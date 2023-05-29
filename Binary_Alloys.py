@@ -8,6 +8,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import gca
+from matplotlib.collections import LineCollection
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+from matplotlib.ticker import LinearLocator
+
 
 import time
 from mpl_toolkits.mplot3d import axes3d
@@ -106,6 +110,7 @@ plt.ylabel('G [J/mole]')
 plt.title('G vs eta for different T, X_B=0.5 , N_A*Omega={:.2f} J'.format(N_A*omega))
 plt.show()
 
+
 # Free energy surface in (X_B,eta) space for T=T0 
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
@@ -113,13 +118,13 @@ ax = fig.add_subplot(projection='3d')
 # Rename the data
 X, Y, Z = x_BG,etaG,G0
 
-
 # Set the axis labels and title
 ax.set_xlabel('X_B')
 ax.set_ylabel('eta')
 ax.set_zlabel('G [ J/mole ]')
 ax.set_title('G vs X_B and eta, N_A\Omega={:.2f} J , T={:.2f}'.format(N_A*omega,T0))
 
+#make the plots in order to do the animation rotating in 3d
 wframe = None
 tstart = time.time()
 for phi in np.linspace(0, 180. / np.pi, 100):
@@ -129,9 +134,8 @@ for phi in np.linspace(0, 180. / np.pi, 100):
     # Generate data.
     Z = np.cos(2 * np.pi * X + phi) * (1 - np.hypot(X, Y))
     # Plot the new wireframe and pause briefly before continuing.
-    wframe = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=2)
-    plt.pause(.001)
+    wframe = ax.plot_surface(X, Y, Z,cmap=cm.jet, rstride=2, cstride=2)
+    #plt.pause(.001)
 
 print('Average FPS: %f' % (100 / (time.time() - tstart)))
-
 
