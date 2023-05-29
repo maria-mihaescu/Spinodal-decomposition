@@ -9,35 +9,11 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.pyplot import gca
 
+import time
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+
 from matplotlib import cm
-
-def meshgrid_of(A):
-    xx, yy = np.meshgrid(range(np.shape(A)[1]), range(np.shape(A)[0]))
-    return xx, yy
-
-def surf(Z, colormap, X=None, Y=None, C=None, shade=None):
-    if X is None and Y is None:
-        X, Y = meshgrid_of(Z)
-    elif X is None:
-        X, _ = meshgrid_of(Z)
-    elif Y is None:
-        _, Y = meshgrid_of(Z)
-
-    if C is None:
-        C = Z
-
-    scalarMap = cm.ScalarMappable(norm=Normalize(vmin=C.min(), vmax=C.max()), cmap=colormap)
-
-    # outputs an array where each C value is replaced with a corresponding color value
-    C_colored = scalarMap.to_rgba(C)
-
-    ax = gca(projection='3d')
-
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, facecolors=C_colored, shade=shade)
-
-    return surf
-
-
 
 
 def xlog(x):
@@ -101,6 +77,7 @@ TS1=-R_gas*(yG*(xlog(xG)+xlog(1-xG))) #entropy
 G1=H1-TS1;  #Gibbs freee energy
 
 #Functions in (eta,T) space for X_B=0.5
+
 eG, TG = np.meshgrid(eta,T)
 H2=N_A*omega*(0.25+eG**2) # enthalpy
 TS2=-R_gas*(yG*(xlog(0.5+eG)+xlog(0.5-eG))) # entropy
@@ -131,17 +108,30 @@ plt.show()
 
 # Free energy surface in (X_B,eta) space for T=T0 
 fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
 
-# choose any colormap e.g. cm.jet, cm.coolwarm, etc.
-#color_map = cm.RdYlGn # reverse the colormap: cm.RdYlGn_r
-#scalarMap = cm.ScalarMappable(norm=Normalize(vmin=min, vmax=max), cmap=color_map)
+# Rename the data
+X, Y, Z = x_BG,etaG,G0
 
-# outputs an array where each C value is replaced with a corresponding color value
-ax = plt.axes(projection='3d')
-ax.scatter3D(x_BG,etaG,G0)
-ax.set_xlabel('X B')
+
+# Set the axis labels and title
+ax.set_xlabel('X_B')
 ax.set_ylabel('eta')
-ax.set_zlabel('G  [ J/mole ]')
+ax.set_zlabel('G [ J/mole ]')
 ax.set_title('G vs X_B and eta, N_A\Omega={:.2f} J , T={:.2f}'.format(N_A*omega,T0))
-plt.show()
+
+wframe = None
+tstart = time.time()
+for phi in np.linspace(0, 180. / np.pi, 100):
+    # If a line collection is already remove it before drawing.
+    if wframe:
+        wframe.remove()
+    # Generate data.
+    Z = np.cos(2 * np.pi * X + phi) * (1 - np.hypot(X, Y))
+    # Plot the new wireframe and pause briefly before continuing.
+    wframe = ax.plot_wireframe(X, Y, Z, rstride=2, cstride=2)
+    plt.pause(.001)
+
+print('Average FPS: %f' % (100 / (time.time() - tstart)))
+
 
