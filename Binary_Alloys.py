@@ -6,17 +6,7 @@ Created on Wed May  3 18:03:42 2023
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
-from matplotlib.pyplot import gca
-from matplotlib.collections import LineCollection
-from mpl_toolkits.mplot3d.art3d import Line3DCollection
-from matplotlib.ticker import LinearLocator
-
-
 import time
-from mpl_toolkits.mplot3d import axes3d
-import matplotlib.pyplot as plt
-
 from matplotlib import cm
 
 
@@ -30,6 +20,7 @@ def xlog(x):
 def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
+    
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
@@ -43,9 +34,9 @@ def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
             wframe.remove()
         # Generate data.
         Z = np.cos(2 * np.pi * X + phi) * (1 - np.hypot(X, Y))
-        # Plot the new wireframe and pause briefly before continuing.
+        
+        # Plot the new surface plot
         wframe = ax.plot_surface(X, Y, Z,cmap=cm.jet, rstride=2, cstride=2)
-        #plt.pause(.001)
     
     print('Average FPS: %f' % (100 / (time.time() - tstart)))
     
@@ -81,16 +72,24 @@ G0=[]
 
 
 for xbg,etag in zip(x_BG,etaG):
-    h0=[N_A*omega*(x*(1-x)+e**2) for x,e in zip(xbg,etag) if (abs(e)< x) or (abs(e)<(1-x))]
+    h0=[]
+    s0=[]
+    g0=[]
+    for x,e in zip(xbg,etag):
+        if abs(e)>=x or abs(e)>=(1-x):
+            h=np.nan
+            s=np.nan
+        else:
+            h=N_A*omega*(x*(1-x)+e**2)
+            s=-(R_gas/2)*(xlog(x+e)+xlog(x-e)+ xlog(1-x+e)+xlog(1-x-e))
+        
+        h0.append(h)
+        s0.append(s)
+        g0.append(h-T0*s)
+        
     H0.append(h0) #  Enthalpy
-    s0=[-(R_gas/2)*(xlog(x+e)+xlog(x-e)+ xlog(1-x+e)+xlog(1-x-e))
-        for x,e in zip(xbg,etag) if (abs(e)< x) or (abs(e)<(1-x))]
-    S0.append(s0)
-    g0=[h-T0*s for h,s in zip(h0,s0)]
-    G0.append(g0)
-    
-print('H0 =',H0)
-
+    S0.append(s0) #Entropy
+    G0.append(g0) #Gibbs free energy
 
 # Functions in (X_B,T) space for eta=0
 
@@ -152,6 +151,7 @@ plt.show()
 
 
 # Free energy surface in (X_B,eta) space for T=T0 
+
 plot_anim_3d(x_BG,etaG,G0,
              'X_B','eta','G [ J/mole ]'
              ,'G vs X_B and eta, N_A\Omega={:.2f} J , T={:.2f}'.format(N_A*omega,T0))
