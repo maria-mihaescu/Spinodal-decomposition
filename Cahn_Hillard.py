@@ -26,20 +26,44 @@ def chemical_potential(c_center,R,T,La):
     mu_chem_dir= R*T*(np.log(c_center)-np.log(1-c_center))+La*(1-2*c_center)
     return mu_chem_dir
 
-def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy):
+def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy,i,j):
+    #periodic boundary conditions 
+    if y==j+1 and y> Ny-1:
+        y = j+1-Ny
+    if x==i-1 and x< 0:
+        x= i-1+Nx
+    if x==i+1 and x> Nx-1:
+        x = i+1-Nx
+    if y==j-1 and y< 0:
+        y=j-1+Ny
+        
+    if y==j+2 and y> Ny-1:
+        y = j+2-Ny
+    if x==i-2 and x< 0:
+        x= i-2+Nx
+    if x==i+2 and x> Nx-1:
+        x = i+2-Nx
+    if y==j-2 and y< 0:
+        y=j-2+Ny
+        
+    #positions of the order parameters values around the center 
     c_center=c[x,y]
     c_left=[x-1,y]
     c_right=[x+1,y]
     c_up=[x,y+1]
     c_down=[x,y-1]
     
+    #laplacian of the chemical potential
     mu_grad_dir=-A*func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)
+    #chemical potential in one direction given by the position of the center
     mu_chem_dir=chemical_potential(c_center,R,T,La)
+    #total chemical potential in that direction 
     mu_tot_dir=mu_grad_dir + mu_chem_dir
+    
     return mu_tot_dir
     
 def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
-    for i,j in zip(range(Nx+3),range(Ny+3)):
+    for i,j in zip(range(Nx),range(Ny)):
         #nearest and second nearest neigbours 
         c_center = c[i,j]
         c_up= c[i,j+1]
@@ -47,39 +71,20 @@ def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
         c_left=c[i-1,j]
         c_right=c[i+1,j]
         
-        
+        """
         c_up_up=c[i,j+2]
         c_down_down=c[i,j-2]
         c_left_left=[i-2,j]
         c_right_right=c[i+2,j]
-
-        
-        #periodic boundary conditions
-        if c_up > c[i, Ny-1]:
-            c_up = c[i,j+1-Ny]
-        if c_left < c[0,j]:
-            c_left= c[i-1+Nx,j]
-        if c_right > c[Nx-1,j]:
-            c_right = c[i+1-Nx,j]
-        if c_down < c[i,0]:
-            c_down=c[i,j-1+Ny]
-            
-        if c_up_up > c[i, Ny-1]:
-            c_up_up = c[i,j+2-Ny]
-        if c_left_left < c[0,j]:
-            c_left_left= c[i-2+Nx,j]
-        if c_right_right > c[Nx-1,j]:
-            c_right_right = c[i+2-Nx,j]
-        if c_down_down < c[i,0]:
-            c_down_down=c[i,j-2+Ny]
-        
+"""
+    
         
         #total diffusion potential for the differen directions 
-        mu_center=total_diffusion_potential(c,i,j,R,T,A,La,dx,dy)
-        mu_left=total_diffusion_potential(c,i-1,j,R,T,A,La,dx,dy)
-        mu_right=total_diffusion_potential(c,i+1,j,R,T,A,La,dx,dy)
-        mu_up=total_diffusion_potential(c,i,j+1,R,T,A,La,dx,dy)
-        mu_down= total_diffusion_potential(c,i,j-1,R,T,A,La,dx,dy)
+        mu_center=total_diffusion_potential(c,i,j,R,T,A,La,dx,dy,i,j)
+        mu_left=total_diffusion_potential(c,i-1,j,R,T,A,La,dx,dy,i,j)
+        mu_right=total_diffusion_potential(c,i+1,j,R,T,A,La,dx,dy,i,j)
+        mu_up=total_diffusion_potential(c,i,j+1,R,T,A,La,dx,dy,i,j)
+        mu_down= total_diffusion_potential(c,i,j-1,R,T,A,La,dx,dy,i,j)
         
         #total chemical energy gradient
         nabla_mu=func_laplacian(mu_center,mu_left,mu_right,mu_up,mu_down,dx,dy)
