@@ -12,23 +12,47 @@ from matplotlib import cm
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
 
-def func_laplacian(c,dx,dy):
-    Nx,Ny =c.shape
-    for i,j in zip(Nx,Ny):
+def add_fluctuation(Nx, Ny, c0, noise):    
+    c=c0+noise*(0.5-np.random.rand(Nx,Ny))
+    return c
+
+def func_laplacian(center,left,right,up,down,dx,dy):
+    lap=(right-2*center+left)/(dx**2) + (up -2*center+down) /(dy**2)
+    return lap
+    
+def chemical_potential(c_center,R,T,La):
+    #use the analytic expression for the chemical potential obtained as
+    #derivative of the homogeneous free energy
+    mu_chem_dir= R*T*(np.log(c_center)-np.log(1-c_center))+La*(1-2*c_center)
+    return mu_chem_dir
+
+def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy):
+    c_center=c[x,y]
+    c_left=[x-1,y]
+    c_right=[x+1,y]
+    c_up=[x,y+1]
+    c_down=[x,y-1]
+    
+    mu_grad_dir=-A*func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)
+    mu_chem_dir=chemical_potential(c_center,R,T,La)
+    mu_tot_dir=mu_grad_dir + mu_chem_dir
+    return mu_tot_dir
+    
+def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
+    for i,j in zip(range(Nx+3),range(Ny+3)):
         #nearest and second nearest neigbours 
         c_center = c[i,j]
         c_up= c[i,j+1]
         c_down=c[i,j-1]
         c_left=c[i-1,j]
         c_right=c[i+1,j]
-        c_up_right=c[i+1,j+1]
-        c_up_left=c[i-1,j+1]
+        
+        
         c_up_up=c[i,j+2]
         c_down_down=c[i,j-2]
         c_left_left=[i-2,j]
         c_right_right=c[i+2,j]
-        c_down_left=c[i-1,j-1]
-        c_down_right=c[i+1,j-1]
+
         
         #periodic boundary conditions
         if c_up > c[i, Ny-1]:
@@ -48,96 +72,85 @@ def func_laplacian(c,dx,dy):
             c_right_right = c[i+2-Nx,j]
         if c_down_down < c[i,0]:
             c_down_down=c[i,j-2+Ny]
-
         
-    
-def add_fluctuation(Nx, Ny, c0, noise):
-    c=c0+noise*(0.5-np.random.rand(Nx,Ny))
-    return c
-    
-def chemical_potential(c,A):
-   #use the analytic expression for the chemical potential obtained as
-   #derivative of the homogeneous free energy
-   mu=2*A*(c*((1-c)**2)-(c**2)*(1-c))
-   return mu
-
-def free_energy(c, A, k, dx, dy):
-    Ny, Nx=c.shape
-    c=c.tolist()
-    Nx=int(Nx)
-    Ny=int(Ny)
-    c_top=c[Ny-1,:] + c[1:Ny,:]
-    c_left=c[:,Nx] + c[:,1:Nx]
-    
-    C0=[]
-    CL=[]
-    CT=[]
-    for c0,ct,cl in zip(c,c_top,c_left):
-        c0_sum= [(c**2)*((1-c)**2) for c in c0]
-        cl_sum=[(c1-c2)**2 for c1,c2 in zip(c0,cl)]
-        ct_sum=[(c1-c2)**2 for c1,c2 in zip(c0,ct)]
-        C0.append(np.sum(c0_sum))
-        CL.append(np.sum(cl_sum))
-        CT.append(np.sum(ct_sum))
-    hom_term=dx*dy*A*np.sum(C0)
-    grad_term = (k/dx)*np.sum(CL) + (k/dy)*np.sum(CT)
-    F=hom_term+grad_term
-    return F
         
-# finite difference phase-field code to solve the cahn-hilliard equation
+        #total diffusion potential for the differen directions 
+        mu_center=total_diffusion_potential(c,i,j,R,T,A,La,dx,dy)
+        mu_left=total_diffusion_potential(c,i-1,j,R,T,A,La,dx,dy)
+        mu_right=total_diffusion_potential(c,i+1,j,R,T,A,La,dx,dy)
+        mu_up=total_diffusion_potential(c,i,j+1,R,T,A,La,dx,dy)
+        mu_down= total_diffusion_potential(c,i,j-1,R,T,A,La,dx,dy)
+        
+        #total chemical energy gradient
+        nabla_mu=func_laplacian(mu_center,mu_left,mu_right,mu_up,mu_down,dx,dy)
 
-#clear all starting point
-tstart = time.time()
+        print('\n nabla_mu=',nabla_mu)
+        #Increments
+        dc2dx2 = ((c_right-c_left)*(mu_right-mu_left))/(4*dx**2)
+        dc2dy2 = ((c_up-c_down)*(mu_up-mu_down))/(4*dy**2)
+        
+        print('\n dc2dx2=',dc2dx2)
+        print('\n dc2dy2=',dc2dy2)
+        
+        #Diffusion and mobility
+        Diff_BA=Diff_B/Diff_A
+        
+        mobility = (Diff_A/R/T)*(c_center+Diff_BA*(1-c_center))*c_center*(1-c_center)
+        print('mobility =',mobility)
+        
+        dmdc = (Diff_A/R/T)*((1-Diff_BA)*c_center*(1-c_center)+(c_center)+Diff_BA*(1-c_center))*(1-2*c_center)
+        print('dmdc =', dmdc)
+        #writting the right hand side of the Cahn-Hilliard equation
+        dcdt=mobility*nabla_mu+dmdc*(dc2dx2+dc2dy2)
+        print('dcdt=', dcdt)
+        dcdt=np.mean(dcdt)
+        #updating the order parameter c following the equation
+        print('dcdt=', dcdt)
+        
+        c_t[i,j] = c[i,j] + dcdt * dt 
 
 
 #define the simulation cell parameters
-Nx= 128
-Ny= 128
+Nx= 128 #number of computational grids along the x direction
+Ny= 128 #number of computational grids along the y direction
 NxNy = Nx*Ny
-dx= 1
-dy = 1
+dx = pow(10,-10) # spacing of computational grids [m]
+dy = pow(10,-10) # spacing of computational grids [m]
 
-# Time integration parameters
-nstep = 50000
-nprint = 500
-dtime = 1.0e-2
-ttime = 0
 
 #parameters specific to the material
-c0=0.50
-dc=0.02
-mobility = 1.0
-grad_coef = 0.5
-A = 1.0 #multiplicative constant in free energy
+
+c0 = 0.5 # average composition of B atom [atomic fraction]
+R = 8.314 # gas constant
+T = 673 # temperature [K]
+La= 20000e-9*T # Atomic interaction constant [J/mol]
+A= 3.0e-14 # gradient coefficient [Jm2/mol]
+Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
+Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
+
+# Time integration parameters
+nsteps = 50000 # total number of time-steps
+nprint = 500
+dt = (dx*dx/Diff_A)*0.1 # time increment [s]
+ttime=0 #current time
+
+#clear all starting point
+c= np.zeros((Nx,Ny))
+c_t= np.zeros((Nx,Ny))
+noise=0.01
 
 #starting microstructure with a concentration fluctuation
-c=add_fluctuation(Nx,Ny,c0,dc)
+c=add_fluctuation(Nx,Ny,c0,noise)
 
 
-# initialization of the arrays that track the time evolution;
-n2=round(nstep/nprint)+1
-c_t=np.zeros(n2) # average concentration
-F_t=np.zeros(n2) #free energy
-t_t=np.zeros(n2) #time
-
-c_mean=[]
-for i in c:
-    c_mean.append(np.mean(i))
-c_t[1]=np.mean(c_mean)
-
-F_t[1]=free_energy(c,A,grad_coef,dx,dy)
-
-
-#Evolution of the cahn hillard equations
-iplot=0
-
-for istep in range(1,nstep):
-    ttime=ttime+dtime #current time
-    lap_c = func_laplacian(c,dx,dy) #laplacian of concentration
-    mu_c  = chemical_potential(c,A) #chemical potential function;
-    dF_dc = mu_c - 2 * grad_coef * lap_c #delta_F/delta_c in the free energy functional
-    lap_dF_dc = func_laplacian(dF_dc,dx,dy) #laplacian of the above
-    
-    #time evolution
-    c = c + dtime * mobility*lap_dF_dc
-    print(c)
+#Solving the Cahn-hiliard equation 
+for nstep in range(1,nsteps+1):
+    update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
+    c[:,:]=c_t[:,:] # updating the order parameter every dt 
+    ttime=ttime + dt #updating the current time 
+    if np.mod(nstep,nprint)==0:
+        plt.imshow(c,cmap='bwr')
+        plt.title('Concentration of B atoms, nstep={}'.format(nstep))
+        plt.colorbar()
+        plt.show()
+        
