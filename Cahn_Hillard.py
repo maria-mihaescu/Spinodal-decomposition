@@ -7,7 +7,7 @@ Created on Mon May 29 15:46:02 2023
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from matplotlib import cm
+
 
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
@@ -26,25 +26,24 @@ def chemical_potential(c_center,R,T,La):
     mu_chem_dir= R*T*(np.log(c_center)-np.log(1-c_center))+La*(1-2*c_center)
     return mu_chem_dir
 
-def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy,i,j):
+def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy):
+    #Renaming the coordinates
+    x=x
+    y=y
+    x_plus=x+1
+    x_min=x-1
+    y_plus=y+1
+    y_min=y-1
+    
     #periodic boundary conditions 
-    if y==j+1 and y> Ny-1:
-        y = j+1-Ny
-    if x==i-1 and x< 0:
-        x= i-1+Nx
-    if x==i+1 and x> Nx-1:
-        x = i+1-Nx
-    if y==j-1 and y< 0:
-        y=j-1+Ny
-        
-    if y==j+2 and y> Ny-1:
-        y = j+2-Ny
-    if x==i-2 and x< 0:
-        x= i-2+Nx
-    if x==i+2 and x> Nx-1:
-        x = i+2-Nx
-    if y==j-2 and y< 0:
-        y=j-2+Ny
+    if y_plus> Ny-1:
+        y_plus = y_plus-Ny
+    if x_min< 0:
+        x_min= x_min+Nx
+    if x_plus > Nx-1:
+        x_plus = x_plus -Nx
+    if y_min< 0:
+        y_min =y_min+Ny
         
     #positions of the order parameters values around the center 
     c_center=c[x,y]
@@ -64,27 +63,37 @@ def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy,i,j):
     
 def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
     for i,j in zip(range(Nx),range(Ny)):
-        #nearest and second nearest neigbours 
-        c_center = c[i,j]
-        c_up= c[i,j+1]
-        c_down=c[i,j-1]
-        c_left=c[i-1,j]
-        c_right=c[i+1,j]
+        #Renaming the coordinates
+        x=i
+        y=j
+        x_plus=i+1
+        x_min=i-1
+        y_plus=j+1
+        y_min=y-1
+
+        #periodic boundary conditions 
+        if y_plus> Ny-1:
+            y_plus = j+1-Ny
+        if x_min< 0:
+            x_min= i-1+Nx
+        if x_plus > Nx-1:
+            x_plus = i+1-Nx
+        if y_min< 0:
+            y_min =j-1+Ny
         
-        """
-        c_up_up=c[i,j+2]
-        c_down_down=c[i,j-2]
-        c_left_left=[i-2,j]
-        c_right_right=c[i+2,j]
-"""
-    
-        
+        #nearest neigbours 
+        c_center = c[x,y]
+        c_up= c[x,y_plus]
+        c_down=c[x,y_min]
+        c_left=c[x_min,y]
+        c_right=c[x_plus,y]
+ 
         #total diffusion potential for the differen directions 
-        mu_center=total_diffusion_potential(c,i,j,R,T,A,La,dx,dy,i,j)
-        mu_left=total_diffusion_potential(c,i-1,j,R,T,A,La,dx,dy,i,j)
-        mu_right=total_diffusion_potential(c,i+1,j,R,T,A,La,dx,dy,i,j)
-        mu_up=total_diffusion_potential(c,i,j+1,R,T,A,La,dx,dy,i,j)
-        mu_down= total_diffusion_potential(c,i,j-1,R,T,A,La,dx,dy,i,j)
+        mu_center=total_diffusion_potential(c,x,y,R,T,A,La,dx,dy)
+        mu_left=total_diffusion_potential(c,x_min,y,R,T,A,La,dx,dy)
+        mu_right=total_diffusion_potential(c,x_plus,y,R,T,A,La,dx,dy)
+        mu_up=total_diffusion_potential(c,x,y_plus,R,T,A,La,dx,dy)
+        mu_down= total_diffusion_potential(c,x,y_min,R,T,A,La,dx,dy)
         
         #total chemical energy gradient
         nabla_mu=func_laplacian(mu_center,mu_left,mu_right,mu_up,mu_down,dx,dy)
@@ -116,8 +125,8 @@ def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
 
 
 #define the simulation cell parameters
-Nx= 128 #number of computational grids along the x direction
-Ny= 128 #number of computational grids along the y direction
+Nx= 10 #number of computational grids along the x direction
+Ny= 10 #number of computational grids along the y direction
 NxNy = Nx*Ny
 dx = pow(10,-10) # spacing of computational grids [m]
 dy = pow(10,-10) # spacing of computational grids [m]
@@ -134,8 +143,8 @@ Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
 Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
 
 # Time integration parameters
-nsteps = 50000 # total number of time-steps
-nprint = 500
+nsteps = 1000 # total number of time-steps
+nprint = 50
 dt = (dx*dx/Diff_A)*0.1 # time increment [s]
 ttime=0 #current time
 
@@ -147,15 +156,32 @@ noise=0.01
 #starting microstructure with a concentration fluctuation
 c=add_fluctuation(Nx,Ny,c0,noise)
 
+#setting the frames
+wframe = None
+cbar=None
+tstart = time.time()
+#Solving the Cahn-hiliard equation and plotting the result
+fig = plt.figure()
+ax = fig.add_subplot()
+ax.set_title('Concentration of B atoms')
 
-#Solving the Cahn-hiliard equation 
 for nstep in range(1,nsteps+1):
-    update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
-    c[:,:]=c_t[:,:] # updating the order parameter every dt 
-    ttime=ttime + dt #updating the current time 
     if np.mod(nstep,nprint)==0:
-        plt.imshow(c,cmap='bwr')
-        plt.title('Concentration of B atoms, nstep={}'.format(nstep))
-        plt.colorbar()
-        plt.show()
+        # If a line collection is already there remove it before drawing it again.
+        if wframe:
+            wframe.remove()
+        #If there is already a color bar remove it before drawing it again
+        if cbar:
+            cbar.remove()
+        #generate the data concentration data following the Cahn_Hilliard equation
         
+        update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
+        c[:,:]=c_t[:,:] # updating the order parameter every dt 
+        ttime=ttime + dt #updating the current time 
+        
+       # Plot the new surface plot
+        img=ax.imshow(c,cmap='bwr')
+        cbar = plt.colorbar(img, ax=ax)
+        plt.show()
+        time.sleep(1)
+            
