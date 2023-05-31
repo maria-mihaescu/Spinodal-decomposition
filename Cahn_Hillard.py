@@ -4,18 +4,16 @@ Created on Mon May 29 15:46:02 2023
 
 @author: maria
 """
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-import matplotlib.animation as ani
+import matplotlib.animation as animation
 
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
 
-def animate(c):
-    ax.clear()
-    ax.imshow(c,cmap='bwr')
-    
+
 def add_fluctuation(Nx, Ny, c0, noise):    
     c=c0+noise*(0.5-np.random.rand(Nx,Ny))
     return c
@@ -103,29 +101,30 @@ def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
             #total chemical energy gradient
             nabla_mu=func_laplacian(mu_center,mu_left,mu_right,mu_up,mu_down,dx,dy)
     
-            print('\n nabla_mu=',nabla_mu)
             #Increments
             dc2dx2 = ((c_right-c_left)*(mu_right-mu_left))/(4*dx*dx)
             dc2dy2 = ((c_up-c_down)*(mu_up-mu_down))/(4*dy*dy)
-            
-            print('\n dc2dx2=',dc2dx2)
-            print('\n dc2dy2=',dc2dy2)
+
             
             #Diffusion and mobility
             Diff_BA=Diff_B/Diff_A
             
             mobility = (Diff_A/R/T)*(c_center+Diff_BA*(1-c_center))*c_center*(1-c_center)
-            print('mobility =',mobility)
             
             dmdc = (Diff_A/R/T)*((1-Diff_BA)*c_center*(1-c_center)+(c_center)+Diff_BA*(1-c_center))*(1-2*c_center)
-            print('dmdc =', dmdc)
             #writting the right hand side of the Cahn-Hilliard equation
             dcdt=mobility*nabla_mu+dmdc*(dc2dx2+dc2dy2)
     
             #updating the order parameter c following the equation
-            print('dcdt=', dcdt)
-            
+          
             c_t[i,j] = c[i,j] + dcdt * dt 
+
+def animate_func(i):
+    if i % fps == 0:
+        print( '.', end ='' )
+    
+    im.set_array(snapshots[i])
+    return [im]
 
 
 #define the simulation cell parameters
@@ -147,6 +146,7 @@ Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
 Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
 
 # Time integration parameters
+
 nsteps = 11000 # total number of time-steps
 nprint = 50
 dt = (dx*dx/Diff_A)*0.1 # time increment [s]
@@ -167,13 +167,49 @@ plt.title('initial concentration')
 plt.colorbar()
 plt.show()
 
-#setting the frames
 
+#Solving the Cahn-hiliard equation and plotting the result
+
+# Plot animated 
+fps = 100
+nSeconds = 5
+nsteps = fps*nSeconds# total number of time-steps
+        
+        
+
+
+# def a list of snapshots with the values of c
+
+snapshots = [c]
+
+for istep in range(nsteps):
+    update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
+    c[:,:]=c_t[:,:] # updating the order parameter every dt 
+    
+    #if istep % nprint ==0:
+    snapshots.append(c)
+
+# set figure, axis and plot element we want to animate 
+
+fig = plt.figure()
+im = plt.imshow(c, cmap='bwr')
+colorbar=plt.colorbar()
+
+
+anim = animation.FuncAnimation(
+                           fig, 
+                           animate_func, 
+                           frames = nSeconds * fps,
+                           interval = 1000 / fps, # in ms
+                           )
+
+
+
+"""
 wframe = None
 cbar=None
 tstart = time.time()
 
-#Solving the Cahn-hiliard equation and plotting the result
 fig = plt.figure()
 ax = fig.add_subplot()
 
@@ -181,12 +217,7 @@ for nstep in range(1,nsteps+1):
     update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
     c[:,:]=c_t[:,:] # updating the order parameter every dt 
     ttime=ttime + dt #updating the current time 
-    img=ax.imshow(c,cmap='bwr')
-    animator=ani.FuncAnimation(img, update_order_parameter)
-    cbar = plt.colorbar(img, ax=ax)
-    title= ax.set_title('Concentration of B atoms at time {:.2f}'.format(ttime))
-    plt.show()
-    """
+
     if np.mod(nstep,nprint)==0:
         # If a line collection is already there remove it before drawing it again.
         if wframe:
@@ -205,7 +236,8 @@ for nstep in range(1,nsteps+1):
         cbar = plt.colorbar(img, ax=ax)
         title= ax.set_title('Concentration of B atoms at time {:.2f}'.format(ttime))
         plt.show()
-        """
+    
+"""
         
 
             
