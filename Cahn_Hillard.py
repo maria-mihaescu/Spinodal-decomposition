@@ -13,21 +13,52 @@ import matplotlib.animation as animation
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
 
+nx = 32 # number of computational grids along x direction
+ny = nx # number of computational grids along y direction
+dx, dy = 2.0e-9, 2.0e-9 # spacing of computational grids [m]
+c0 = 0.5 # average composition of B atom [atomic fraction]
+R = 8.314 # gas constant
+T = 673 # temperature [K]
+nsteps = 6000# total number of time-steps
+
+La = 20000.-9.*T # Atom intaraction constant [J/mol]
+ac = 3.0e-14 # gradient coefficient [Jm2/mol]
+Da = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
+Db = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
+dt = (dx*dx/Da)*0.1 # time increment [s]
 
 def add_fluctuation(Nx, Ny, c0, noise):    
     c=c0+noise*(0.5-np.random.rand(Nx,Ny))
     return c
 
 def func_laplacian(center,left,right,up,down,dx,dy):
-    lap=(right-2*center+left)/(dx**2) + (up -2*center+down) /(dy**2)
+    lap=(right-2*center+left)/dx/dx + (up -2*center+down) /dy/dy
     return lap
     
-def chemical_potential(c_center,R,T,La):
+
+def chemical_potential(c,R,T,La):
+    chem_pot= R*T*(c*np.log(c)+(1-c)*np.log(1-c))+La*c*(1-c)
+    return chem_pot
+
+#Show the chemical potential in function of the order parameter
+fig = plt.figure(figsize=(5,5))
+cc = np.linspace(0.01, 0.99, 100);
+
+plt.plot(cc, chemical_potential(cc,R,T,La),color='black')
+plt.plot(c0, chemical_potential(c0,R,T,La),color='r',marker='o',markersize=10)
+plt.xlabel('Concentration c [at. frac]')
+plt.ylabel('Chemical free energy density')
+plt.show()
+
+def diffusion_potential_chemical(c_center,R,T,La):
     #chemical term of the diffusion potential
     mu_chem_dir= R*T*(np.log(c_center)-np.log(1-c_center))+La*(1-2*c_center)
+    
     return mu_chem_dir
 
+
 def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy):
+    
     #Renaming the coordinates
     x=x
     y=y
@@ -47,31 +78,31 @@ def total_diffusion_potential(c,x,y,R,T,A,La,dx,dy):
         y_min =y_min+Ny
         
     #positions of the order parameters values around the center 
-    c_center=c[x,y]
-    c_left=c[x_min,y]
-    c_right=c[x_plus,y]
-    c_up=c[x,y_plus]
-    c_down=c[x,y_min]
+    c_center= c[x,y]
+    c_left= c[x_min,y]
+    c_right= c[x_plus,y]
+    c_up= c[x,y_plus]
+    c_down= c[x,y_min]
     
     #laplacian of the chemical potential
     mu_grad_dir=-A*func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)
     #chemical potential in one direction given by the position of the center
-    mu_chem_dir=chemical_potential(c_center,R,T,La)
+    mu_chem_dir=diffusion_potential_chemical(c_center,R,T,La)
     #total chemical potential in that direction 
     mu_tot_dir=mu_grad_dir + mu_chem_dir
     
     return mu_tot_dir
     
 def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
-    for j in range(Ny):
-        for i in range(Nx):
+    for i in range(Nx):
+        for j in range(Ny):
             
             #Renaming the coordinates
             x=i
             y=j
-            x_plus=i+1
-            x_min=i-1
-            y_plus=j+1
+            x_plus=x+1
+            x_min=x-1
+            y_plus=y+1
             y_min=y-1
     
             #periodic boundary conditions 
@@ -111,9 +142,10 @@ def update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt):
             
             mobility = (Diff_A/R/T)*(c_center+Diff_BA*(1-c_center))*c_center*(1-c_center)
             
-            dmdc = (Diff_A/R/T)*((1-Diff_BA)*c_center*(1-c_center)+(c_center)+Diff_BA*(1-c_center))*(1-2*c_center)
+            dmdc = (Diff_A/R/T)*((1-Diff_BA)*c_center*(1-c_center)+(c_center+Diff_BA*(1-c_center))*(1-2*c_center))
             #writting the right hand side of the Cahn-Hilliard equation
-            dcdt=mobility*nabla_mu+dmdc*(dc2dx2+dc2dy2)
+            
+            dcdt=mobility*nabla_mu + dmdc*(dc2dx2+dc2dy2)
     
             #updating the order parameter c following the equation
           
@@ -145,12 +177,6 @@ A= 3.0e-14 # gradient coefficient [Jm2/mol]
 Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
 Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
 
-# Time integration parameters
-
-nsteps = 11000 # total number of time-steps
-nprint = 50
-dt = (dx*dx/Diff_A)*0.1 # time increment [s]
-ttime=0 #current time
 
 #clear all starting point
 
@@ -160,7 +186,10 @@ noise=0.01
 
 
 #starting microstructure with a concentration fluctuation
-c=add_fluctuation(Nx,Ny,c0,noise)
+c_init=add_fluctuation(Nx,Ny,c0,noise)
+c=c_init
+
+#printing separatly the initial concentration plot
 plt.figure()
 plt.imshow(c,cmap='bwr')
 plt.title('initial concentration')
@@ -171,28 +200,31 @@ plt.show()
 #Solving the Cahn-hiliard equation and plotting the result
 
 # Plot animated 
+# Time integration parameters
+
+nprint = 60
+dt = (dx*dx/Diff_A)*0.1 # time increment [s]
 fps = 100
-nSeconds = 5
+nSeconds = 6
 nsteps = fps*nSeconds# total number of time-steps
-        
-        
+ttime=0 #current time       
 
 
 # def a list of snapshots with the values of c
 
-snapshots = [c]
+snapshots = [c_init]
 
-for istep in range(nsteps):
+for istep in range(1,nsteps+1):
     update_order_parameter(c,c_t,R,T,A,La,Diff_A,Diff_B,dx,dy,dt)
     c[:,:]=c_t[:,:] # updating the order parameter every dt 
     
-    #if istep % nprint ==0:
-    snapshots.append(c)
+    if istep % nprint ==0:
+        snapshots.append(c[:,:])
 
 # set figure, axis and plot element we want to animate 
 
 fig = plt.figure()
-im = plt.imshow(c, cmap='bwr')
+im = plt.imshow(c[:,:], cmap='bwr')
 colorbar=plt.colorbar()
 
 
@@ -204,7 +236,7 @@ anim = animation.FuncAnimation(
                            )
 
 
-
+print('Done!')
 """
 wframe = None
 cbar=None
