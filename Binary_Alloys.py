@@ -2,7 +2,7 @@
 """
 Created on Wed May  3 18:03:42 2023
 
-@author: maria
+@author: Maria Mihaescu
 """
 import numpy as np
 import matplotlib.pyplot as plt
