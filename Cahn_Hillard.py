@@ -4,17 +4,16 @@ Created on Mon May 29 15:46:02 2023
 
 @author: maria
 """
-import random
+
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 import matplotlib.animation as animation
 
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
 #define the simulation cell parameters
-Nx= 30 #number of computational grids along the x direction
-Ny= 30 #number of computational grids along the y direction
+Nx= 32 #number of computational grids along the x direction
+Ny= 32 #number of computational grids along the y direction
 NxNy = Nx*Ny
 dx =  2.0e-9 # spacing of computational grids [m]
 dy =  2.0e-9 # spacing of computational grids [m]
@@ -58,38 +57,52 @@ plt.xlabel('Concentration c [at. frac]')
 plt.ylabel('Chemical free energy density')
 plt.show()
 
+def boundary_conditions(x,y):
+    #Renaming the coordinates
+    x=x
+    y=y
+    x_plus=x+1
+    x_min=x-1
+    y_plus=y+1
+    y_min=y-1
+    
+    #periodic boundary conditions 
+
+    if y_plus > Ny-1:
+        y_plus = y_plus - Ny
+    if x_min < 0:
+        x_min= x_min + Nx
+    if x_plus > Nx-1:
+        x_plus = x_plus - Nx
+    if y_min < 0:
+        y_min =y_min + Ny
+        
+    return x,y,x_plus,x_min,y_plus,y_min
+
+def concentration_nearest_neighbours(c,x,y):
+    
+    x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(x, y)
+        
+    #positions of the order parameters values around the center 
+    c_center= c[x,y]
+    c_left= c[x_min,y]
+    c_right= c[x_plus,y]
+    c_up= c[x,y_plus]
+    c_down= c[x,y_min]
+    
+    return c_center,c_left,c_right,c_up,c_down
+
 def diffusion_potential_chemical(cc):
     #chemical term of the diffusion potential
     mu_chem_dir= R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
     return mu_chem_dir
 
 
-def total_diffusion_potential(c,a,b):
+def total_diffusion_potential(c,x,y):
     
-    #Renaming the coordinates
-    a_plus=a + 1
-    a_min=a - 1
-    b_plus=b + 1
-    b_min=b - 1
-    
-    #periodic boundary conditions 
+    #getting the concentration of the neighrest neighbours around the point in (x,y)
+    c_center,c_left,c_right,c_up,c_down = concentration_nearest_neighbours(c,x,y)
 
-    if b_plus > Ny-1:
-        b_plus = b_plus - Ny
-    if a_min < 0:
-        a_min= a_min + Nx
-    if a_plus > Nx-1:
-        a_plus = a_plus - Nx
-    if b_min < 0:
-        b_min =b_min + Ny
-        
-    #positions of the order parameters values around the center 
-    c_center= c[a,b]
-    c_left= c[a_min,b]
-    c_right= c[a_plus,b]
-    c_up= c[a,b_plus]
-    c_down= c[a,b_min]
-    
     #laplacian of the chemical potential
     
     mu_grad_dir=-A*(func_laplacian(c_center,c_left,c_right,c_up,c_down))
@@ -107,31 +120,11 @@ def update_order_parameter(c,c_t):
     for j in range(Ny):
         for i in range(Nx):
             
-            #Renaming the coordinates
-            x=i
-            y=j
-            x_plus=x+1
-            x_min=x-1
-            y_plus=y+1
-            y_min=y-1
-    
-            #periodic boundary conditions 
-            if y_plus > Ny-1:
-                y_plus = y_plus-Ny
-            if x_min < 0:
-                x_min= x_min + Nx
-            if x_plus > Nx-1:
-                x_plus = x_plus-Nx
-            if y_min < 0:
-                y_min =y_min+Ny
+            #Coordinates with boundary conditions
+            x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(i, j)
             
-            
-            #nearest neigbours 
-            c_center = c[x,y]
-            c_up= c[x,y_plus]
-            c_down=c[x,y_min]
-            c_left= c[x_min,y]
-            c_right= c[x_plus,y]
+            #concentration of the nearest neighbours
+            c_center,c_left,c_right,c_up,c_down = concentration_nearest_neighbours(c,x,y)
             
             #total diffusion potential for the differen directions 
             
@@ -170,61 +163,60 @@ def update_order_parameter(c,c_t):
 
 
 
-#clear all starting point
+
+#Solving the Cahn-hiliard equation and plotting the result
 
 
-"""
+
+#Setting concentrations to 0
+c= np.zeros((Nx,Ny))
+c_t= np.zeros((Nx,Ny))
+
+#adding random fluctuations 
+c = add_fluctuation(Nx, Ny, c0, noise)
+
 #printing separatly the initial concentration plot
 plt.figure()
 plt.imshow(c,cmap='bwr')
 plt.title('initial concentration')
 plt.colorbar()
 plt.show()
-"""
-
-#Solving the Cahn-hiliard equation and plotting the result
-
-
-# Plot NOT animated 
-# Time integration parameters
-
-
-c= np.zeros((Nx,Ny))
-c_t= np.zeros((Nx,Ny))
-
-c = c0 + np.random.rand(Nx, Ny)*0.01
-
 
 
 # Plot animated 
 # Time integration parameters
+nsteps = 600# total number of time-steps       
+nprint = 60
 
+#creating the snapshots list with all the images
 
-nsteps = 6000# total number of time-steps       
-nprint = 600
-
-
-
-#creating the snapshots list
 fig, ax = plt.subplots()
-
+cbar=None
 snapshots=[]
 
 for istep in range(1,nsteps+1):
     update_order_parameter(c,c_t)
     c[:,:]=c_t[:,:] # updating the order parameter every dt 
-    
+
     if istep % nprint ==0:
+        if cbar:
+            cbar.remove()
         im = ax.imshow(c, cmap='bwr', animated=True)
-        if istep == 1:
-            ax.imshow(c, cmap='bwr')
-    
+        cbar=fig.colorbar(im,ax=ax)    
         snapshots.append([im])       
     
-anim = animation.ArtistAnimation(fig,snapshots,interval=50, blit=True,repeat_delay=1000)
+anim = animation.ArtistAnimation(fig,snapshots,interval=500, blit=True,repeat_delay=10)
                            
 
-
+# To save the animation, use e.g.
+#
+# ani.save("movie.mp4")
+#
+# or
+#
+# writer = animation.FFMpegWriter(
+#     fps=15, metadata=dict(artist='Me'), bitrate=1800)
+# ani.save("movie.mp4", writer=writer)
 
 
 
