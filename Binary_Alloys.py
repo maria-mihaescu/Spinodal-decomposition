@@ -73,11 +73,8 @@ eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 #  must be lower than X_B and 1-X_B (see definitions in the model)
 # Sets enthalpy and entropy to "Not a Number" in the unphysical region, to
 # avoid plotting of non physical values
-x_BG,etaG = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
 
-h0_test=N_A*omega*(np.multiply(x_BG,(1-x_BG)+np.multiply(etaG,etaG)))
-s0_test=-(R_gas/2)*(xlog(x_BG+etaG)+xlog(x_BG-etaG)+ xlog(1-x_BG+etaG)+xlog(1-x_BG-etaG))
-g0_test=h0_test-T0*s0_test
+x_BG,etaG = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
 
 H0=[]
 S0=[]
