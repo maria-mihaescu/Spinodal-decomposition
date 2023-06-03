@@ -8,7 +8,6 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import matplotlib
 
 
 def xlog(x):
