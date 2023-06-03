@@ -12,6 +12,10 @@ import matplotlib.animation as animation
 #Goal of the simulation two-dimensional phase-field simulation 
 #of the spinodal decomposition using Cahn-Hilliard equation.
 #define the simulation cell parameters
+
+R = 8.314 # gas constant
+
+#Parameters specific to the grid 
 Nx= 32 #number of computational grids along the x direction
 Ny= 32 #number of computational grids along the y direction
 NxNy = Nx*Ny
@@ -21,13 +25,9 @@ dy =  2.0e-9 # spacing of computational grids [m]
 #parameters specific to the material
 
 c0 = 0.5 # average composition of B atom [atomic fraction]
-
-R = 8.314 # gas constant
 T = 673 # temperature [K]
-
 La = 20000.-9.*T # Atom intaraction constant [J/mol]
 A= 3.0e-14 # gradient coefficient [Jm2/mol]
-
 Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
 Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
 noise=0.01
@@ -165,61 +165,63 @@ def update_order_parameter(c,c_t):
 
 
 #Solving the Cahn-hiliard equation and plotting the result
-
-
-
-#Setting concentrations to 0
-c= np.zeros((Nx,Ny))
-c_t= np.zeros((Nx,Ny))
-
-#adding random fluctuations 
-c = add_fluctuation(Nx, Ny, c0, noise)
-
-#printing separatly the initial concentration plot
-plt.figure()
-plt.imshow(c,cmap='bwr')
-plt.title('initial concentration')
-plt.colorbar()
-plt.show()
-
-
-# Plot animated 
-# Time integration parameters
-nsteps = 600# total number of time-steps       
-nprint = 60
-
-#creating the snapshots list with all the images
-
-fig, ax = plt.subplots()
-cbar=None
-snapshots=[]
-
-for istep in range(1,nsteps+1):
-    update_order_parameter(c,c_t)
-    c[:,:]=c_t[:,:] # updating the order parameter every dt 
-
-    if istep % nprint ==0:
-        if cbar:
-            cbar.remove()
-        im = ax.imshow(c, cmap='bwr', animated=True)
-        cbar=fig.colorbar(im,ax=ax)    
-        snapshots.append([im])       
+def initial_concentration():
+    #Setting concentrations to 0
+    c= np.zeros((Nx,Ny))
+    c_t= np.zeros((Nx,Ny))
     
-anim = animation.ArtistAnimation(fig,snapshots,interval=500, blit=True,repeat_delay=10)
-                           
+    #adding random fluctuations 
+    c = add_fluctuation(Nx, Ny, c0, noise)
+    
+    return c,c_t
 
-# To save the animation, use e.g.
-#
-# ani.save("movie.mp4")
-#
-# or
-#
-# writer = animation.FFMpegWriter(
-#     fps=15, metadata=dict(artist='Me'), bitrate=1800)
-# ani.save("movie.mp4", writer=writer)
+def plot_initial_concentration(c,c_t):
+    #printing separatly the initial concentration plot
+    fig, ax = plt.subplots()
+    im=ax.imshow(c,cmap='bwr')
+    ax.set_title('initial concentration')
+    fig.colorbar(im,ax=ax)
+    fig.show()
 
+def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval):
+    
+    # Plot animated 
+    # Time integration parameters
+    
+    #creating the snapshots list with all the images
+    
+    fig, ax = plt.subplots()
+    cbar=None
+    snapshots=[]
+    
+    for istep in range(1,nsteps+1):
+        update_order_parameter(c,c_t)
+        c[:,:]=c_t[:,:] # updating the order parameter every dt 
+    
+        if istep % nprint ==0:
+            if cbar:
+                cbar.remove()
+            im = ax.imshow(c, cmap='bwr', animated=True)
+            cbar=fig.colorbar(im,ax=ax)    
+            snapshots.append([im])       
+        
+    anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
+    return anim
+    
+    # To save the animation, use e.g.
+    #
+    # ani.save("movie.mp4")
+    #
+    # or
+    #
+    # writer = animation.FFMpegWriter(
+    #     fps=15, metadata=dict(artist='Me'), bitrate=1800)
+    # ani.save("movie.mp4", writer=writer)
 
-
+#run the programm 
+c,c_t=initial_concentration()
+plot_initial_concentration(c,c_t)
+Cahn_hiliard_animated(c,c_t,600,60,700)                        
         
 
             
