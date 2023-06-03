@@ -31,7 +31,7 @@ def xlog_scal(x):
 #make the plots in order to do the animation rotating in 3d
 
 def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
-    fig = plt.figure()
+    fig=matplotlib.figure.Figure()
     ax = fig.add_subplot(projection='3d')
     
     ax.set_xlabel(xlabel)
@@ -48,6 +48,7 @@ def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
         # Plot the new surface plot
         wframe = ax.plot_surface(X, Y, Z,cmap=cm.nipy_spectral_r, rstride=2, cstride=2)
     
+    print("3D Plot done !")
     return fig
     
 
