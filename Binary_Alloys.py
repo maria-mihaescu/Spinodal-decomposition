@@ -5,10 +5,14 @@ Created on Wed May  3 18:03:42 2023
 @author: Maria Mihaescu
 """
 import numpy as np
-import time
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+#ranges for composition, temperature and order parameter
+X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
+T=np.arange(50,1000,50)      # Temperature space
+eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 
 def xlog(x):
     if x.all()<0:
@@ -36,7 +40,6 @@ def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
     ax.set_title(title)
 
     wframe = None
-    tstart = time.time()
     for phi in np.linspace(0, 180. / np.pi, 100):
         # If a line collection is already remove it before drawing.
         if wframe:
@@ -45,17 +48,19 @@ def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
         # Plot the new surface plot
         wframe = ax.plot_surface(X, Y, Z,cmap=cm.nipy_spectral_r, rstride=2, cstride=2)
     
-    print('Average FPS: %f' % (100 / (time.time() - tstart)))
+    return fig
     
-    
+
+
 def plot_2d(X,G,xlabel,title) :
-    fig, ax = plt.subplots()
+    fig=matplotlib.figure.Figure()
+    ax = fig.add_subplot()
     for g in G:
         ax.plot(X,g)
         ax.set_xlabel(xlabel)
         ax.set_ylabel('G [J/mole]')
         ax.set_title(title)
-        fig.show()
+    return fig
     
 #This program calculates the free energy of a binary alloy in the
 # so-called "quasi-chemical" atomistic model. Only nearest-neighbours
@@ -77,7 +82,7 @@ def interaction_parameter(Z,diff_eV):
     return omega
 
 
-def set_free_energy(X_B,eta,T,T0,omega):
+def set_free_energy(T0,omega):
     
     # Functions in (X_B,eta) space for T=T0;
 
@@ -153,7 +158,8 @@ def set_free_energy(X_B,eta,T,T0,omega):
     
     return X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T
 
-
+"""
+#Test of the functions
 #Set parameters of the material:
     
 #parameters used in the material
@@ -161,14 +167,11 @@ Z=8
 diff_eV=0.02
 T0=550     # Temperature for calculation of free energy surface in (X_B,eta) space
 
-#ranges for composition, temperature and order parameter
-X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
-T=np.arange(50,1000,50)      # Temperature space
-eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
+
 
 omega = interaction_parameter(Z,diff_eV)
 #Set parameters for the graphs
-X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(X_B,eta,T,T0,omega)
+X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
 
 
 # Free energy vs composition at different T for order parameter eta=0
@@ -195,3 +198,4 @@ plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
              'eta','T [K]','G [ J/mole ]'
              ,'G vs eta and T, X_B=0.5, N_A\Omega={:.2f} J'.format(N_A*omega))
 
+"""
