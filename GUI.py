@@ -79,6 +79,9 @@ while True:
 
     if window==window1:
         
+        if event == sg.WIN_CLOSED : # if user closes window
+            break
+        
         Z=int(values[0])
         diff_eV=float(values[1])
         T0=float(values[2])
@@ -98,6 +101,7 @@ while True:
     
         
         # Add the plot to the window
+        
         draw_figure(window1["-FIG0-"].TKCanvas, fig0)
         draw_figure(window1["-FIG1-"].TKCanvas, fig1)
             
@@ -105,15 +109,13 @@ while True:
         #  window['-FIG0-'].update(draw_figure(window["-FIG0-"].TKCanvas, fig0))
          #  window["-FIG1-"].update(draw_figure(window["-FIG1-"].TKCanvas, fig1))
 
-        if event == sg.WIN_CLOSED : # if user closes window
-            break
-        
         if event == 'Next >':
             window1.hide()
             window2 = make_window2()
             
             
     if window == window2:
+
         #Free energy surface in the (X_B,eta) space for temperature T=T0
         fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
                      'X_B','eta','G [ J/mole ]'
@@ -134,12 +136,13 @@ while True:
             
     if window == window3:
         
+
         fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
                      'X_B','T [K]','G [ J/mole ]'
                      ,'G vs X_B and T, eta=0')
         # Free energy surface in (X_B,T) space for order parameter eta=0 
         draw_figure(window3["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
-        
+    
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
@@ -154,20 +157,21 @@ while True:
 
     if window == window4:
         #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
-        
-        
+
         fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
                      'eta','T [K]','G [ J/mole ]'
                      ,'G vs eta and T, X_B=0.5')
         
         draw_figure(window4["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
+
+        if event in (sg.WIN_CLOSED, '< Prev'):
+            window4.hide()
+            window3.un_hide()
         
+                
         if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
             break
 
-        elif event in (sg.WIN_CLOSED, '< Prev'):
-            window4.hide()
-            window3.un_hide()
     
 
 window.close()
