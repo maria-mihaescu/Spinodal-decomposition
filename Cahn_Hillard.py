@@ -57,7 +57,7 @@ def time_increment(dx,Diff_A):
     dt = (dx*dx/Diff_A)*0.1
     return dt
 
-#dt = time_increment(dx,Diff_A)
+dt = time_increment(dx,Diff_A)
 
 def add_fluctuation(Nx, Ny, c0):  
     c = c0 + np.random.rand(Nx, Ny)*0.01
@@ -214,6 +214,15 @@ def plot_initial_concentration(c):
     fig.colorbar(im,ax=ax)
     return fig
 
+def plot_concentration(c):
+    #printing separatly the initial concentration plot
+    fig = matplotlib.figure.Figure()
+    ax = fig.add_subplot()
+    im=ax.imshow(c,cmap='bwr')
+    ax.set_title('Concentration of B atoms')
+    fig.colorbar(im,ax=ax)
+    return fig
+
 def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt):
     
     # Plot animated 
@@ -236,7 +245,7 @@ def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval,Nx,Ny,A,dx,dy,T,La,Diff_A
             im = ax.imshow(c, cmap='bwr', animated=True)
             cbar=fig.colorbar(im,ax=ax)    
             snapshots.append([im])       
-        
+
     anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
     return anim
     
