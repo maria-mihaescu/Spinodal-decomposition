@@ -8,9 +8,12 @@ Created on Thu Jun  1 18:51:10 2023
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
+import time
 
 import matplotlib
 matplotlib.use("TkAgg")
+
+import matplotlib.pyplot as plt 
 
 from Binary_Alloys import interaction_parameter
 from Binary_Alloys import set_free_energy
@@ -22,6 +25,9 @@ from Cahn_Hillard import plot_chemical_potential
 from Cahn_Hillard import initial_concentration
 from Cahn_Hillard import plot_initial_concentration
 from Cahn_Hillard import Cahn_hiliard_animated
+from Cahn_Hillard import update_order_parameter
+from Cahn_Hillard import plot_concentration
+
 #from Cahn_Hillard import atom_interac_cst
 
 
@@ -31,6 +37,7 @@ def draw_figure(canvas, figure):
     figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
     return figure_canvas_agg
 
+    
 # Define the window layout
 
 def make_window1():
@@ -236,6 +243,7 @@ while True:
             dt = time_increment(dx,Diff_A)
             print("Values stored")
             print(nsteps,nprint,interval,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt)
+        
         elif event == 'Next p4 >':
             window3.hide()
             window4 = make_window4()
@@ -252,10 +260,46 @@ while True:
         if event== sg.WIN_CLOSED : # if user closes window 
             break
         
-        
         elif event == 'Show initial plots': 
+            def atom_interac_cst(T):    
+                La = 20000.-9.*T # Atom interaction constant [J/mol]
+                return La
+
+
+            #parameters specific to the material entered by the user
+            nsteps=600
+            nprint=60
+            c0 = 0.5 # average composition of B atom [atomic fraction]
+            T = 673 # temperature [K]
+
+            La=13943
+            A= 3.0e-14 # gradient coefficient [Jm2/mol]
+
+            coef_DA=1.0e-04
+            coef_DB=2.0e-05
+            E_DA=300000.0
+            E_DB=300000.0
+
+
+            #Parameters specific to the grid 
+            Nx= 32 #number of computational grids along the x direction
+            Ny= 32 #number of computational grids along the y direction
+            dx =  2.0e-9 # spacing of computational grids [m]
+            dy =  2.0e-9 # spacing of computational grids [m]
             
-            fig_chem_pot=plot_chemical_potential(c0,T,La)
+            Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
+            Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
+
+                        
+            def time_increment(dx,Diff_A):
+                # time increment [s]
+                dt = (dx*dx/Diff_A)*0.1
+                return dt
+            
+            dt = time_increment(dx,Diff_A)
+
+
+            fig_chem_pot=plot_chemical_potential(c0,La)
             draw_figure(window["-c0_chemical_potential-"].TKCanvas, fig_chem_pot)
             
             #Defining a random initial concentration
@@ -278,14 +322,49 @@ while True:
             #window=window3
             
     if window == window5:
-        
         if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
             break
         
         elif event == 'Show animation': 
-            fig_anim=Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt) 
-            draw_figure(window["-anim-"].TKCanvas, fig_anim)
+            figure_canvas_agg = None
+            cbar=None
+            for istep in range(1,nsteps+1):
+                fig = matplotlib.figure.Figure()
+                ax = fig.add_subplot() 
+                update_order_parameter(c,c_t,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt)
+                c[:,:]=c_t[:,:] # updating the order parameter every dt 
         
+                if istep % nprint ==0:                    
+                    if figure_canvas_agg:
+                       figure_canvas_agg.get_tk_widget().forget()
+                       plt.close('all')
+                       #fig.clear()
+                       #ax.cla()
+                       #ax.clear()
+                       #figure_canvas_agg = None
+                    if cbar:
+                        cbar.remove
+                        
+                    im = ax.imshow(c, cmap='bwr', animated=True)
+                    cbar=fig.colorbar(im,ax=ax)
+            
+                    figure_canvas_agg = FigureCanvasTkAgg(fig,window["-anim-"].TKCanvas)
+                    figure_canvas_agg.draw()
+                    figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
+                    figure_canvas_agg
+                    time.sleep(0.004)
+                    window.Refresh()
+                    
+                    # figure_canvas_agg.get_tk_widget().forget()
+                    # plt.close('all')
+                    # fig.clear()
+                    # figure_agg = None
+                        
+                    #if cbar:
+                     #   cbar.remove()
+                        
+
+                          
         elif event == '< Prev p4':
             window5.close()
             window4.un_hide()
