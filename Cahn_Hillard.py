@@ -6,7 +6,7 @@ Created on Mon May 29 15:46:02 2023
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 import matplotlib.animation as animation
 
 #Goal of the simulation two-dimensional phase-field simulation 
@@ -15,6 +15,16 @@ import matplotlib.animation as animation
 
 R = 8.314 # gas constant
 
+
+#parameters specific to the material
+
+c0 = 0.5 # average composition of B atom [atomic fraction]
+T = 673 # temperature [K]
+La = 20000.-9.*T # Atom interaction constant [J/mol]
+A= 3.0e-14 # gradient coefficient [Jm2/mol]
+Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
+Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
+
 #Parameters specific to the grid 
 Nx= 32 #number of computational grids along the x direction
 Ny= 32 #number of computational grids along the y direction
@@ -22,20 +32,17 @@ NxNy = Nx*Ny
 dx =  2.0e-9 # spacing of computational grids [m]
 dy =  2.0e-9 # spacing of computational grids [m]
 
-#parameters specific to the material
+#nsteps,nprint,interval
 
-c0 = 0.5 # average composition of B atom [atomic fraction]
-T = 673 # temperature [K]
-La = 20000.-9.*T # Atom intaraction constant [J/mol]
-A= 3.0e-14 # gradient coefficient [Jm2/mol]
-Diff_A = 1.0e-04*np.exp(-300000.0/R/T) # diffusion coefficient of A atom [m2/s]
-Diff_B = 2.0e-05*np.exp(-300000.0/R/T) # diffusion coefficient of B atom [m2/s]
-noise=0.01
-dt = (dx*dx/Diff_A)*0.1 # time increment [s]
+def time_increment(dx,Diff_A):
+    # time increment [s]
+    dt = (dx*dx/Diff_A)*0.1
+    return dt
 
+dt = time_increment(dx,Diff_A)
 
 def add_fluctuation(Nx, Ny, c0, noise):  
-    c = c0 + np.random.rand(Nx, Ny)*noise
+    c = c0 + np.random.rand(Nx, Ny)*0.01
     return c
 
 def func_laplacian(center,left,right,up,down):
@@ -46,16 +53,17 @@ def chemical_potential(c):
     chem_pot= R*T*(c*np.log(c)+(1-c)*np.log(1-c))+La*c*(1-c)
     return chem_pot
 
-#Show the chemical potential in function of the order parameter
 
-fig = plt.figure(figsize=(5,5))
-cc = np.linspace(0.01, 0.99, 100);
-
-plt.plot(cc, chemical_potential(cc),color='black')
-plt.plot(c0, chemical_potential(c0),color='r',marker='o',markersize=10)
-plt.xlabel('Concentration c [at. frac]')
-plt.ylabel('Chemical free energy density')
-plt.show()
+def plot_chemical_potential(c0):
+    fig = matplotlib.figure.Figure()
+    ax = fig.add_subplot()
+    cc = np.linspace(0.01, 0.99, 100);
+    ax.plot(cc, chemical_potential(cc),color='black')
+    ax.plot(c0, chemical_potential(c0),color='r',marker='o',markersize=10)
+    ax.set_xlabel('Concentration c [at. frac]')
+    ax.set_ylabel('Chemical free energy density')
+    
+    return fig
 
 def boundary_conditions(x,y):
     #Renaming the coordinates
@@ -162,8 +170,6 @@ def update_order_parameter(c,c_t):
 
 
 
-
-
 #Solving the Cahn-hiliard equation and plotting the result
 def initial_concentration():
     #Setting concentrations to 0
@@ -171,17 +177,18 @@ def initial_concentration():
     c_t= np.zeros((Nx,Ny))
     
     #adding random fluctuations 
-    c = add_fluctuation(Nx, Ny, c0, noise)
+    c = add_fluctuation(Nx, Ny, c0)
     
     return c,c_t
 
 def plot_initial_concentration(c,c_t):
     #printing separatly the initial concentration plot
-    fig, ax = plt.subplots()
+    fig = matplotlib.figure.Figure()
+    ax = fig.add_subplot()
     im=ax.imshow(c,cmap='bwr')
     ax.set_title('initial concentration')
     fig.colorbar(im,ax=ax)
-    fig.show()
+    return fig
 
 def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval):
     
@@ -190,7 +197,8 @@ def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval):
     
     #creating the snapshots list with all the images
     
-    fig, ax = plt.subplots()
+    fig = matplotlib.figure.Figure()
+    ax = fig.add_subplot()
     cbar=None
     snapshots=[]
     
@@ -208,20 +216,12 @@ def Cahn_hiliard_animated(c,c_t,nsteps,nprint,interval):
     anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
     return anim
     
-    # To save the animation, use e.g.
-    #
-    # ani.save("movie.mp4")
-    #
-    # or
-    #
-    # writer = animation.FFMpegWriter(
-    #     fps=15, metadata=dict(artist='Me'), bitrate=1800)
-    # ani.save("movie.mp4", writer=writer)
 
+"""
 #run the programm 
 c,c_t=initial_concentration()
 plot_initial_concentration(c,c_t)
 Cahn_hiliard_animated(c,c_t,600,60,700)                        
         
-
+"""
             
