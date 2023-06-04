@@ -34,8 +34,8 @@ def make_window1():
         [sg.Text('Fraction of energy difference in eV'), sg.InputText()],
         [sg.Text('Temperature in K for calculation of G in (X_B, eta) space'), sg.InputText()],
        
-        [sg.Canvas(key="-FIG0-"),sg.Canvas(key="-FIG1-")],
-        [sg.Button("Ok"),sg.Button('Next >')],
+        [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
+        [sg.Button('Ok'),sg.Button('Next >')],
     ]
 
     return sg.Window(
@@ -82,28 +82,30 @@ while True:
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
-        Z=int(values[0])
-        diff_eV=float(values[1])
-        T0=float(values[2])
-    
-        #set parameters for the plots
-        #ranges for composition, temperature and order parameter
-        X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
-        T=np.arange(50,1000,50)      # Temperature space
-        eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
-    
-        omega = interaction_parameter(Z,diff_eV)
-        #Set parameters for the graphs
-        X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
-    
-        fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
-        fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
-    
+        if event == 'Ok':
+            Z=int(values[0])
+            diff_eV=float(values[1])
+            T0=float(values[2])
         
-        # Add the plot to the window
+            #set parameters for the plots
+            #ranges for composition, temperature and order parameter
+            X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
+            T=np.arange(50,1000,50)      # Temperature space
+            eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
         
-        draw_figure(window1["-FIG0-"].TKCanvas, fig0)
-        draw_figure(window1["-FIG1-"].TKCanvas, fig1)
+            omega = interaction_parameter(Z,diff_eV)
+            #Set parameters for the graphs
+            X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
+        
+            fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
+            fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
+        
+            
+            # Add the plot to the window
+            
+            draw_figure(window1["-FIG0-"].TKCanvas, fig0)
+            draw_figure(window1["-FIG1-"].TKCanvas, fig1)
+            
             
         #if event == '-IN-' :
         #  window['-FIG0-'].update(draw_figure(window["-FIG0-"].TKCanvas, fig0))
@@ -116,12 +118,13 @@ while True:
             
     if window == window2:
 
-        #Free energy surface in the (X_B,eta) space for temperature T=T0
-        fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
-                     'X_B','eta','G [ J/mole ]'
-                     ,'G vs X_B and eta')
-        
-        draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
+        if event == 'Show':
+            #Free energy surface in the (X_B,eta) space for temperature T=T0
+            fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
+                         'X_B','eta','G [ J/mole ]'
+                         ,'G vs X_B and eta')
+            
+            draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
         
         if event == sg.WIN_CLOSED : # if user closes window
             break
@@ -135,13 +138,12 @@ while True:
             window1.un_hide()
             
     if window == window3:
-        
-
-        fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
-                     'X_B','T [K]','G [ J/mole ]'
-                     ,'G vs X_B and T, eta=0')
-        # Free energy surface in (X_B,T) space for order parameter eta=0 
-        draw_figure(window3["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
+        if event == 'Show':
+            fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
+                         'X_B','T [K]','G [ J/mole ]'
+                         ,'G vs X_B and T, eta=0')
+            # Free energy surface in (X_B,T) space for order parameter eta=0 
+            draw_figure(window3["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
     
         if event == sg.WIN_CLOSED : # if user closes window
             break
@@ -156,13 +158,14 @@ while True:
 
 
     if window == window4:
-        #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
-
-        fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
-                     'eta','T [K]','G [ J/mole ]'
-                     ,'G vs eta and T, X_B=0.5')
-        
-        draw_figure(window4["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
+        if event == 'Show':
+            #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
+    
+            fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
+                         'eta','T [K]','G [ J/mole ]'
+                         ,'G vs eta and T, X_B=0.5')
+            
+            draw_figure(window4["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
 
         if event in (sg.WIN_CLOSED, '< Prev'):
             window4.hide()
