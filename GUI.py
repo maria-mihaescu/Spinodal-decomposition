@@ -32,7 +32,7 @@ def make_window1():
         #[sg.Text('Temperature in K for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN-', enable_events=True)],
         [sg.Text('Atomic number Z'), sg.InputText()],
         [sg.Text('Fraction of energy difference in eV'), sg.InputText()],
-        [sg.Text('Temperature in K for calculation of G in (X_B, eta) space'), sg.InputText()],
+        [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText()],
        
         [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
         [sg.Button('Ok'),sg.Button('Next >')],
@@ -43,38 +43,69 @@ def make_window1():
         layout,
         location=(0, 0),
         finalize=True,
-        element_justification="center",
-        font="Helvetica 18")
+        element_justification="center")
 
 def make_window2():
-    layout = [[sg.Text('3D plots of the free energy in the (eta,X_B) space')],
+    layout = [[sg.Text('3D plots of the free energy in the different spaces')],
               [sg.Button('Show')],
-              [sg.Canvas(key="-3D_(eta,X_B)-")],
+              [sg.Canvas(key="-3D_(eta,X_B)-"),sg.Canvas(key="-3D_(X_B,T)-")],
+              [sg.Canvas(key="-3D_(eta,T)-")],
                [sg.Button('< Prev'), sg.Button('Next >')]]
 
-    return sg.Window('3D plots of the free energy in the (eta,X_B) space', layout, finalize=True)
+    return sg.Window('3D plots of the free energy in the different spaces', layout,location=(0, 0),
+    finalize=True,
+    element_justification="center")
 
 def make_window3():
-    layout = [[sg.Text('3D plots of the free energy in the (X_B,T) space')],
-              [sg.Button('Show')],
-              [sg.Canvas(key="-3D_(X_B,T)-")],
-               [sg.Button('< Prev'), sg.Button('Next >')]]
+    layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
+              [sg.Text('Parameters specific to the material :')],
+              [sg.Text('Average composition of atom B [at. frac]: c0'),sg.InputText()],
+              [sg.Text('Temperature of the BiAlloy  [K] : T0'),sg.InputText()],
+              [sg.Text('Atom interaction constant [J/mol] : La'),sg.InputText()],
+              [sg.Text('Gradient coefficient [J*M^2/mol] : A'),sg.InputText()],
+              [sg.Text('Diffusion coefficient of A atoms [M^2/s] : Diff_A'),sg.InputText()],
+              [sg.Text('Diffusion coefficient of B atoms [M^2/s] : Diff_B'),sg.InputText()],
+              [sg.Text('Parameters specific to the grid :')],
+              [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText()],
+              [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText()],
+              [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText()],
+              [sg.Text('Spacing of computational grids along the y direction [M] : dy'),sg.InputText()],
+              [sg.Text('Parameters specific to the animation :')],
+              [sg.Text('Total number of time-steps  : Nsteps'),sg.InputText()],
+              [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText()],
+              [sg.Text('Interval between each frame [ms]: Nprint'),sg.InputText()],
+              [sg.Button('Ok'),sg.Button('< Prev'), sg.Button('Next >')]]
 
-    return sg.Window('3D plots of the free energy in the (X_B,T) space', layout, finalize=True)
+    return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True,
+    element_justification="center")
 
 def make_window4():
-    layout = [[sg.Text('3D plots of the free energy in the (eta,T) space')],
+    layout = [[sg.Text('Initial states:')],
               [sg.Button('Show')],
-              [sg.Canvas(key="-3D_(eta,T)-")],
+              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_concentration-")],
+               [sg.Button('< Prev'), sg.Button('Next >')]]
+
+    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True,
+    element_justification="center")
+
+def make_window5():
+    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
+              [sg.Button('Show')],
+              [sg.Canvas(key="-anim-")],
                [sg.Button('< Prev'), sg.Button('Exit')]]
 
-    return sg.Window('3D plots of the free energy in the (eta,T) space', layout, finalize=True)
+    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True,
+    element_justification="center")
 
 
-window1, window2, window3, window4 = make_window1(), None, None, None
+#Make the first window and set the others to none 
+window1, window2, window3, window4, window5 = make_window1(), None, None, None, None
 
 while True:
-    
+    #Read all the imputs of the windows
     window, event, values = sg.read_all_windows()
 
     if window==window1:
@@ -118,13 +149,28 @@ while True:
             
     if window == window2:
 
-        if event == 'Show':
+        if event == 'Show': 
             #Free energy surface in the (X_B,eta) space for temperature T=T0
             fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
                          'X_B','eta','G [ J/mole ]'
                          ,'G vs X_B and eta')
             
-            draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
+            draw_figure(window["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
+            
+            # Free energy surface in (X_B,T) space for order parameter eta=0 
+            fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
+                         'X_B','T [K]','G [ J/mole ]'
+                         ,'G vs X_B and T, eta=0')
+            
+            draw_figure(window["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
+            
+            #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
+        
+            fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
+                         'eta','T [K]','G [ J/mole ]'
+                         ,'G vs eta and T, X_B=0.5')
+            
+            draw_figure(window["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
         
         if event == sg.WIN_CLOSED : # if user closes window
             break
@@ -138,13 +184,8 @@ while True:
             window1.un_hide()
             
     if window == window3:
-        if event == 'Show':
-            fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
-                         'X_B','T [K]','G [ J/mole ]'
-                         ,'G vs X_B and T, eta=0')
-            # Free energy surface in (X_B,T) space for order parameter eta=0 
-            draw_figure(window3["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
-    
+        #if event == 'Show':
+        
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
@@ -158,24 +199,28 @@ while True:
 
 
     if window == window4:
-        if event == 'Show':
-            #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
-    
-            fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
-                         'eta','T [K]','G [ J/mole ]'
-                         ,'G vs eta and T, X_B=0.5')
+        #if event == 'Show': 
             
-            draw_figure(window4["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
-
+        if event == sg.WIN_CLOSED : # if user closes window 
+            break
+        
+        if event == 'Next >':
+            window4.hide()
+            window5 = make_window5()
+            
+        elif event in (sg.WIN_CLOSED, '< Prev'):
+            window4.hide()
+            window3.un_hide()
+            
+    if window == window5:
+                             
+        if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
+            break
+        
         if event in (sg.WIN_CLOSED, '< Prev'):
             window4.hide()
             window3.un_hide()
         
-                
-        if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
-            break
-
-    
-
+        
 window.close()
 
