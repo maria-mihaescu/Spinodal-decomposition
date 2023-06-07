@@ -72,18 +72,8 @@ def make_window2():
     finalize=True,
     element_justification="center")
 
+
 def make_window3():
-    
-    layout = [[sg.Text('Save free energy of binary alloys data')],
-              [sg.Text('Name of the directory :'),sg.InputText(key='-IN_dir_BiAlloy-')],
-              [sg.Text('Name of the txt data file :'),sg.InputText(key='-IN_txt_BiAlloy-')],
-              [sg.Button('Save data txt'),sg.Button('Save plots')],
-              [sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
-
-    return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
-    finalize=True, element_justification="center")
-
-def make_window4():
     
     layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
               [sg.Text('Parameters specific to the material :')],
@@ -107,16 +97,26 @@ def make_window4():
               [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText(key='-IN_Nprint-')],
               [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText(key='-IN_Interval-')],
               
-              [sg.Button('enter values'),sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
+              [sg.Button('enter values'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
 
     return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
-def make_window5():
+def make_window4():
     
     layout = [[sg.Text('Initial states:')],
               [sg.Button('Show initial plots')],
               [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_concentration-")],
+               [sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
+
+    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True, element_justification="center")
+
+def make_window5():
+    
+    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
+              [sg.Button('Show animation')],
+              [sg.Canvas(key="-anim-")],
                [sg.Button('< Prev p4'), sg.Button('Next p6 >')]]
 
     return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
@@ -124,31 +124,18 @@ def make_window5():
 
 def make_window6():
     
-    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
-              [sg.Button('Show animation')],
-              [sg.Canvas(key="-anim-")],
-               [sg.Button('< Prev p5'), sg.Button('Next p7 >')]]
-
-    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
-    finalize=True, element_justification="center")
-
-def make_window7():
-    
     layout = [[sg.Text('Save the spinodal decomposition data')],
               [sg.Text('Path of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_path-')],
               [sg.Text('Name of the txt file:'),sg.InputText(key='-IN_txt_file-')],
               [sg.Button('Save txt')],
-              [sg.Text('Path of the directory for the mp4 animation of the spinodal decomposition:'),sg.InputText(key='-IN_mp4_path-')],
-              [sg.Text('Name of the mp4 animation movie:'),sg.InputText(key='-IN_mp4_movie-')],
-              [sg.Button('Save mp4')],
-               [sg.Button('< Prev p6'), sg.Button('Exit')]]
+               [sg.Button('< Prev p5'), sg.Button('Exit')]]
 
     return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
 
 #Make the first window and set the others to none 
-window1, window2, window3, window4, window5, window6 , window7= make_window1(), None, None, None, None, None, None
+window1, window2, window3, window4, window5, window6 = make_window1(), None, None, None, None, None
 
 #Set the figure drawings to None in order to be able to update them each time 
 
@@ -241,7 +228,6 @@ while True:
             
            
         elif event == 'Next p3 >':
-            print('Next pushed')
             window2.hide()
             window3 = make_window3()
 
@@ -249,31 +235,17 @@ while True:
             window2.close()
             window1.un_hide()
             
+
     if window == window3:
         
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
-        elif event == 'Next p4 >':
-            print('Next pushed')
-            window3.hide()
-            window4 = make_window4()
-
-        elif event =='< Prev p2':
-            window3.close()
-            window2.un_hide()
-            
-            
-    if window == window4:
-        
-        if event == sg.WIN_CLOSED : # if user closes window
-            break
-        
         elif event == 'enter values':
+            
             #setting the variables to the user defined values
             c0=float(values['-IN_c0-'])
             T=float(values['-IN_T0-'])
-            #La=float(values[2])
             A=float(values['-IN_A-'])
             coef_DA=float(values['-IN_coef_DA-'])
             E_DA=float(values['-IN_E_DA-'])
@@ -292,25 +264,26 @@ while True:
             Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
             Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
             dt = time_increment(dx,Diff_A)
-            print("Values stored !")
+
 
         
-        elif event == 'Next p5 >':
-            window4.hide()
-            window5 = make_window5()
+        elif event == 'Next p4 >':
+            window3.hide()
+            window4 = make_window4()
            
             
-        elif event == '< Prev p3':
-            window4.close()
-            window3.un_hide()
+        elif event == '< Prev p2':
+            window3.close()
+            window2.un_hide()
 
 
-    if window == window5:
+    if window == window4:
         if event== sg.WIN_CLOSED : # if user closes window 
             break
         
         elif event == 'Show initial plots': 
             
+            """
             #Just for testing so we don't have to enter all those parameters each time
             #parameters specific to the material entered by the user
             nsteps=600
@@ -338,6 +311,7 @@ while True:
             dt = time_increment(dx,Diff_A)
 
             interval=400
+            """
             
             #Defining a random initial concentration
             c,c_t=initial_concentration(Nx,Ny,c0)
@@ -354,17 +328,17 @@ while True:
             figure_canvas_agg_init_c=draw_figure(window["-initial_concentration-"].TKCanvas, fig_init_c)
            
         
-        elif event == 'Next p6 >':
-            window5.hide()
-            window6 = make_window6()
+        elif event == 'Next p5 >':
+            window4.hide()
+            window5 = make_window5()
 
             
-        elif event =='< Prev p4':        
-            window5.close()
-            window4.un_hide()
+        elif event =='< Prev p3':        
+            window4.close()
+            window3.un_hide()
 
             
-    if window == window6:
+    if window == window5:
         if event == sg.WIN_CLOSED : # if user closes window or clicks cancel
             break
         
@@ -405,15 +379,15 @@ while True:
             anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
 
                           
-        elif event == '< Prev p5':
-            window6.close()
-            window5.un_hide()
+        elif event == '< Prev p4':
+            window5.close()
+            window4.un_hide()
             
-        elif event == 'Next p7 >':
-            window6.hide()
-            window7 = make_window7()
+        elif event == 'Next p6 >':
+            window5.hide()
+            window6 = make_window6()
 
-    if window == window7:
+    if window == window6:
         
         if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
             break
@@ -427,24 +401,16 @@ while True:
                 for c,t in zip(C_list,Time):
                     f.write("Concentration at time {}".format(t))
                     f.write('\n')
+                    f.write('x'+','+'y'+','+'c[x,y]'+ "\n")
+                    f.write('\n')
                     for x in range (Nx):
                         for y in range (Ny):
-                            f.write(str(x)+','+str(y)+','+str(c[x,y]))
+                            f.write(str(x)+','+str(y)+','+str(c[x,y])+ "\n")
                 f.close()
                     
-                            
             
-        elif event == 'Save mp4':
-            
-            path_mp4=values['-IN_mp4_path-']
-            title_mp4=values['-IN_mp4_movie-']
-            
-            plt.rcParams['animation.ffmpeg_path'] = path_mp4+title_mp4+'.mp4'
-            FFwriter = animation.FFMpegWriter(fps=10)
-            anim.save(title_mp4+'.mp4', writer = FFwriter)
-
-        elif event =='< Prev p6':
-            window7.close()
-            window6.un_hide()
+        elif event =='< Prev p5':
+            window6.close()
+            window5.un_hide()
         
 window.close()
