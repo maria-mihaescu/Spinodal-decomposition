@@ -14,6 +14,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 
 import matplotlib.pyplot as plt 
+import matplotlib.animation as animation
 
 from Binary_Alloys import interaction_parameter
 from Binary_Alloys import set_free_energy
@@ -134,10 +135,10 @@ def make_window6():
 def make_window7():
     
     layout = [[sg.Text('Save the spinodal decomposition data')],
-              [sg.Text('Name of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_directory-')],
+              [sg.Text('Path of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_path-')],
               [sg.Text('Name of the txt file:'),sg.InputText(key='-IN_txt_file-')],
               [sg.Button('Save txt')],
-              [sg.Text('Name of the directory for the mp4 animation of the spinodal decomposition:'),sg.InputText(key='-IN_mp4_directory-')],
+              [sg.Text('Path of the directory for the mp4 animation of the spinodal decomposition:'),sg.InputText(key='-IN_mp4_path-')],
               [sg.Text('Name of the mp4 animation movie:'),sg.InputText(key='-IN_mp4_movie-')],
               [sg.Button('Save mp4')],
                [sg.Button('< Prev p6'), sg.Button('Exit')]]
@@ -158,6 +159,8 @@ figure_canvas_agg_3d1=None
 figure_canvas_agg_3d2=None
 figure_canvas_agg_chem_pot=None
 figure_canvas_agg_init_c=None
+figure_canvas_agg = None
+cbar=None
 
 while True:
     
@@ -334,6 +337,8 @@ while True:
             Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
             dt = time_increment(dx,Diff_A)
 
+            interval=400
+            
             #Defining a random initial concentration
             c,c_t=initial_concentration(Nx,Ny,c0)
             #set the figure with the initial data
@@ -364,33 +369,40 @@ while True:
             break
         
         elif event == 'Show animation': 
-            figure_canvas_agg = None
-            cbar=None
+            fig = matplotlib.figure.Figure()
+            ax = fig.add_subplot()
+            
+            snapshots=[]
+            c_init=c
+            time=0
+            C_list=[c_init]
+            Time=[time]
+
             
             for istep in range(1,nsteps+1):
-                fig = matplotlib.figure.Figure()
-                ax = fig.add_subplot() 
                 update_order_parameter(c,c_t,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt)
                 c[:,:]=c_t[:,:] # updating the order parameter every dt 
-        
+                time=time+dt
+                C_list.append(c)
+                Time.append(time)
+                
                 if istep % nprint ==0:                    
-                    if figure_canvas_agg:
-                       figure_canvas_agg.get_tk_widget().forget()
-                       plt.close('all')
 
-                    if cbar:
-                        cbar.remove
+                    if figure_canvas_agg is not None:
+                        delete_fig_agg(figure_canvas_agg)
+                        
+                    if cbar is not None:
+                        cbar.remove()
                         
                     im = ax.imshow(c, cmap='bwr', animated=True)
+                    ax.set_title("Concentration of atom B at time {:.2f}".format(time))
                     cbar=fig.colorbar(im,ax=ax)
-            
-                    figure_canvas_agg = FigureCanvasTkAgg(fig,window["-anim-"].TKCanvas)
-                    figure_canvas_agg.draw()
-                    figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
-                    figure_canvas_agg
-                    time.sleep(0.004)
+                    snapshots.append([im])   
+                    
+                    figure_canvas_agg = draw_figure(window["-anim-"].TKCanvas, fig) 
                     window.Refresh()
-
+                    
+            anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
 
                           
         elif event == '< Prev p5':
@@ -405,7 +417,31 @@ while True:
         
         if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
             break
-
+        elif event =='Save txt':
+            
+            path_txt=values['-IN_txt_path-']
+            title_txt=values['-IN_txt_file-']
+            
+            path_to_file=path_txt+title_txt+'.txt'
+            with open(path_to_file, 'w') as f:
+                for c,t in zip(C_list,Time):
+                    f.write("Concentration at time {}".format(t))
+                    f.write('\n')
+                    for x in range (Nx):
+                        for y in range (Ny):
+                            f.write(str(x)+','+str(y)+','+str(c[x,y]))
+                f.close()
+                    
+                            
+            
+        elif event == 'Save mp4':
+            
+            path_mp4=values['-IN_mp4_path-']
+            title_mp4=values['-IN_mp4_movie-']
+            
+            plt.rcParams['animation.ffmpeg_path'] = path_mp4+title_mp4+'.mp4'
+            FFwriter = animation.FFMpegWriter(fps=10)
+            anim.save(title_mp4+'.mp4', writer = FFwriter)
 
         elif event =='< Prev p6':
             window7.close()
