@@ -89,6 +89,15 @@ def plot_chemical_potential(c0,La):
 #plot_chemical_potential(c0,T,La)
 #plt.show()
 
+def atom_interac_cst(T):    
+    La = 20000.-9.*T # Atom interaction constant [J/mol]
+    return La
+
+def time_increment(dx,Diff_A):
+    # time increment [s]
+    dt = (dx*dx/Diff_A)*0.1
+    return dt
+
 def boundary_conditions(x,y,Nx,Ny):
     #Renaming the coordinates
     x=x
