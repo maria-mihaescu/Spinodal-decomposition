@@ -24,11 +24,8 @@ from Cahn_Hillard import time_increment
 from Cahn_Hillard import plot_chemical_potential
 from Cahn_Hillard import initial_concentration
 from Cahn_Hillard import plot_initial_concentration
-from Cahn_Hillard import Cahn_hiliard_animated
 from Cahn_Hillard import update_order_parameter
-from Cahn_Hillard import plot_concentration
-
-#from Cahn_Hillard import atom_interac_cst
+from Cahn_Hillard import atom_interac_cst
 
 
 def draw_figure(canvas, figure):
@@ -47,9 +44,6 @@ def delete_fig_agg(fig_agg):
 def make_window1():
     layout = [
         [sg.Text("Free energy of a binary alloy in the Quasi-chemical atomistic model")],
-        #[sg.Text('Atomic number Z'), sg.InputText(key='-IN-', enable_events=True)],
-        #[sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN-', enable_events=True)],
-        #[sg.Text('Temperature in K for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN-', enable_events=True)],
         [sg.Text('Atomic number Z'), sg.InputText(key='-IN_Z-')],
         [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-')],
         [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
@@ -79,63 +73,91 @@ def make_window2():
 
 def make_window3():
     
-    layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
-              [sg.Text('Parameters specific to the material :')],
-              [sg.Text('Average composition of atom B [at. frac]: c0'),sg.InputText()],
-              [sg.Text('Temperature of the BiAlloy  [K] : T0'),sg.InputText()],
-              #[sg.Text('Atom interaction constant [J/mol] : La'),sg.InputText()],
-              [sg.Text('Gradient coefficient [J*M^2/mol] : A'),sg.InputText()],
-              
-              [sg.Text('Coefficient for diffusion coefficient calculation of A atoms [M^2/s] : coef_DA'),sg.InputText()],
-              [sg.Text('Activation energy for diffusion coefficient of A atoms [J/mol] : E_DA'),sg.InputText()],
-              [sg.Text('Coefficient for diffusion coefficient calculation of B atoms [M^2/s] : coef_DB'),sg.InputText()],
-              [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText()],
-              
-              [sg.Text('Parameters specific to the grid :')],
-              [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText()],
-              [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText()],
-              [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText()],
-              [sg.Text('Spacing of computational grids along the y direction [M] : dy'),sg.InputText()],
-              
-              [sg.Text('Parameters specific to the animation :')],
-              [sg.Text('Total number of time-steps  : Nsteps'),sg.InputText()],
-              [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText()],
-              [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText()],
-              
-              [sg.Button('enter values'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
+    layout = [[sg.Text('Save free energy of binary alloys data')],
+              [sg.Text('Name of the directory :'),sg.InputText(key='-IN_dir_BiAlloy-')],
+              [sg.Text('Name of the txt data file :'),sg.InputText(key='-IN_txt_BiAlloy-')],
+              [sg.Button('Save data txt'),sg.Button('Save plots')],
+              [sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
 
-    return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
 def make_window4():
     
-    layout = [[sg.Text('Initial states:')],
-              [sg.Button('Show initial plots')],
-              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_concentration-")],
-               [sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
+    layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
+              [sg.Text('Parameters specific to the material :')],
+              [sg.Text('Average composition of atom B [at. frac]: c0'),sg.InputText(key='-IN_c0-')],
+              [sg.Text('Temperature of the BiAlloy  [K] : T0'),sg.InputText(key='-IN_T0-')],
+              [sg.Text('Gradient coefficient [J*M^2/mol] : A'),sg.InputText(key='-IN_A-')],
+              
+              [sg.Text('Coefficient for diffusion coefficient calculation of A atoms [M^2/s] : coef_DA'),sg.InputText(key='-IN_coef_DA-')],
+              [sg.Text('Activation energy for diffusion coefficient of A atoms [J/mol] : E_DA'),sg.InputText(key='-IN_E_DA-')],
+              [sg.Text('Coefficient for diffusion coefficient calculation of B atoms [M^2/s] : coef_DB'),sg.InputText(key='-IN_coef_DB-')],
+              [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText(key='-IN_E_DB-')],
+              
+              [sg.Text('Parameters specific to the grid :')],
+              [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText(key='-IN_Nx-')],
+              [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText(key='-IN_Ny-')],
+              [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText(key='-IN_dx-')],
+              [sg.Text('Spacing of computational grids along the y direction [M] : dy'),sg.InputText(key='-IN_dy-')],
+              
+              [sg.Text('Parameters specific to the animation :')],
+              [sg.Text('Total number of time-steps  : Nsteps'),sg.InputText(key='-IN_Nsteps-')],
+              [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText(key='-IN_Nprint-')],
+              [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText(key='-IN_Interval-')],
+              
+              [sg.Button('enter values'),sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
 
-    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
 def make_window5():
     
-    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
-              [sg.Button('Show animation')],
-              [sg.Canvas(key="-anim-")],
-               [sg.Button('< Prev'), sg.Button('Exit')]]
+    layout = [[sg.Text('Initial states:')],
+              [sg.Button('Show initial plots')],
+              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_concentration-")],
+               [sg.Button('< Prev p4'), sg.Button('Next p6 >')]]
 
     return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
+def make_window6():
+    
+    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
+              [sg.Button('Show animation')],
+              [sg.Canvas(key="-anim-")],
+               [sg.Button('< Prev p5'), sg.Button('Next p7 >')]]
+
+    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True, element_justification="center")
+
+def make_window7():
+    
+    layout = [[sg.Text('Save the spinodal decomposition data')],
+              [sg.Text('Name of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_directory-')],
+              [sg.Text('Name of the txt file:'),sg.InputText(key='-IN_txt_file-')],
+              [sg.Button('Save txt')],
+              [sg.Text('Name of the directory for the mp4 animation of the spinodal decomposition:'),sg.InputText(key='-IN_mp4_directory-')],
+              [sg.Text('Name of the mp4 animation movie:'),sg.InputText(key='-IN_mp4_movie-')],
+              [sg.Button('Save mp4')]
+               [sg.Button('< Prev p6'), sg.Button('Exit')]]
+
+    return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
+    finalize=True, element_justification="center")
+
 
 #Make the first window and set the others to none 
-window1, window2, window3, window4, window5 = make_window1(), None, None, None, None
+window1, window2, window3, window4, window5, window6 , window7= make_window1(), None, None, None, None, None, None
+
+#Set the figure drawings to None in order to be able to update them each time 
 
 figure_canvas_agg0 = None
 figure_canvas_agg1 = None
 figure_canvas_agg_3d0=None
 figure_canvas_agg_3d1=None
 figure_canvas_agg_3d2=None
+figure_canvas_agg_chem_pot=None
+figure_canvas_agg_init_c=None
 
 while True:
     
@@ -229,54 +251,64 @@ while True:
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
+        elif event == 'Next p4 >':
+            print('Next pushed')
+            window3.hide()
+            window4 = make_window4()
+
+        elif event =='< Prev p2':
+            window3.close()
+            window2.un_hide()
+            
+            
+    if window == window4:
+        
+        if event == sg.WIN_CLOSED : # if user closes window
+            break
+        
         elif event == 'enter values':
             #setting the variables to the user defined values
-            c0=float(values[0])
-            T=float(values[1])
+            c0=float(values['-IN_c0-'])
+            T=float(values['-IN_T0-'])
             #La=float(values[2])
-            A=float(values[2])
-            coef_DA=float(values[3])
-            E_DA=float(values[4])
-            coef_DB=float(values[5])
-            E_DB=float(values[6])
-            Nx=int(values[7])
-            Ny=int(values[8])
-            dx=float(values[9])
-            dy=float(values[10])
-            nsteps=int(values[11])
-            nprint=int(values[12])
-            interval=float(values[13])
+            A=float(values['-IN_A-'])
+            coef_DA=float(values['-IN_coef_DA-'])
+            E_DA=float(values['-IN_E_DA-'])
+            coef_DB=float(values['-IN_coef_DB-'])
+            E_DB=float(values['-IN_E_DB-'])
+            Nx=int(values['-IN_Nx-'])
+            Ny=int(values['-IN_Ny-'])
+            dx=float(values['-IN_dx-'])
+            dy=float(values['-IN_dy-'])
+            nsteps=int(values['-IN_Nsteps-'])
+            nprint=int(values['-IN_Nprint-'])
+            interval=float(values['-IN_Interval-'])
             
             #setting the complementary variables that are in function of the set ones
-            La=20000.-9.*T # Atom interaction constant [J/mol]
+            La=atom_interac_cst(T) # Atom interaction constant [J/mol]
             Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
             Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
             dt = time_increment(dx,Diff_A)
-            print("Values stored")
-            print(nsteps,nprint,interval,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt)
-        
-        elif event == 'Next p4 >':
-            window3.hide()
-            window4 = make_window4()
-            #window=window4
-            #event4, values4 = window4.read()
-            
-            
-        elif event == '< Prev p2':
-            window3.close()
-            window2.un_hide()
-            #window=window2
+            print("Values stored !")
 
-    if window == window4:
+        
+        elif event == 'Next p5 >':
+            window4.hide()
+            window5 = make_window5()
+           
+            
+        elif event == '< Prev p3':
+            window4.close()
+            window3.un_hide()
+
+
+    if window == window5:
         if event== sg.WIN_CLOSED : # if user closes window 
             break
         
         elif event == 'Show initial plots': 
-            def atom_interac_cst(T):    
-                La = 20000.-9.*T # Atom interaction constant [J/mol]
-                return La
-
-
+            
+            #Just for testing so we don't have to enter all those parameters each time
             #parameters specific to the material entered by the user
             nsteps=600
             nprint=60
@@ -300,45 +332,41 @@ while True:
             
             Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
             Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
-
-                        
-            def time_increment(dx,Diff_A):
-                # time increment [s]
-                dt = (dx*dx/Diff_A)*0.1
-                return dt
-            
             dt = time_increment(dx,Diff_A)
 
-
-            fig_chem_pot=plot_chemical_potential(c0,La)
-            draw_figure(window["-c0_chemical_potential-"].TKCanvas, fig_chem_pot)
-            
             #Defining a random initial concentration
             c,c_t=initial_concentration(Nx,Ny,c0)
+            #set the figure with the initial data
+            fig_chem_pot=plot_chemical_potential(c0,La)
             fig_init_c=plot_initial_concentration(c)
-            draw_figure(window["-initial_concentration-"].TKCanvas, fig_init_c)
+            
+            if figure_canvas_agg_chem_pot is not None:
+                delete_fig_agg(figure_canvas_agg_chem_pot)
+            if figure_canvas_agg_init_c is not None:
+                delete_fig_agg(figure_canvas_agg_init_c)
+
+            figure_canvas_agg_chem_pot=draw_figure(window["-c0_chemical_potential-"].TKCanvas, fig_chem_pot)
+            figure_canvas_agg_init_c=draw_figure(window["-initial_concentration-"].TKCanvas, fig_init_c)
            
         
-        elif event == 'Next p5 >':
-            window4.hide()
-            window5 = make_window5()
-            #window=window5
-            #event5, values5 = window5.read()
+        elif event == 'Next p6 >':
+            window5.hide()
+            window6 = make_window6()
+
             
+        elif event =='< Prev p4':        
+            window5.close()
+            window4.un_hide()
+
             
-        elif event =='< Prev p4':
-            
-            window4.close()
-            window3.un_hide()
-            #window=window3
-            
-    if window == window5:
-        if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
+    if window == window6:
+        if event == sg.WIN_CLOSED : # if user closes window or clicks cancel
             break
         
         elif event == 'Show animation': 
             figure_canvas_agg = None
             cbar=None
+            
             for istep in range(1,nsteps+1):
                 fig = matplotlib.figure.Figure()
                 ax = fig.add_subplot() 
@@ -349,10 +377,7 @@ while True:
                     if figure_canvas_agg:
                        figure_canvas_agg.get_tk_widget().forget()
                        plt.close('all')
-                       #fig.clear()
-                       #ax.cla()
-                       #ax.clear()
-                       #figure_canvas_agg = None
+
                     if cbar:
                         cbar.remove
                         
@@ -365,21 +390,25 @@ while True:
                     figure_canvas_agg
                     time.sleep(0.004)
                     window.Refresh()
-                    
-                    # figure_canvas_agg.get_tk_widget().forget()
-                    # plt.close('all')
-                    # fig.clear()
-                    # figure_agg = None
-                        
-                    #if cbar:
-                     #   cbar.remove()
-                        
+
 
                           
-        elif event == '< Prev p4':
-            window5.close()
-            window4.un_hide()
-            #window=window4
+        elif event == '< Prev p5':
+            window6.close()
+            window5.un_hide()
+            
+        elif event == 'Next p7 >':
+            window6.hide()
+            window7 = make_window7()
+
+    if window == window7:
         
+        if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
+            break
+
+
+        elif event =='< Prev p6':
+            window7.close()
+            window6.un_hide()
         
 window.close()
