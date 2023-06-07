@@ -37,6 +37,10 @@ def draw_figure(canvas, figure):
     figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
     return figure_canvas_agg
 
+
+def delete_fig_agg(fig_agg):
+    fig_agg.get_tk_widget().forget()
+    plt.close('all')
     
 # Define the window layout
 
@@ -46,12 +50,12 @@ def make_window1():
         #[sg.Text('Atomic number Z'), sg.InputText(key='-IN-', enable_events=True)],
         #[sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN-', enable_events=True)],
         #[sg.Text('Temperature in K for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN-', enable_events=True)],
-        [sg.Text('Atomic number Z'), sg.InputText()],
-        [sg.Text('Fraction of energy difference in eV'), sg.InputText()],
-        [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText()],
+        [sg.Text('Atomic number Z'), sg.InputText(key='-IN_Z-')],
+        [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-')],
+        [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
        
         [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
-        [sg.Button('Ok'),sg.Button('Next p2 >')],
+        [sg.Button('Show Plots'),sg.Button('Next p2 >')],
     ]
 
     return sg.Window(
@@ -98,7 +102,7 @@ def make_window3():
               [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText()],
               [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText()],
               
-              [sg.Button('values ok'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
+              [sg.Button('enter values'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
 
     return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
     finalize=True, element_justification="center")
@@ -127,50 +131,55 @@ def make_window5():
 #Make the first window and set the others to none 
 window1, window2, window3, window4, window5 = make_window1(), None, None, None, None
 
+figure_canvas_agg0 = None
+figure_canvas_agg1 = None
+figure_canvas_agg_3d0=None
+figure_canvas_agg_3d1=None
+figure_canvas_agg_3d2=None
+
 while True:
     
     window,event,values = sg.read_all_windows()
-    #window=window1
-    #Read all the imputs of the windows
-    #event1, values1 = window1.read()
     
     if window==window1:
               
         if event== sg.WIN_CLOSED : # if user closes window
             break
         
-        elif event == 'Ok':
-            Z=int(values[0])
-            diff_eV=float(values[1])
-            T0=float(values[2])
-        
+        elif event == 'Show Plots':
+            
+            Z=(int(values['-IN_Z-']))
+            diff_eV=(float(values['-IN_X-']))
+            T0=(float(values['-IN_T-']))
+
+            
             #set parameters for the plots
             #ranges for composition, temperature and order parameter
             X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
             T=np.arange(50,1000,50)      # Temperature space
             eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
-        
+            
             omega = interaction_parameter(Z,diff_eV)
+            
             #Set parameters for the graphs
             X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
-        
+             
             fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
             fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
-        
-            # Add the plot to the window
+
             
-            draw_figure(window1["-FIG0-"].TKCanvas, fig0)
-            draw_figure(window1["-FIG1-"].TKCanvas, fig1)
-            
-        #if event == '-IN-' :
-        #  window['-FIG0-'].update(draw_figure(window["-FIG0-"].TKCanvas, fig0))
-         #  window["-FIG1-"].update(draw_figure(window["-FIG1-"].TKCanvas, fig1))
+            if figure_canvas_agg0 is not None:
+                delete_fig_agg(figure_canvas_agg0)
+            if figure_canvas_agg1 is not None:
+                delete_fig_agg(figure_canvas_agg1)
+                
+            figure_canvas_agg0 = draw_figure(window1["-FIG0-"].TKCanvas, fig0) 
+            figure_canvas_agg1 = draw_figure(window1["-FIG1-"].TKCanvas, fig1)
+
 
         elif event == 'Next p2 >':
             window1.hide()
             window2 = make_window2()
-            #window=window2
-            #event2, values2 = window2.read()
             
     if window == window2:
         
@@ -178,7 +187,6 @@ while True:
             break
         
         elif event == 'Show 3D plots': 
-            
             #Free energy surface in the (X_B,eta) space for temperature T=T0
             fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
                          'X_B','eta','G [ J/mole ]'
@@ -195,30 +203,33 @@ while True:
                          'eta','T [K]','G [ J/mole ]'
                          ,'G vs eta and T, X_B=0.5')
             
+            if figure_canvas_agg_3d0 is not None:
+                delete_fig_agg(figure_canvas_agg_3d0)
+            if figure_canvas_agg_3d1 is not None:
+                delete_fig_agg(figure_canvas_agg_3d1)
+            if figure_canvas_agg_3d2 is not None:
+                delete_fig_agg(figure_canvas_agg_3d2)
+
+            figure_canvas_agg_3d0= draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
+            figure_canvas_agg_3d1= draw_figure(window2["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
+            figure_canvas_agg_3d2= draw_figure(window2["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
             
-            draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
-            draw_figure(window2["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
-            draw_figure(window2["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
-        
+           
         elif event == 'Next p3 >':
             print('Next pushed')
             window2.hide()
             window3 = make_window3()
-            #window=window3
-            #event3, values3 = window3.read()
 
-             
         elif event =='< Prev p1':
             window2.close()
             window1.un_hide()
-            #window=window1
             
     if window == window3:
         
         if event == sg.WIN_CLOSED : # if user closes window
             break
         
-        elif event == 'values ok':
+        elif event == 'enter values':
             #setting the variables to the user defined values
             c0=float(values[0])
             T=float(values[1])
