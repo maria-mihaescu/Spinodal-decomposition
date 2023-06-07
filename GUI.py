@@ -139,7 +139,7 @@ def make_window7():
               [sg.Button('Save txt')],
               [sg.Text('Name of the directory for the mp4 animation of the spinodal decomposition:'),sg.InputText(key='-IN_mp4_directory-')],
               [sg.Text('Name of the mp4 animation movie:'),sg.InputText(key='-IN_mp4_movie-')],
-              [sg.Button('Save mp4')]
+              [sg.Button('Save mp4')],
                [sg.Button('< Prev p6'), sg.Button('Exit')]]
 
     return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
