@@ -6,9 +6,9 @@ Created on Thu Jun  1 18:51:10 2023
 """
 
 import numpy as np
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
-import time
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -17,19 +17,36 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 from Binary_Alloys import interaction_parameter
-from Binary_Alloys import set_free_energy
+from Binary_Alloys import calculate_free_energy
 from Binary_Alloys import plot_anim_3d, plot_2d
 
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
-from Cahn_Hillard import plot_chemical_potential
+from Cahn_Hillard import plot_chemical_free_energy_density
 from Cahn_Hillard import initial_concentration
 from Cahn_Hillard import plot_initial_concentration
 from Cahn_Hillard import update_order_parameter
 from Cahn_Hillard import atom_interac_cst
 
 
-def draw_figure(canvas, figure):
+def draw_figure(canvas,
+                figure):
+    """
+    
+
+    Parameters
+    ----------
+    canvas : TYPE
+        DESCRIPTION.
+    figure : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    figure_canvas_agg : TYPE
+        DESCRIPTION.
+
+    """
     figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
@@ -37,12 +54,34 @@ def draw_figure(canvas, figure):
 
 
 def delete_fig_agg(fig_agg):
+    """
+    
+
+    Parameters
+    ----------
+    fig_agg : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
     fig_agg.get_tk_widget().forget()
     plt.close('all')
     
 # Define the window layout
 
 def make_window1():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     layout = [
         [sg.Text("Free energy of a binary alloy in the Quasi-chemical atomistic model")],
         [sg.Text('Atomic number Z'), sg.InputText(key='-IN_Z-')],
@@ -61,6 +100,15 @@ def make_window1():
         element_justification="center")
 
 def make_window2():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     
     layout = [[sg.Text('3D plots of the free energy in the different spaces')],
               [sg.Button('Show 3D plots')],
@@ -74,6 +122,15 @@ def make_window2():
 
 
 def make_window3():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     
     layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
               [sg.Text('Parameters specific to the material :')],
@@ -103,6 +160,15 @@ def make_window3():
     finalize=True, element_justification="center")
 
 def make_window4():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     
     layout = [[sg.Text('Initial states:')],
               [sg.Button('Show initial plots')],
@@ -113,6 +179,15 @@ def make_window4():
     finalize=True, element_justification="center")
 
 def make_window5():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     
     layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
               [sg.Button('Show animation')],
@@ -123,6 +198,15 @@ def make_window5():
     finalize=True, element_justification="center")
 
 def make_window6():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     
     layout = [[sg.Text('Save the spinodal decomposition data')],
               [sg.Text('Path of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_path-')],
@@ -173,8 +257,8 @@ while True:
             
             omega = interaction_parameter(Z,diff_eV)
             
-            #Set parameters for the graphs
-            X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
+            #Set parameters for the graphs in all the different spaces
+            X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = calculate_free_energy(T0,omega)
              
             fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
             fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
@@ -316,7 +400,7 @@ while True:
             #Defining a random initial concentration
             c,c_t=initial_concentration(Nx,Ny,c0)
             #set the figure with the initial data
-            fig_chem_pot=plot_chemical_potential(c0,La)
+            fig_chem_pot=plot_chemical_free_energy_density(c0,La,T)
             fig_init_c=plot_initial_concentration(c)
             
             if figure_canvas_agg_chem_pot is not None:
@@ -346,19 +430,20 @@ while True:
             fig = matplotlib.figure.Figure()
             ax = fig.add_subplot()
             
+            #initialize the parameters and the lists
             snapshots=[]
             c_init=c
-            time=0
+            current_time=0
             C_list=[c_init]
-            Time=[time]
+            Time=[current_time]
 
             
             for istep in range(1,nsteps+1):
                 update_order_parameter(c,c_t,Nx,Ny,A,dx,dy,T,La,Diff_A,Diff_B,dt)
                 c[:,:]=c_t[:,:] # updating the order parameter every dt 
-                time=time+dt
+                current_time=current_time+dt
                 C_list.append(c)
-                Time.append(time)
+                Time.append(current_time)
                 
                 if istep % nprint ==0:                    
 
@@ -369,7 +454,7 @@ while True:
                         cbar.remove()
                         
                     im = ax.imshow(c, cmap='bwr', animated=True)
-                    ax.set_title("Concentration of atom B at time {:.2f}".format(time))
+                    ax.set_title("Concentration of atom B at time {:.2f}".format(current_time))
                     cbar=fig.colorbar(im,ax=ax)
                     snapshots.append([im])   
                     
