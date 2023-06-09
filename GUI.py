@@ -23,8 +23,8 @@ from Binary_Alloys import plot_anim_3d, plot_2d
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
 from Cahn_Hillard import plot_chemical_free_energy_density
-from Cahn_Hillard import initial_concentration
-from Cahn_Hillard import plot_initial_concentration
+from Cahn_Hillard import initial_composition
+from Cahn_Hillard import plot_initial_composition
 from Cahn_Hillard import update_order_parameter
 from Cahn_Hillard import atom_interac_cst
 
@@ -172,7 +172,7 @@ def make_window4():
     
     layout = [[sg.Text('Initial states:')],
               [sg.Button('Show initial plots')],
-              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_concentration-")],
+              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_composition-")],
                [sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
 
     return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
@@ -397,11 +397,11 @@ while True:
             interval=400
             """
             
-            #Defining a random initial concentration
-            c,c_t=initial_concentration(Nx,Ny,c0)
+            #Defining a random initial composition
+            c,c_t=initial_composition(Nx,Ny,c0)
             #set the figure with the initial data
-            fig_chem_pot=plot_chemical_free_energy_density(c0,La,T)
-            fig_init_c=plot_initial_concentration(c)
+            fig_chem_pot=plot_chemical_free_energy_density(c0,La)
+            fig_init_c=plot_initial_composition(c)
             
             if figure_canvas_agg_chem_pot is not None:
                 delete_fig_agg(figure_canvas_agg_chem_pot)
@@ -409,7 +409,7 @@ while True:
                 delete_fig_agg(figure_canvas_agg_init_c)
 
             figure_canvas_agg_chem_pot=draw_figure(window["-c0_chemical_potential-"].TKCanvas, fig_chem_pot)
-            figure_canvas_agg_init_c=draw_figure(window["-initial_concentration-"].TKCanvas, fig_init_c)
+            figure_canvas_agg_init_c=draw_figure(window["-initial_composition-"].TKCanvas, fig_init_c)
            
         
         elif event == 'Next p5 >':
@@ -454,7 +454,7 @@ while True:
                         cbar.remove()
                         
                     im = ax.imshow(c, cmap='bwr', animated=True)
-                    ax.set_title("Concentration of atom B at time {:.2f}".format(current_time))
+                    ax.set_title("composition of atom B at time {:.2f}".format(current_time))
                     cbar=fig.colorbar(im,ax=ax)
                     snapshots.append([im])   
                     
@@ -484,7 +484,7 @@ while True:
             path_to_file=path_txt+title_txt+'.txt'
             with open(path_to_file, 'w') as f:
                 for c,t in zip(C_list,Time):
-                    f.write("Concentration at time {}".format(t))
+                    f.write("composition at time {}".format(t))
                     f.write('\n')
                     f.write('x'+','+'y'+','+'c[x,y]'+ "\n")
                     f.write('\n')
