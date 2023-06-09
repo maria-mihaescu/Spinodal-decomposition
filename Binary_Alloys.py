@@ -6,8 +6,9 @@ Created on Wed May  3 18:03:42 2023
 """
 import numpy as np
 import matplotlib
-import matplotlib.pyplot as plt
 from matplotlib import cm
+
+#Multicomponent homogeneous systems
 
 #ranges for composition, temperature and order parameter
 X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
@@ -15,6 +16,21 @@ T=np.arange(50,1000,50)      # Temperature space
 eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 
 def xlog(x):
+    """
+    function for the fomula x*log(x) if x is an array
+
+    Parameters
+    ----------
+    x : TYPE nd.ndarray
+        DESCRIPTION. parameter to be entered in the calculation function
+
+    Returns
+    -------
+    s : TYPE nd.ndarray
+        DESCRIPTION. calculated array  
+
+    """
+
     if x.all()<0:
         s=np.nan
     else:
@@ -22,15 +38,62 @@ def xlog(x):
     return s
 
 def xlog_scal(x):
+
+    """
+    function for the fomula x*log(x) if x is a float
+
+    Parameters
+    ----------
+    x : TYPE : float
+        DESCRIPTION.parameter to be entered in the calculation function
+
+    Returns
+    -------
+    s : TYPE : float
+        DESCRIPTION. calculated parameter
+
+    """
     if x<0:
         s=np.nan
     else:
         s= x * np.log(x)
     return s
     
-#make the plots in order to do the animation rotating in 3d
 
-def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
+
+def plot_anim_3d(X,
+                 Y,
+                 Z,
+                 xlabel,
+                 ylabel,
+                 zlabel,
+                 title):
+
+    """function to do plots that rotate in 3D
+
+    Parameters
+    ----------
+    X : TYPE : numpy.ndarray
+        DESCRIPTION. X data in the space (X,Y)
+    Y : TYPE : numpy.ndarray
+        DESCRIPTION. Y data in the space (X,Y)
+    Z : TYPE : numpy.ndarray
+        DESCRIPTION. Z data in function of the X,Y data 
+    xlabel : TYPE : string
+        DESCRIPTION: Label of the x axis 
+    ylabel : TYPE : string 
+        DESCRIPTION. Label of the y axis
+    zlabel : TYPE string
+        DESCRIPTION. Label of the z axis
+    title : TYPE string
+        DESCRIPTION. title of the graph 
+
+    Returns
+    -------
+    fig : TYPE matplotlib.figure.Figure()
+        DESCRIPTION. 3D figure 
+
+    """
     fig=matplotlib.figure.Figure()
     ax = fig.add_subplot(projection='3d')
     
@@ -48,12 +111,38 @@ def plot_anim_3d(X,Y,Z,xlabel,ylabel,zlabel,title):
         # Plot the new surface plot
         wframe = ax.plot_surface(X, Y, Z,cmap=cm.nipy_spectral_r, rstride=2, cstride=2)
     
+    #print a line to show that the 3D plot is done
     print("3D Plot done !")
     return fig
     
 
 
-def plot_2d(X,G,xlabel,title) :
+def plot_2d(X,
+            G,
+            xlabel,
+            title) :
+
+    """
+    
+    Function that returns a 2D plot of the free energy in function of an order parameter 
+    
+    Parameters
+    ----------
+    X : TYPE numpy.ndarray
+        DESCRIPTION. Range for the order parameter 
+    G : TYPE numpy.ndarray
+        DESCRIPTION. Calculated free energy for this order parameter 
+    xlabel : TYPE string
+        DESCRIPTION. Label of the xaxis
+    title : TYPE string
+        DESCRIPTION. title of the plot
+
+    Returns
+    -------
+    fig : TYPE matplotlib.figure.Figure()
+        DESCRIPTION. Figure of the free energy in function of an order parameter
+
+    """
     fig=matplotlib.figure.Figure()
     ax = fig.add_subplot()
     for g in G:
@@ -63,39 +152,77 @@ def plot_2d(X,G,xlabel,title) :
         ax.set_title(title)
     return fig
     
-#This program calculates the free energy of a binary alloy in the
-# so-called "quasi-chemical" atomistic model. Only nearest-neighbours
-# interactions are taken into account and only the configurational 
-# Bragg-Williams-Gorsky entropy is considered, neglecting e.g. strain energy 
-# due to atomic size mismatch and vibrational entropy. 
 
-#Set the constants
+#Set the physical constants
 k_B=1.38e-23  #Boltzmann's constant
 N_A=6.02e+23  #Avogadro's number
 R_gas=k_B*N_A #Gas constant
 
 
-def interaction_parameter(Z,diff_eV):
-    # interaction parameter: 
-    #Z= atomic number ;
-    #diff_eV = fraction of eV difference
+def interaction_parameter(Z,
+                          diff_eV):
+
+    """
+    Function calculating the interaction parameter
+
+    Parameters
+    ----------
+    Z : TYPE int
+        DESCRIPTION. atomic number 
+    diff_eV : TYPE float
+        DESCRIPTION. fraction of eV difference 
+
+    Returns
+    -------
+    omega : TYPE float
+        DESCRIPTION.In teraction parameter in J 
+
+    """
     omega= -Z*diff_eV*1.6e-19
+
     return omega
 
+def calculate_free_energy(T0,
+                    omega):
+    
+    """
+    This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
+    The assumptions taken in the model are :
+        - Only nearest-neighbours interactions are taken into account
+        - Only the configurational Bragg-Williams-Gorsky entropy is considered
+        - Strain energy due to atomic size mismatch and vibrational entropy are neglected
 
-def set_free_energy(T0,omega):
-    
-    # Functions in (X_B,eta) space for T=T0;
+    Parameters
+    ----------
+    T0 : TYPE float 
+        DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
+    omega : TYPE float
+        DESCRIPTION. Interaction parameter in J 
 
-    # Uses the xlog function, that handles the cases where the argument of the
-    # logarithm would be negative, to calculate entropy
-    
-    #  Finds the unphysical region in the (X_B, eta) mesh. In fact, abs(eta)
-    #  must be lower than X_B and 1-X_B (see definitions in the model)
-    
-    # Sets enthalpy and entropy to "Not a Number" in the unphysical region, to
-    # avoid plotting of non physical values
-    
+    Returns
+    -------
+    X_XB_eta : TYPE numpy.ndarray
+        DESCRIPTION. Composition in the (X_B,eta) space 
+    eta_XB_eta : TYPE numpy.ndarray
+        DESCRIPTION. Structural order parameter eta in the (X_B,eta) space 
+    G_XB_eta : TYPE numpy.ndarray
+        DESCRIPTION. Gibbs free energy G in the (X_B,eta) space 
+    X_XB_T : TYPE numpy.ndarray
+        DESCRIPTION. Composition X in the (X_B,T) space 
+    T_XB_T : TYPE numpy.ndarray
+        DESCRIPTION. Temperature T in the (X_B,T) space 
+    G_XB_T : TYPE numpy.ndarray
+        DESCRIPTION. Gibbs free energy G in the (X_B,T) space 
+    eta_eta_T : TYPE numpy.ndarray
+        DESCRIPTION. Structural order parameter eta in the (eta,T) space 
+    T_eta_T : TYPE numpy.ndarray
+        DESCRIPTION. Temperature T in the (eta,T) space 
+    G_eta_T : TYPE numpy.ndarray
+        DESCRIPTION. Gibbs free energy G in the (eta,T) space 
+
+    """
+   # Functions in (X_B,eta) space for T=T0
+   
     x_BG,etaG = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
     
     H0=[]
@@ -106,6 +233,11 @@ def set_free_energy(T0,omega):
         h0=[]
         s0=[]
         g0=[]
+        
+        #  Finds the unphysical region in the (X_B, eta) mesh. In fact, abs(eta)
+        #  must be lower than X_B and 1-X_B (as stated in the model)
+        # Sets enthalpy and entropy to "Not a Number" in the unphysical region, to
+        # avoid plotting of non physical values
         
         for x,e in zip(xbg,etag):
             if abs(e)>=x or abs(e)>=(1-x):
@@ -122,7 +254,7 @@ def set_free_energy(T0,omega):
             s0.append(s)
             g0.append(g)
             
-        H0.append(h0) #  Enthalpy
+        H0.append(h0) #Enthalpy
         S0.append(s0) #Entropy
         G0.append(g0) #Gibbs free energy
     
@@ -159,44 +291,3 @@ def set_free_energy(T0,omega):
     
     return X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T
 
-"""
-#Test of the functions
-#Set parameters of the material:
-    
-#parameters used in the material
-Z=8
-diff_eV=0.02
-T0=550     # Temperature for calculation of free energy surface in (X_B,eta) space
-
-
-
-omega = interaction_parameter(Z,diff_eV)
-#Set parameters for the graphs
-X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = set_free_energy(T0,omega)
-
-
-# Free energy vs composition at different T for order parameter eta=0
-
-plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
-
-# Free energy vs order paramer eta for different T at X_B=0.5
-plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
-
-
-#Free energy surface in the (X_B,eta) space for temperature T=T0
-plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
-             'X_B','eta','G [ J/mole ]'
-             ,'G vs X_B and eta, N_A\Omega={:.2f} J , T={:.2f}'.format(N_A*omega,T0))
-
-
-# Free energy surface in (X_B,T) space for order parameter eta=0 
-plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
-             'X_B','T [K]','G [ J/mole ]'
-             ,'G vs X_B and T, eta=0, N_A\Omega={:.2f} J'.format(N_A*omega))
-
-#Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
-plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
-             'eta','T [K]','G [ J/mole ]'
-             ,'G vs eta and T, X_B=0.5, N_A\Omega={:.2f} J'.format(N_A*omega))
-
-"""
