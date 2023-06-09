@@ -58,14 +58,14 @@ def diffusion_coeff(coef,
 def time_increment(dx,
                    Diff_A):
     """
-    Function to calculate the time increment in s between each update of the concentration
+    Function to calculate the time increment in s between each update of the composition
 
     Parameters
     ----------
     dx : TYPE float
         DESCRIPTION. spacing of the computational grid in the x direction [m]
     Diff_A : TYPE float 
-        DESCRIPTION.diffusion coefficient in [m2/s]
+        DESCRIPTION.diffusion coefficient of atom A in [m2/s]
 
     Returns
     -------
@@ -80,8 +80,8 @@ def add_fluctuation(Nx,
                     Ny, 
                     c0): 
     """
-    function that adds random fluctuation of the concentration in a computational grid of size
-    Nx*Ny, starting from an initial concentration of B atoms of c0 in [atomic fraction]
+    function that adds random fluctuation of the composition in a computational grid of size
+    Nx*Ny, starting from an initial composition of B atoms of c0 in [atomic fraction]
 
     Parameters
     ----------
@@ -110,7 +110,7 @@ def func_laplacian(center,
                    dy):
     """
     Calculates the gradient term of a quantity at a given matrix point
-    (concentration or diffusion potential) given the variation of the quantity 
+    (composition or diffusion potential) given the variation of the quantity 
     within its nearest neighbours in the matrix of size Nx*Ny.
 
     Parameters
@@ -143,7 +143,7 @@ def chemical_free_energy_density(c,
                        T,
                        La):
     """
-    Function to calculate the chemical potential  in a specific point given a concentration of B atom, a temperature and 
+    Function to calculate the chemical potential  in a specific point given a composition of B atom, a temperature and 
     and atomic interaction constante
 
     Parameters
@@ -166,10 +166,10 @@ def chemical_free_energy_density(c,
 
 
 def plot_chemical_free_energy_density(c0,
-                            La):
+                                      La):
     """
-    Function to plot the chemical free energy density in function of concentration 
-    for c between [0,1] and T=673K to show where the initial concentration of B atoms c0 stands 
+    Function to plot the chemical free energy density in function of composition 
+    for c between [0,1] and T=673K to show where the initial composition of B atoms c0 stands 
 
     Parameters
     ----------
@@ -181,7 +181,7 @@ def plot_chemical_free_energy_density(c0,
     Returns
     -------
     fig : TYPE matplotlib.figure.Figure()
-        DESCRIPTION. figure of the Chemical free energy density in function of concentration
+        DESCRIPTION. figure of the Chemical free energy density in function of composition
         for c between [0,1] and T=673K
 
     """
@@ -194,9 +194,9 @@ def plot_chemical_free_energy_density(c0,
     ax.plot(cc,chemical_free_energy_density(cc,T,La),color='black')
     ax.plot(c0, chemical_free_energy_density(c0,T,La),color='r',marker='o',markersize=10)
     
-    ax.set_xlabel('Concentration c [at. frac]')
+    ax.set_xlabel('composition c [at. frac]')
     ax.set_ylabel('Chemical free energy density')
-    ax.set_title('Chemical free energy density in function of concentration \n for c between [0,1] and T=673K')
+    ax.set_title('Chemical free energy density in function of composition \n for c between [0,1] and T=673K')
     
     return fig
 
@@ -207,33 +207,33 @@ def boundary_conditions(x,
                         Ny):
     """
     Function to define the boundary conditions of the Nx*Ny matrix. If a border is reached, one goes 
-    to the border on the other side. 
+    to the border on the oposite side. 
 
     Parameters
     ----------
-    x : TYPE
-        DESCRIPTION.
-    y : TYPE
-        DESCRIPTION.
-    Nx : TYPE
-        DESCRIPTION.
-    Ny : TYPE
-        DESCRIPTION.
+    x : TYPE int
+        DESCRIPTION. coordinate of the grid cell along the x direction 
+    y : TYPE int
+        DESCRIPTION. coordinate of the grid cell along the y direction 
+    Nx : TYPE int
+        DESCRIPTION. number of computational grids along the x direction
+    Ny : TYPE int 
+        DESCRIPTION. number of computational grids along the y direction
 
     Returns
     -------
-    x : TYPE
-        DESCRIPTION.
-    y : TYPE
-        DESCRIPTION.
-    x_plus : TYPE
-        DESCRIPTION.
-    x_min : TYPE
-        DESCRIPTION.
-    y_plus : TYPE
-        DESCRIPTION.
-    y_min : TYPE
-        DESCRIPTION.
+    x : TYPE int 
+        DESCRIPTION. coordinate of the grid cell along the x direction 
+    y : TYPE int 
+        DESCRIPTION. coordinate of the grid cell along the y direction 
+    x_plus : TYPE int
+        DESCRIPTION. coordinate of the grid cell on the right along the x direction
+    x_min : TYPE int
+        DESCRIPTION. coordinate of the grid cell on the left along the x direction
+    y_plus : TYPE int
+        DESCRIPTION. coordinate of the grid cell above along the y direction
+    y_min : TYPE int 
+        DESCRIPTION.coordinate of the grid cell under along the y direction
 
     """
     #Renaming the coordinates
@@ -257,43 +257,44 @@ def boundary_conditions(x,
         
     return x,y,x_plus,x_min,y_plus,y_min
 
-def concentration_nearest_neighbours(c,
+def composition_nearest_neighbours(c,
                                      x,
                                      y,
                                      Nx,
                                      Ny):
     """
+    Function that returns the composition of B atoms of the cells around the central cell 
+    at coordinates (x,y)
     
-
     Parameters
     ----------
-    c : TYPE
-        DESCRIPTION.
-    x : TYPE
-        DESCRIPTION.
-    y : TYPE
-        DESCRIPTION.
-    Nx : TYPE
-        DESCRIPTION.
-    Ny : TYPE
-        DESCRIPTION.
+    c : TYPE list
+        DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
+    x : TYPE int 
+        DESCRIPTION. coordinate of the grid cell along the x direction 
+    y : TYPE int
+        DESCRIPTION. coordinate of the grid cell along the y direction 
+    Nx : TYPE int
+        DESCRIPTION. number of computational grids along the x direction
+    Ny : TYPE int 
+        DESCRIPTION. number of computational grids along the y direction
 
     Returns
     -------
-    c_center : TYPE
-        DESCRIPTION.
-    c_left : TYPE
-        DESCRIPTION.
-    c_right : TYPE
-        DESCRIPTION.
-    c_up : TYPE
-        DESCRIPTION.
-    c_down : TYPE
-        DESCRIPTION.
+    c_center : TYPE float
+        DESCRIPTION. composition at point of coordinate (x,y) [atomic fraction]
+    c_left : TYPE float
+        DESCRIPTION. composition at point of coordinate (x-1,y) [atomic fraction]
+    c_right : TYPE float
+        DESCRIPTION. composition at point of coordinate (x+1,y) [atomic fraction]
+    c_up : TYPE float
+        DESCRIPTION. composition at point of coordinate (x,y+1) [atomic fraction]
+    c_down : TYPE float
+        DESCRIPTION. composition at point of coordinate (x,y-1) [atomic fraction]
 
     """
-    
-    x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(x, y,Nx,Ny)
+    #setting the coordinates of the cells to follow the boundary conditions
+    x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(x,y,Nx,Ny)
         
     #positions of the order parameters values around the center 
     c_center= c[x,y]
@@ -308,21 +309,21 @@ def diffusion_potential_chemical(cc,
                                  T,
                                  La):
     """
-    
+    function to calculate the chemical component of the diffusion potential.
 
     Parameters
     ----------
-    cc : TYPE
-        DESCRIPTION.
-    T : TYPE
-        DESCRIPTION.
-    La : TYPE
-        DESCRIPTION.
+    cc : TYPE float
+        DESCRIPTION. composition of the center cell [atomic fraction]
+    T : TYPE float
+        DESCRIPTION. temperature of the material [K]
+    La : TYPE float 
+        DESCRIPTION.Atom intaraction constant [J/mol]
 
     Returns
     -------
-    mu_chem_dir : TYPE
-        DESCRIPTION.
+    mu_chem_dir : TYPE float 
+        DESCRIPTION. chemical component of the diffusion potential
 
     """
     #chemical term of the diffusion potential
@@ -341,40 +342,41 @@ def total_diffusion_potential(c,
                               Nx,
                               Ny):
     """
-    
+    Function to calculate the total diffusion potential potential, which is the sum of the chemical
+    term and the gradient term for a given cell at (x,y). 
 
     Parameters
     ----------
-    c : TYPE
-        DESCRIPTION.
-    x : TYPE
-        DESCRIPTION.
-    y : TYPE
-        DESCRIPTION.
-    A : TYPE
-        DESCRIPTION.
-    dx : TYPE
-        DESCRIPTION.
-    dy : TYPE
-        DESCRIPTION.
-    T : TYPE
-        DESCRIPTION.
-    La : TYPE
-        DESCRIPTION.
-    Nx : TYPE
-        DESCRIPTION.
-    Ny : TYPE
-        DESCRIPTION.
+    c : TYPE list
+        DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
+    x : TYPE int 
+        DESCRIPTION. coordinate of the grid cell along the x direction 
+    y : TYPE int
+        DESCRIPTION. coordinate of the grid cell along the y direction 
+    A : TYPE float
+        DESCRIPTION. gradient coefficient [Jm2/mol]
+    dx : TYPE float
+        DESCRIPTION. spacing of the computational grid in the x direction [m]
+    dy : TYPE float
+        DESCRIPTION. spacing of the computational grid in the y direction [m]
+    T : TYPE float
+        DESCRIPTION. temperature of the material [K]
+    La : TYPE float 
+        DESCRIPTION.Atom intaraction constant [J/mol]
+    Nx : TYPE int
+        DESCRIPTION. number of computational grids along the x direction
+    Ny : TYPE int 
+        DESCRIPTION. number of computational grids along the y direction
 
     Returns
     -------
-    mu_tot_dir : TYPE
-        DESCRIPTION.
+    mu_tot_dir : TYPE float 
+        DESCRIPTION. total diffusion potential potential for the cell in (x,y)
 
     """
     
-    #getting the concentration of the neighrest neighbours around the point in (x,y)
-    c_center,c_left,c_right,c_up,c_down = concentration_nearest_neighbours(c,x,y,Nx,Ny)
+    #getting the composition of the neighrest neighbours around the point in (x,y)
+    c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
 
     #laplacian of the chemical potential
     
@@ -401,40 +403,42 @@ def update_order_parameter(c,
                            Diff_B,
                            dt):
     """
+    Function that updates the order parameter c (composition matrix) by solving the Cahn-Hilliard 
+    equations at a time interval dt and naming it c_t. This will result in a two-dimensional phase-field simulation 
+    of the spinodal decomposition.
     
-#Goal of the simulation two-dimensional phase-field simulation 
-#of the spinodal decomposition using Cahn-Hilliard equation.
     Parameters
     ----------
-    c : TYPE
-        DESCRIPTION.
-    c_t : TYPE
-        DESCRIPTION.
-    Nx : TYPE
-        DESCRIPTION.
-    Ny : TYPE
-        DESCRIPTION.
-    A : TYPE
-        DESCRIPTION.
-    dx : TYPE
-        DESCRIPTION.
-    dy : TYPE
-        DESCRIPTION.
-    T : TYPE
-        DESCRIPTION.
-    La : TYPE
-        DESCRIPTION.
-    Diff_A : TYPE
-        DESCRIPTION.
-    Diff_B : TYPE
-        DESCRIPTION.
-    dt : TYPE
-        DESCRIPTION.
+    c : TYPE list
+        DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
+    c_t : TYPE list
+        DESCRIPTION. Composition matrix where c_t[x,y] is the composition at point of coordinate (x,y)
+                        after a time dt
+    Nx : TYPE int
+        DESCRIPTION. number of computational grids along the x direction
+    Ny : TYPE int 
+        DESCRIPTION. number of computational grids along the y direction
+    A : TYPE float
+        DESCRIPTION. gradient coefficient [Jm2/mol]
+    dx : TYPE float
+        DESCRIPTION. spacing of the computational grid in the x direction [m]
+    dy : TYPE float
+        DESCRIPTION. spacing of the computational grid in the y direction [m]
+    T : TYPE float
+        DESCRIPTION. temperature of the material [K]
+    La : TYPE float 
+         DESCRIPTION.Atom intaraction constant [J/mol]
+    Diff_A : TYPE float 
+        DESCRIPTION.diffusion coefficient of atom A in [m2/s]
+    Diff_B : TYPE float 
+        DESCRIPTION.diffusion coefficient of atom B in [m2/s]
+    dt : TYPE float 
+        DESCRIPTION.time increment [s]
 
     Returns
     -------
-    None.
-
+    None
+    
     """
     
     for j in range(Ny):
@@ -443,8 +447,8 @@ def update_order_parameter(c,
             #Coordinates with boundary conditions
             x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(i,j,Nx,Ny)
             
-            #concentration of the nearest neighbours
-            c_center,c_left,c_right,c_up,c_down = concentration_nearest_neighbours(c,x,y,Nx,Ny)
+            #composition of the nearest neighbours
+            c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
             
             #total diffusion potential for the differen directions 
             
@@ -480,33 +484,37 @@ def update_order_parameter(c,
           
             c_t[x,y] = c[x,y] + dcdt * dt 
 
+            
 
 
-#Solving the Cahn-hiliard equation and plotting the result
-def initial_concentration(Nx,
+def initial_composition(Nx,
                           Ny,
                           c0):
     """
-    
+    Function that sets the initial matrix for the composition c and c_t
+    at zero. Then, adds a random initial composition of B atoms in a grid of size Nx*Ny 
+    going from the initial composition c0 for the matrix c. 
 
     Parameters
     ----------
-    Nx : TYPE
-        DESCRIPTION.
-    Ny : TYPE
-        DESCRIPTION.
-    c0 : TYPE
-        DESCRIPTION.
+    Nx : TYPE int
+        DESCRIPTION. number of computational grids along the x direction
+    Ny : TYPE int 
+        DESCRIPTION. number of computational grids along the y direction
+    c0 : TYPE float
+        DESCRIPTION. average composition of B atom [atomic fraction]
 
     Returns
     -------
-    c : TYPE
-        DESCRIPTION.
-    c_t : TYPE
-        DESCRIPTION.
+    c : TYPE list
+        DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
+                    with an initial random composition 
+    c_t : TYPE list
+        DESCRIPTION. Composition matrix where c_t[x,y] is the composition at point of coordinate (x,y)
+                        after a time dt, set to zero
 
     """
-    #Setting concentrations to 0
+    #Setting compositions matrix to 0
     c= np.zeros((Nx,Ny))
     c_t= np.zeros((Nx,Ny))
     
@@ -515,49 +523,27 @@ def initial_concentration(Nx,
     
     return c,c_t
 
-def plot_initial_concentration(c):
+def plot_initial_composition(c):
     """
-    
+    Function to plot the initial composition.
 
     Parameters
     ----------
-    c : TYPE
-        DESCRIPTION.
+    c : TYPE list
+        DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
+                    with an initial random composition 
 
     Returns
     -------
-    fig : TYPE
-        DESCRIPTION.
+    fig : TYPE matplotlib.figure.Figure()
+        DESCRIPTION. Figure of the initial composition
 
     """
-    #printing separatly the initial concentration plot
+    #printing separatly the initial composition plot
     fig = matplotlib.figure.Figure()
     ax = fig.add_subplot()
     im=ax.imshow(c,cmap='bwr')
-    ax.set_title('initial concentration')
-    fig.colorbar(im,ax=ax)
-    return fig
-
-def plot_concentration(c):
-    """
-    
-
-    Parameters
-    ----------
-    c : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    fig : TYPE
-        DESCRIPTION.
-
-    """
-    #printing separatly the initial concentration plot
-    fig = matplotlib.figure.Figure()
-    ax = fig.add_subplot()
-    im=ax.imshow(c,cmap='bwr')
-    ax.set_title('Concentration of B atoms')
+    ax.set_title('initial composition of B atoms')
     fig.colorbar(im,ax=ax)
     return fig
 
