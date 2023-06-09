@@ -32,19 +32,19 @@ from Cahn_Hillard import atom_interac_cst
 def draw_figure(canvas,
                 figure):
     """
-    
+    Function that draws the wanted figure in the empty canvas of the window
 
     Parameters
     ----------
-    canvas : TYPE
-        DESCRIPTION.
-    figure : TYPE
-        DESCRIPTION.
+    canvas : TYPE PySimpleGUI.Canvas(canvas, background_color, size)
+        DESCRIPTION. drawable panel on the surface of the PySimpleGUI application window
+    figure : TYPE matplotlib.figure.Figure()
+        DESCRIPTION. figure we want to draw on the panel 
 
     Returns
     -------
-    figure_canvas_agg : TYPE
-        DESCRIPTION.
+    figure_canvas_agg : TYPE FigureCanvasTkAgg(figure, canvas)
+        DESCRIPTION. figure drawn on the canvas
 
     """
     figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
@@ -55,12 +55,12 @@ def draw_figure(canvas,
 
 def delete_fig_agg(fig_agg):
     """
-    
+    Function to delet the figure drawn on the canvas 
 
     Parameters
     ----------
-    fig_agg : TYPE
-        DESCRIPTION.
+    fig_agg : TYPE FigureCanvasTkAgg(figure, canvas)
+        DESCRIPTION. figure drawn on the canvas
 
     Returns
     -------
@@ -74,7 +74,7 @@ def delete_fig_agg(fig_agg):
 
 def make_window1():
     """
-    
+    Make the first window of the GUI
 
     Returns
     -------
@@ -101,7 +101,7 @@ def make_window1():
 
 def make_window2():
     """
-    
+    Make the second window of the GUI
 
     Returns
     -------
@@ -123,7 +123,7 @@ def make_window2():
 
 def make_window3():
     """
-    
+    Make the third window of the GUI
 
     Returns
     -------
@@ -161,7 +161,7 @@ def make_window3():
 
 def make_window4():
     """
-    
+    Make the fourth window of the GUI
 
     Returns
     -------
@@ -180,7 +180,7 @@ def make_window4():
 
 def make_window5():
     """
-    
+    Make the fifth window of the GUI
 
     Returns
     -------
@@ -199,7 +199,7 @@ def make_window5():
 
 def make_window6():
     """
-    
+    Make the 6th window of the GUI
 
     Returns
     -------
@@ -218,11 +218,10 @@ def make_window6():
     finalize=True, element_justification="center")
 
 
-#Make the first window and set the others to none 
+#Make the first window and set the others windows to none 
 window1, window2, window3, window4, window5, window6 = make_window1(), None, None, None, None, None
 
 #Set the figure drawings to None in order to be able to update them each time 
-
 figure_canvas_agg0 = None
 figure_canvas_agg1 = None
 figure_canvas_agg_3d0=None
@@ -231,19 +230,22 @@ figure_canvas_agg_3d2=None
 figure_canvas_agg_chem_pot=None
 figure_canvas_agg_init_c=None
 figure_canvas_agg = None
+#set the color bar to None in order to be able to update it later
 cbar=None
 
 while True:
     
+    #read all the events, windows and values entered on the windows
     window,event,values = sg.read_all_windows()
     
     if window==window1:
               
-        if event== sg.WIN_CLOSED : # if user closes window
+        if event== sg.WIN_CLOSED : # if user closes window close the programm
             break
         
-        elif event == 'Show Plots':
+        elif event == 'Show Plots': #if user goes on the button show plots
             
+            #set values to the entered user values
             Z=(int(values['-IN_Z-']))
             diff_eV=(float(values['-IN_X-']))
             T0=(float(values['-IN_T-']))
@@ -260,17 +262,19 @@ while True:
             #Set parameters for the graphs in all the different spaces
             X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = calculate_free_energy(T0,omega)
              
+            #set the 2D figures with those parameters
             fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
             fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
 
-            
+            #Delete the figures if they are already present 
             if figure_canvas_agg0 is not None:
                 delete_fig_agg(figure_canvas_agg0)
             if figure_canvas_agg1 is not None:
                 delete_fig_agg(figure_canvas_agg1)
                 
-            figure_canvas_agg0 = draw_figure(window1["-FIG0-"].TKCanvas, fig0) 
-            figure_canvas_agg1 = draw_figure(window1["-FIG1-"].TKCanvas, fig1)
+            #Draw the computed figures on the empty canvas
+            figure_canvas_agg0 = draw_figure(window["-FIG0-"].TKCanvas, fig0) 
+            figure_canvas_agg1 = draw_figure(window["-FIG1-"].TKCanvas, fig1)
 
 
         elif event == 'Next p2 >':
@@ -279,7 +283,7 @@ while True:
             
     if window == window2:
         
-        if event == sg.WIN_CLOSED : # if user closes window
+        if event == sg.WIN_CLOSED : # if user closes the window
             break
         
         elif event == 'Show 3D plots': 
@@ -299,16 +303,18 @@ while True:
                          'eta','T [K]','G [ J/mole ]'
                          ,'G vs eta and T, X_B=0.5')
             
+            #Delete the figures if they are already present 
             if figure_canvas_agg_3d0 is not None:
                 delete_fig_agg(figure_canvas_agg_3d0)
             if figure_canvas_agg_3d1 is not None:
                 delete_fig_agg(figure_canvas_agg_3d1)
             if figure_canvas_agg_3d2 is not None:
                 delete_fig_agg(figure_canvas_agg_3d2)
-
-            figure_canvas_agg_3d0= draw_figure(window2["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
-            figure_canvas_agg_3d1= draw_figure(window2["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
-            figure_canvas_agg_3d2= draw_figure(window2["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
+            
+            #Draw the computed figures on the empty canvas
+            figure_canvas_agg_3d0= draw_figure(window["-3D_(eta,X_B)-"].TKCanvas, fig_3d_0)
+            figure_canvas_agg_3d1= draw_figure(window["-3D_(X_B,T)-"].TKCanvas, fig_3d_1)
+            figure_canvas_agg_3d2= draw_figure(window["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
             
            
         elif event == 'Next p3 >':
@@ -403,11 +409,13 @@ while True:
             fig_chem_pot=plot_chemical_free_energy_density(c0,La)
             fig_init_c=plot_initial_composition(c)
             
+            #Delete the figures if they are already present 
             if figure_canvas_agg_chem_pot is not None:
                 delete_fig_agg(figure_canvas_agg_chem_pot)
             if figure_canvas_agg_init_c is not None:
                 delete_fig_agg(figure_canvas_agg_init_c)
 
+            #Draw the computed figures on the empty canvas
             figure_canvas_agg_chem_pot=draw_figure(window["-c0_chemical_potential-"].TKCanvas, fig_chem_pot)
             figure_canvas_agg_init_c=draw_figure(window["-initial_composition-"].TKCanvas, fig_init_c)
            
@@ -445,8 +453,10 @@ while True:
                 C_list.append(c)
                 Time.append(current_time)
                 
-                if istep % nprint ==0:                    
-
+                if istep % nprint ==0:  
+                    
+                    #Delete the figures and colorbar if they are already present 
+                    
                     if figure_canvas_agg is not None:
                         delete_fig_agg(figure_canvas_agg)
                         
@@ -458,6 +468,7 @@ while True:
                     cbar=fig.colorbar(im,ax=ax)
                     snapshots.append([im])   
                     
+                    #Draw the computed figures on the empty canvas
                     figure_canvas_agg = draw_figure(window["-anim-"].TKCanvas, fig) 
                     window.Refresh()
                     
@@ -476,16 +487,21 @@ while True:
         
         if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
             break
+        
         elif event =='Save txt':
-            
+            #set the values for the path and title
             path_txt=values['-IN_txt_path-']
             title_txt=values['-IN_txt_file-']
             
-            path_to_file=path_txt+title_txt+'.txt'
+            path_to_file= path_txt + title_txt + '.txt'
+            
+            #create a new txt file on the desired path
             with open(path_to_file, 'w') as f:
+                #For each composition matrix and each time
                 for c,t in zip(C_list,Time):
                     f.write("composition at time {}".format(t))
                     f.write('\n')
+                    #print the coordinates of the matrix cell and the composition of that cell
                     f.write('x'+','+'y'+','+'c[x,y]'+ "\n")
                     f.write('\n')
                     for x in range (Nx):
@@ -497,5 +513,6 @@ while True:
         elif event =='< Prev p5':
             window6.close()
             window5.un_hide()
+
         
 window.close()
