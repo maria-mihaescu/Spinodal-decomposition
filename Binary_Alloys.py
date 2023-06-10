@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib
 from matplotlib import cm
 import matplotlib.pyplot as plt
-import math
+
 
 #Multicomponent homogeneous systems
 
@@ -358,10 +358,25 @@ def calculate_free_energy(T0,
     
     return X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T
 
-
-# Run the testing functions
-test_xlog()
-test_xlog_scal()
-test_plot_anim_3d()
-test_plot_2d()
-test_interaction_parameter()
+def test_calculate_free_energy():
+    T0 = 300  # example value for T0
+    omega = 1.5  # example value for omega
+    
+    X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
+    T=np.arange(50,1000,50)      # Temperature space
+    eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
+    
+    X_XB_eta, eta_XB_eta, G_XB_eta, X_XB_T, T_XB_T, G_XB_T, eta_eta_T, T_eta_T, G_eta_T = calculate_free_energy(T0, omega)
+    
+    # Check the shapes of the output arrays
+    assert X_XB_eta.shape == (len(eta), len(X_B))
+    assert eta_XB_eta.shape == (len(eta), len(X_B))
+    assert G_XB_eta.shape == (len(eta), len(X_B))
+    assert X_XB_T.shape == (len(T), len(X_B))
+    assert T_XB_T.shape == (len(T), len(X_B))
+    assert G_XB_T.shape == (len(T), len(X_B))
+    assert eta_eta_T.shape == (len(T), len(eta))
+    assert T_eta_T.shape == (len(T), len(eta))
+    assert G_eta_T.shape == (len(T), len(eta))
+    
+   
