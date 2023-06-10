@@ -220,7 +220,7 @@ def interaction_parameter(Z,
     Parameters
     ----------
     Z : TYPE int
-        DESCRIPTION. atomic number 
+        DESCRIPTION. number of nearest neighbours
     diff_eV : TYPE float
         DESCRIPTION. fraction of eV difference 
 
