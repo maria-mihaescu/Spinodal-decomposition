@@ -40,7 +40,12 @@ def xlog(x):
         DESCRIPTION. calculated array  
 
     """
-    s = np.where((x > 0) & (~np.isnan(x)), x * np.log(x), np.nan)
+    try:
+       s = np.where((x > 0) & (~np.isnan(x)), x * np.log(x), np.nan)
+    
+    except RuntimeWarning:
+        # Handle the warning, e.g., assign NaN values
+        s = np.nan * np.ones_like(x)
     return s
 
 
