@@ -7,6 +7,8 @@ Created on Wed May  3 18:03:42 2023
 import numpy as np
 import matplotlib
 from matplotlib import cm
+import matplotlib.pyplot as plt
+import math
 
 #Multicomponent homogeneous systems
 
@@ -15,7 +17,15 @@ X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
 T=np.arange(50,1000,50)      # Temperature space
 eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 
+#Set the physical constants
+k_B=1.38e-23  #Boltzmann's constant
+N_A=6.02e+23  #Avogadro's number
+R_gas=k_B*N_A #Gas constant
+
+
+
 def xlog(x):
+    
     """
     function for the fomula x*log(x) if x is an array
 
@@ -30,13 +40,31 @@ def xlog(x):
         DESCRIPTION. calculated array  
 
     """
-
-    if x.all()<0:
-        s=np.nan
-    else:
-        s= np.multiply(x,np.log(x))
+    s = np.where((x > 0) & (~np.isnan(x)), x * np.log(x), np.nan)
     return s
 
+
+def test_xlog():
+    # Test case 1
+    X1 = np.array([0.2, 0.5, 0.8])
+    expected_result1 = np.array([-0.32188758, -0.34657359, -0.17851484])
+    result1 = xlog(X1)
+    assert np.allclose(result1, expected_result1), "Test case 1 failed"
+
+    # Test case 2
+    X2 = np.array([-1.2, 0, 1.5, 2.3])
+    expected_result2 = np.array([np.nan, np.nan, 0.60819766, 1.91569098])
+    result2 = xlog(X2)
+    assert np.allclose(result2, expected_result2, equal_nan=True), "Test case 2 failed"
+
+    # Test case 3
+    X3 = np.array([])
+    expected_result3 = np.array([])
+    result3 = xlog(X3)
+    assert np.array_equal(result3, expected_result3), "Test case 3 failed"
+
+    print("All tests passed successfully!")
+    
 def xlog_scal(x):
 
     """
@@ -59,8 +87,15 @@ def xlog_scal(x):
         s= x * np.log(x)
     return s
     
+def test_xlog_scal():
+    x = 0.5
+    expected_result = -0.3466
 
+    result = xlog_scal(x)
 
+    assert np.isclose(round(result, 4), expected_result), "xlog_scal test failed"
+ 
+    
 def plot_anim_3d(X,
                  Y,
                  Z,
@@ -115,6 +150,18 @@ def plot_anim_3d(X,
     print("3D Plot done !")
     return fig
     
+def test_plot_anim_3d():
+    X = np.array([[0, 1], [0, 1]])
+    Y = np.array([[0, 0], [1, 1]])
+    Z = np.array([[0, 1], [1, 0]])
+    xlabel = "X"
+    ylabel = "Y"
+    zlabel = "Z"
+    title = "3D Plot"
+
+    fig = plot_anim_3d(X, Y, Z, xlabel, ylabel, zlabel, title)
+
+    assert isinstance(fig, plt.Figure), "plot_anim_3d test failed"
 
 
 def plot_2d(X,
@@ -152,11 +199,16 @@ def plot_2d(X,
         ax.set_title(title)
     return fig
     
+def test_plot_2d():
+    X = np.array([0, 1, 2, 3, 4])
+    G = np.array([[0, 1, 2, 3, 4], [1, 2, 3, 4, 5], [2, 3, 4, 5, 6]])
+    xlabel = "X"
+    title = "2D Plot"
 
-#Set the physical constants
-k_B=1.38e-23  #Boltzmann's constant
-N_A=6.02e+23  #Avogadro's number
-R_gas=k_B*N_A #Gas constant
+    fig = plot_2d(X, G, xlabel, title)
+
+    assert isinstance(fig, plt.Figure), "plot_2d test failed"
+
 
 
 def interaction_parameter(Z,
@@ -181,6 +233,16 @@ def interaction_parameter(Z,
     omega= -Z*diff_eV*1.6e-19
 
     return omega
+
+def test_interaction_parameter():
+    Z = 10
+    diff_eV = 0.5
+    expected_result = -8e-18
+
+    result = interaction_parameter(Z, diff_eV)
+
+    assert np.isclose(result, expected_result), "interaction_parameter test failed"
+
 
 def calculate_free_energy(T0,
                     omega):
@@ -291,3 +353,10 @@ def calculate_free_energy(T0,
     
     return X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T
 
+
+# Run the testing functions
+test_xlog()
+test_xlog_scal()
+test_plot_anim_3d()
+test_plot_2d()
+test_interaction_parameter()
