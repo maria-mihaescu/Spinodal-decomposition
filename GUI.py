@@ -86,7 +86,7 @@ def make_window1():
     """
     layout = [
         [sg.Text("Free energy of a binary alloy in the Quasi-chemical atomistic model")],
-        [sg.Text('Atomic number Z'), sg.InputText(key='-IN_Z-')],
+        [sg.Text('Number of nearest neighbours Z'), sg.InputText(key='-IN_Z-')],
         [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-')],
         [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
        
