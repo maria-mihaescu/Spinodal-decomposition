@@ -30,6 +30,28 @@ def atom_interac_cst(T):
     La = 20000.-9.*T # Atom interaction constant [J/mol]
     return La
 
+def test_atom_interac_cst():
+    # Test case 1: T = 300 K
+    T = 300
+    expected_output = 20000 - 9 * T
+    assert atom_interac_cst(T) == expected_output
+
+    # Test case 2: T = 500 K
+    T = 500
+    expected_output = 20000 - 9 * T
+    assert atom_interac_cst(T) == expected_output
+
+    # Test case 3: T = 0 K
+    T = 0
+    expected_output = 20000 - 9 * T
+    assert atom_interac_cst(T) == expected_output
+
+    # Test case 4: T = 1000 K
+    T = 1000
+    expected_output = 20000 - 9 * T
+    assert atom_interac_cst(T) == expected_output
+
+    print("All test cases passed!")
 
 def diffusion_coeff(coef,
                     E,
