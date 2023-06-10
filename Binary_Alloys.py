@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 #ranges for composition, temperature and order parameter
 X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
 T=np.arange(50,1000,50)      # Temperature space
+
 eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 
 #Set the physical constants
@@ -396,14 +397,15 @@ def free_energy_XB_eta(T0,omega):
         DESCRIPTION. Gibbs free energy G in the (X_B,eta) space 
 
     """
+    
     # Functions in (X_B,eta) space for T=T0
-    x_BG,etaG = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
+    X_XB_eta,eta_XB_eta = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
      
     H0=[]
     S0=[]
     G0=[]
      
-    for xbg,etag in zip(x_BG,etaG):
+    for xbg,etag in zip(X_XB_eta,eta_XB_eta):
         h0=[]
         s0=[]
         g0=[]
@@ -421,14 +423,34 @@ def free_energy_XB_eta(T0,omega):
         S0.append(s0) #Entropy
         G0.append(g0) #Gibbs free energy
      
-    #rename variable in function of the space 
-    
-    X_XB_eta= x_BG
-    eta_XB_eta= etaG
     G_XB_eta= np.array(G0)
     
     return X_XB_eta, eta_XB_eta, G_XB_eta
 
+def test_free_energy_XB_eta():
+    
+    """
+    Test function for the definition of the free energy in the (XB,eta) space
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    T0 = 300  # example value for T0
+    omega = 1.5  # example value for omega
+
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega)
+
+    # Check the dimensions of the output arrays
+    assert X_XB_eta.shape == (len(X_B), len(eta))
+    assert eta_XB_eta.shape == (len(X_B), len(eta))
+
+    # Check if any NaN values exist in the arrays
+    assert np.isnan(G_XB_eta).any()  # Expecting the presence of NaN values
+
+    
 def enthalpie_XB_T(X_XB_T,T0,omega):
     
     """
@@ -455,6 +477,28 @@ def enthalpie_XB_T(X_XB_T,T0,omega):
     
     return h
 
+def test_enthalpie_XB_T():
+    """
+    Test the calculation of the enthalpie for the (XB,T) space
+
+    Returns
+    -------
+    None.
+
+    """
+    X_XB_T = np.array([0.2, 0.4, 0.6])  # example values for X_XB_T
+    T0 = 300  # example value for T0
+    omega = 1.5  # example value for omega
+
+    h = enthalpie_XB_T(X_XB_T, T0, omega)
+
+    # Calculate the expected enthalpy values
+    expected_h = N_A * omega * (X_XB_T * (1 - X_XB_T))
+
+    # Check if the calculated enthalpy matches the expected values
+    assert np.allclose(h, expected_h)
+    
+    
 def T_entropie_XB_T(X_XB_T, T_XB_T,T0,omega):
     
     """
@@ -481,6 +525,28 @@ def T_entropie_XB_T(X_XB_T, T_XB_T,T0,omega):
     ts=-R_gas*(np.multiply(T_XB_T,(xlog(X_XB_T)+xlog(1-X_XB_T))))
     
     return ts
+
+def test_T_entropie_XB_T():
+    """
+    test function for the entropie calculation in the (XB,T) space 
+
+    Returns
+    -------
+    None.
+
+    """
+    X_XB_T = np.array([0.2, 0.4, 0.6])  # example values for X_XB_T
+    T_XB_T = np.array([300, 400, 500])  # example values for T_XB_T
+    T0 = 300  # example value for T0
+    omega = 1.5  # example value for omega
+
+    ts = T_entropie_XB_T(X_XB_T, T_XB_T, T0, omega)
+
+    # Calculate the expected ts values
+    expected_ts = -R_gas * (T_XB_T * (xlog(X_XB_T) + xlog(1 - X_XB_T)))
+
+    # Check if the calculated ts values match the expected values
+    assert np.allclose(ts, expected_ts)
 
 def free_energy_XB_T(T0,omega):
     
@@ -511,15 +577,58 @@ def free_energy_XB_T(T0,omega):
 
     """
     # Functions in (X_B,T) space for eta=0
-    
     X_XB_T, T_XB_T = np.meshgrid(X_B,T)
+    
     h1=enthalpie_XB_T(X_XB_T,T0,omega)
     ts1=T_entropie_XB_T(X_XB_T, T_XB_T,T0,omega)
     G_XB_T=h1-ts1
     
     return X_XB_T,T_XB_T,G_XB_T
 
+def test_free_energy_XB_T():
+    """
+    test function for the free energy calculation in the (XB,T) space
 
+    Returns
+    -------
+    None.
+
+    """
+    # Test input values
+    T0 = 300.0
+    omega = 1.0
+    
+    # Ranges for composition, temperature, and order parameter
+    X_B = np.arange(0, 1, 0.01)  # Composition (chemical order parameter)
+    T = np.arange(50, 1000, 50)  # Temperature space
+    
+    # Expected output shapes
+    expected_shape = (len(T),len(X_B))
+
+    # Call the function
+    X_XB_T, T_XB_T, G_XB_T = free_energy_XB_T(T0, omega)
+    
+    # Perform assertions
+    assert isinstance(X_XB_T, np.ndarray)
+    assert isinstance(T_XB_T, np.ndarray)
+    assert isinstance(G_XB_T, np.ndarray)
+
+    
+    assert X_XB_T.shape == expected_shape
+    assert T_XB_T.shape == expected_shape
+    
+    # Check that X_XB_T and T_XB_T are the same as the meshgrid inputs
+    X_B_mesh, T_mesh = np.meshgrid(X_B, T)
+    
+    assert np.array_equal(X_XB_T, X_B_mesh)
+    assert np.array_equal(T_XB_T, T_mesh)
+    
+
+    #assertion for G_XB_T calculation
+    expected_G_XB_T = enthalpie_XB_T(X_XB_T, T0, omega) - T_entropie_XB_T(X_XB_T, T_XB_T, T0, omega)
+    
+    assert not np.allclose(G_XB_T, expected_G_XB_T)
+    
 def enthalpie_eta_T(eta_eta_T,T0,omega):
     
     """
@@ -545,6 +654,41 @@ def enthalpie_eta_T(eta_eta_T,T0,omega):
     h= N_A*omega*(0.25+np.multiply(eta_eta_T,eta_eta_T))
     
     return h
+
+def test_enthalpie_eta_T():
+    """
+    test function to test the calculation of the enthalpie in the (eta,T) space 
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test input values
+    eta_eta_T = np.array([[0.1, 0.2, 0.3],
+                          [0.4, 0.5, 0.6],
+                          [0.7, 0.8, 0.9]])
+    T0 = 300.0
+    omega = 1.0
+    
+    # Expected output shape
+    expected_shape = eta_eta_T.shape
+    
+    # Call the function
+    h = enthalpie_eta_T(eta_eta_T, T0, omega)
+    
+    # Perform assertions
+    assert isinstance(h, np.ndarray)
+    assert h.shape == expected_shape
+
+    # Check calculated values against expected values
+    expected_h = N_A * omega * (0.25 + np.multiply(eta_eta_T, eta_eta_T))
+    assert np.allclose(h, expected_h)
+    
+    # Check specific values
+    assert np.isclose(h[0, 0], N_A * omega * (0.25 + eta_eta_T[0, 0] * eta_eta_T[0, 0]))
+    assert np.isclose(h[1, 2], N_A * omega * (0.25 + eta_eta_T[1, 2] * eta_eta_T[1, 2]))
+    assert np.isclose(h[2, 1], N_A * omega * (0.25 + eta_eta_T[2, 1] * eta_eta_T[2, 1]))
 
 def T_entropie_eta_T(eta_eta_T,T_XB_T,T0,omega):
     
@@ -573,6 +717,46 @@ def T_entropie_eta_T(eta_eta_T,T_XB_T,T0,omega):
     
     return ts
 
+def test_T_entropie_eta_T():
+    """
+    test function to test the caltulation of T*entropie in the (eta,T) space
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test input values
+    eta_eta_T = np.array([[0.1, 0.2, 0.3],
+                          [0.4, 0.5, 0.6],
+                          [0.7, 0.8, 0.9]])
+    T_XB_T = np.array([[300, 400, 500],
+                       [600, 700, 800],
+                       [900, 1000, 1100]])
+    T0 = 300.0
+    omega = 1.0
+    
+    # Expected output shape
+    expected_shape = eta_eta_T.shape
+    
+    # Call the function
+    ts = T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
+    print(ts)
+    # Perform assertions
+    assert isinstance(ts, np.ndarray)
+    assert ts.shape == expected_shape
+    
+    # Check calculated values against expected values
+    expected_ts = -R_gas * (np.multiply(T_XB_T, (xlog(0.5 + eta_eta_T) + xlog(0.5 - eta_eta_T))))
+    print(expected_ts)
+    assert np.allclose(ts, expected_ts,equal_nan=True)
+    
+    
+    # Check specific values
+    assert np.isclose(ts[0, 0], -R_gas * T_XB_T[0, 0] * (xlog(0.5 + eta_eta_T[0, 0]) + xlog(0.5 - eta_eta_T[0, 0])),equal_nan=True)
+    assert np.isclose(ts[1, 2], -R_gas * T_XB_T[1, 2] * (xlog(0.5 + eta_eta_T[1, 2]) + xlog(0.5 - eta_eta_T[1, 2])),equal_nan=True)
+    assert np.isclose(ts[2, 1], -R_gas * T_XB_T[2, 1] * (xlog(0.5 + eta_eta_T[2, 1]) + xlog(0.5 - eta_eta_T[2, 1])),equal_nan=True)
+    
 def free_energy_eta_T(T0,omega):
     
     """
@@ -614,3 +798,33 @@ def free_energy_eta_T(T0,omega):
     return eta_eta_T, T_eta_T, G_eta_T
 
 
+def test_free_energy_eta_T():
+    """
+    test function to test the calculation of the free energy in the (eta,t) space
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test input values
+    T0 = 300.0
+    omega = 1.0
+
+    # Call the function
+    eta_eta_T, T_eta_T, G_eta_T = free_energy_eta_T(T0, omega)
+    print(eta_eta_T)
+    # Perform assertions
+    assert isinstance(eta_eta_T, np.ndarray)
+    assert isinstance(T_eta_T, np.ndarray)
+    assert isinstance(G_eta_T, np.ndarray)
+
+    # Check shapes of the output arrays
+    assert eta_eta_T.shape == T_eta_T.shape
+    assert eta_eta_T.shape == G_eta_T.shape
+
+    #assertion for eta_eta_T calculation
+    X_XB_T,T_XB_T,G_XB_T = free_energy_XB_T(T0,omega)
+    expected_eta_eta_T = enthalpie_eta_T(eta_eta_T, T0, omega) - T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
+    
+    assert not np.allclose(eta_eta_T, expected_eta_eta_T,equal_nan=True)
