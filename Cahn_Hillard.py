@@ -854,7 +854,7 @@ def test_update_order_parameter():
 
     """
     # Test case 1
-    c0=0.5
+
     T = 673 # temperature [K]
     La=13943
     A= 3.0e-14 # gradient coefficient [Jm2/mol]
@@ -882,7 +882,8 @@ def test_update_order_parameter():
     update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
 
     assert np.allclose(c_t, expected_output)
-test_update_order_parameter()
+    
+
 
 def initial_composition(Nx,
                           Ny,
