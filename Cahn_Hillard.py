@@ -842,7 +842,7 @@ def update_order_parameter(c,
           
             c_t[x,y] = c[x,y] + dcdt * dt 
             
-            return c_t
+            
 
 def test_update_order_parameter():
     """
@@ -854,27 +854,35 @@ def test_update_order_parameter():
 
     """
     # Test case 1
-    c = np.array([[0.2, 0.3, 0.4],
-                  [0.5, 0.6, 0.7],
-                  [0.8, 0.9, 1.0]])
-    c_t = np.zeros_like(c)
-    Nx = 3
-    Ny = 3
-    A = 0.1
-    dx = 0.5
-    dy = 0.5
-    T = 300
-    La = 10
-    Diff_A = 1e-5
-    Diff_B = 2e-5
-    dt = 0.001
-    expected_output = np.array([[0.20000007,0.,0.],
-                                [0.,0.,0.],
-                                [0.,0.,0.]]) 
-    c_t=update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
-    
-    assert np.allclose(c_t, expected_output)
+    c0=0.5
+    T = 673 # temperature [K]
+    La=13943
+    A= 3.0e-14 # gradient coefficient [Jm2/mol]
+    coef_DA=1.0e-04
+    coef_DB=2.0e-05
+    E_DA=300000.0
+    E_DB=300000.0 
+    Nx= 3 #number of computational grids along the x direction
+    Ny= 3 #number of computational grids along the y direction
+    dx =  2.0e-9 # spacing of computational grids [m]
+    dy =  2.0e-9 # spacing of computational grids [m]
+    Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
+    Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
+    dt = time_increment(dx,Diff_A)
 
+
+    c = np.array([[0.50548814, 0.50715189, 0.50602763],
+                  [0.50544883, 0.50423655, 0.50645894],
+                  [0.50437587, 0.50891773, 0.50963663]])
+    c_t = np.zeros_like(c)
+    
+    expected_output = np.array([[0.50532619, 0.50676076, 0.50666109],
+                                [0.50488973, 0.50528719, 0.50639366],
+                                [0.50563731, 0.5081079,  0.50866898]])
+    update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
+
+    assert np.allclose(c_t, expected_output)
+test_update_order_parameter()
 
 def initial_composition(Nx,
                           Ny,
