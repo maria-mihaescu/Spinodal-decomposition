@@ -17,7 +17,9 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 from Binary_Alloys import interaction_parameter
-from Binary_Alloys import calculate_free_energy
+from Binary_Alloys import free_energy_XB_eta
+from Binary_Alloys import free_energy_XB_T
+from Binary_Alloys import free_energy_eta_T
 from Binary_Alloys import plot_anim_3d, plot_2d
 
 from Cahn_Hillard import diffusion_coeff
@@ -260,7 +262,9 @@ while True:
             omega = interaction_parameter(Z,diff_eV)
             
             #Set parameters for the graphs in all the different spaces
-            X_XB_eta,eta_XB_eta,G_XB_eta,X_XB_T,T_XB_T,G_XB_T,eta_eta_T,T_eta_T,G_eta_T = calculate_free_energy(T0,omega)
+            X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega)
+            X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega)
+            eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega)
              
             #set the 2D figures with those parameters
             fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
@@ -350,13 +354,13 @@ while True:
             interval=float(values['-IN_Interval-'])
             
             #setting the complementary variables that are in function of the set ones
+            
             La=atom_interac_cst(T) # Atom interaction constant [J/mol]
             Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
             Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
             dt = time_increment(dx,Diff_A)
 
-
-        
+            
         elif event == 'Next p4 >':
             window3.hide()
             window4 = make_window4()
@@ -402,7 +406,6 @@ while True:
 
             interval=400
             """
-            
             #Defining a random initial composition
             c,c_t=initial_composition(Nx,Ny,c0)
             #set the figure with the initial data
@@ -502,6 +505,7 @@ while True:
                     f.write("composition at time {}".format(t))
                     f.write('\n')
                     #print the coordinates of the matrix cell and the composition of that cell
+                    #x sets the row and y sets the place on the row
                     f.write('x'+','+'y'+','+'c[x,y]'+ "\n")
                     f.write('\n')
                     for x in range (Nx):
