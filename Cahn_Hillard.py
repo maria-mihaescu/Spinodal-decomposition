@@ -7,7 +7,7 @@ Created on Mon May 29 15:46:02 2023
 
 import numpy as np
 import matplotlib
-
+import matplotlib.pyplot as plt
 
 #Defining the physical constants
 R = 8.314 # gas constant
@@ -59,7 +59,6 @@ def test_atom_interac_cst():
     expected_output = 20000 - 9 * T
     assert atom_interac_cst(T) == expected_output
 
-    print("All test cases passed!")
 
 def diffusion_coeff(coef,
                     E,
@@ -122,7 +121,6 @@ def test_diffusion_coeff():
     expected_output = coef * np.exp(-E / (8.314 * T))
     assert diffusion_coeff(coef, E, T) == expected_output
 
-    print("All test cases passed!")
 
 def time_increment(dx,
                    Diff_A):
@@ -178,7 +176,6 @@ def test_time_increment():
     expected_output = (dx * dx / Diff_A) * 0.1
     assert time_increment(dx, Diff_A) == expected_output
 
-    print("All test cases passed!")
 
 def add_fluctuation(Nx, 
                     Ny, 
@@ -289,6 +286,49 @@ def func_laplacian(center,
     lap=(right-2*center+left)/dx/dx + (up -2*center+down) /dy/dy
     return lap
 
+def test_func_laplacian():
+    """
+    Test function to calculate the laplacian of a quantity at a given matrix point
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    center = 1.0
+    left = 0.5
+    right = 1.5
+    up = 1.2
+    down = 0.8
+    dx = 0.1
+    dy = 0.2
+    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
+    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
+
+    # Test case 2
+    center = 2.0
+    left = 1.5
+    right = 2.5
+    up = 2.2
+    down = 1.8
+    dx = 0.2
+    dy = 0.3
+    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
+    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
+
+    # Test case 3
+    center = 0.5
+    left = 0.3
+    right = 0.7
+    up = 0.4
+    down = 0.2
+    dx = 0.05
+    dy = 0.1
+    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
+    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
+
+
 def chemical_free_energy_density(c,
                        T,
                        La):
@@ -313,6 +353,38 @@ def chemical_free_energy_density(c,
     """
     chem_pot= R*T*(c*np.log(c)+(1-c)*np.log(1-c))+La*c*(1-c)
     return chem_pot
+
+def test_chemical_free_energy_density():
+    """
+    Test function to test the calculation of the free energy density with some example cases
+
+    Returns
+    -------
+    None.
+
+    """
+    import numpy as np
+    # Test case 1
+    c = 0.2
+    T = 673 
+    La = 10
+    R = 8.314  # Gas constant
+    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
+    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
+
+    # Test case 2
+    c = 0.6
+    T = 673 
+    La = 5
+    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
+    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
+
+    # Test case 3
+    c = 0.8
+    T = 673 
+    La = 20
+    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
+    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
 
 
 def plot_chemical_free_energy_density(c0,
@@ -407,6 +479,39 @@ def boundary_conditions(x,
         
     return x,y,x_plus,x_min,y_plus,y_min
 
+def test_boundary_conditions():
+    """
+    test the boundary condition function
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    x = 3
+    y = 5
+    Nx = 10
+    Ny = 8
+    expected_output = (3, 5, 4, 2, 6, 4)
+    assert boundary_conditions(x, y, Nx, Ny) == expected_output
+
+    # Test case 2
+    x = 0
+    y = 0
+    Nx = 7
+    Ny = 7
+    expected_output = (0, 0, 1, 6, 1, 6)
+    assert boundary_conditions(x, y, Nx, Ny) == expected_output
+
+    # Test case 3
+    x = 8
+    y = 2
+    Nx = 9
+    Ny = 5
+    expected_output = (8, 2, 0, 7, 3, 1)
+    assert boundary_conditions(x, y, Nx, Ny) == expected_output
+
 def composition_nearest_neighbours(c,
                                      x,
                                      y,
@@ -418,7 +523,7 @@ def composition_nearest_neighbours(c,
     
     Parameters
     ----------
-    c : TYPE list
+    c : TYPE array
         DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
     x : TYPE int 
         DESCRIPTION. coordinate of the grid cell along the x direction 
@@ -445,7 +550,7 @@ def composition_nearest_neighbours(c,
     """
     #setting the coordinates of the cells to follow the boundary conditions
     x,y,x_plus,x_min,y_plus,y_min = boundary_conditions(x,y,Nx,Ny)
-        
+
     #positions of the order parameters values around the center 
     c_center= c[x,y]
     c_left= c[x_min,y]
@@ -454,6 +559,57 @@ def composition_nearest_neighbours(c,
     c_down= c[x,y_min]
     
     return c_center,c_left,c_right,c_up,c_down
+
+def test_composition_nearest_neighbours():
+    """
+    Test the function that shows the composition of the nearest neighbours of a matrix taking in 
+    account the boundary conditions.
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    #x sets the list we are in 
+    #y sets the place in the list 
+    
+    c = np.array([[0.2, 0.3, 0.4],
+                  [0.5, 0.6, 0.7],
+                  [0.8, 0.9, 1.0]])
+    x = 1
+    y = 1
+    Nx = 3
+    Ny = 3
+    expected_output = (0.6, 0.3, 0.9, 0.7, 0.5)
+    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
+
+    # Test case 2
+    #x sets the list we are in 
+    #y sets the place in the list 
+    c = np.array([[0.1, 0.2, 0.3],
+                  [0.4, 0.5, 0.6],
+                  [0.7, 0.8, 0.9]])
+    x = 2
+    y = 0
+    Nx = 3
+    Ny = 3
+    expected_output = (0.7, 0.4, 0.1, 0.8, 0.9)
+    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
+
+    # Test case 3
+    #x sets the list we are in 
+    #y sets the place in the list 
+    c = np.array([[0.5, 0.2, 0.3],
+                  [0.1, 0.6, 0.7],
+                  [0.8, 0.4, 0.9]])
+    x = 0
+    y = 2
+    Nx = 3
+    Ny = 3
+    expected_output = (0.3, 0.9, 0.7, 0.5, 0.2)
+    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
+
 
 def diffusion_potential_chemical(cc,
                                  T,
@@ -481,6 +637,39 @@ def diffusion_potential_chemical(cc,
     return mu_chem_dir
 
 
+def test_diffusion_potential_chemical():
+    """
+    test function for the function to calculate the chemical component of the diffusion potential
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    cc = 0.5
+    T = 300
+    La = 10
+    
+    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+
+    # Test case 2
+    cc = 0.8
+    T = 500
+    La = 5
+    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+
+    # Test case 3
+    cc = 0.3
+    T = 400
+    La = 8
+    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+    
+
+    
 def total_diffusion_potential(c,
                               x,
                               y,
@@ -497,7 +686,7 @@ def total_diffusion_potential(c,
 
     Parameters
     ----------
-    c : TYPE list
+    c : TYPE array
         DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
     x : TYPE int 
         DESCRIPTION. coordinate of the grid cell along the x direction 
@@ -540,6 +729,25 @@ def total_diffusion_potential(c,
     
     return mu_tot_dir
     
+def test_total_diffusion_potential():
+    # Test case 1
+    c = np.array([[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0]])
+    x = 1
+    y = 1
+    A = 0.1
+    dx = 0.5
+    dy = 0.5
+    T = 300
+    La = 10
+    Nx = 3
+    Ny = 3
+    
+    #using already tested functions
+    c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
+    expected_output = -A*(func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)) + diffusion_potential_chemical(c_center,T,La)
+
+    assert np.isclose(total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny), expected_output)
+
 def update_order_parameter(c,
                            c_t,
                            Nx,
@@ -559,9 +767,9 @@ def update_order_parameter(c,
     
     Parameters
     ----------
-    c : TYPE list
+    c : TYPE array
         DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
-    c_t : TYPE list
+    c_t : TYPE array
         DESCRIPTION. Composition matrix where c_t[x,y] is the composition at point of coordinate (x,y)
                         after a time dt
     Nx : TYPE int
@@ -633,8 +841,39 @@ def update_order_parameter(c,
             #updating the order parameter c following the equation
           
             c_t[x,y] = c[x,y] + dcdt * dt 
-
             
+            return c_t
+
+def test_update_order_parameter():
+    """
+    test function t check if the order parameter is well updated 
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    c = np.array([[0.2, 0.3, 0.4],
+                  [0.5, 0.6, 0.7],
+                  [0.8, 0.9, 1.0]])
+    c_t = np.zeros_like(c)
+    Nx = 3
+    Ny = 3
+    A = 0.1
+    dx = 0.5
+    dy = 0.5
+    T = 300
+    La = 10
+    Diff_A = 1e-5
+    Diff_B = 2e-5
+    dt = 0.001
+    expected_output = np.array([[0.20000007,0.,0.],
+                                [0.,0.,0.],
+                                [0.,0.,0.]]) 
+    c_t=update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
+    
+    assert np.allclose(c_t, expected_output)
 
 
 def initial_composition(Nx,
@@ -672,6 +911,8 @@ def initial_composition(Nx,
     c = add_fluctuation(Nx,Ny,c0)
     
     return c,c_t
+
+
 
 def plot_initial_composition(c):
     """
