@@ -31,6 +31,14 @@ def atom_interac_cst(T):
     return La
 
 def test_atom_interac_cst():
+    """
+    test function to test the atomic interaction constant calculation 
+
+    Returns
+    -------
+    None.
+
+    """
     # Test case 1: T = 300 K
     T = 300
     expected_output = 20000 - 9 * T
@@ -77,6 +85,45 @@ def diffusion_coeff(coef,
     Diff=coef*np.exp(-E/(R*T))
     return Diff
 
+def test_diffusion_coeff():
+    """
+    test function to test the diffusion coefficient calculation
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    coef = 1.5
+    E = 50000
+    T = 300
+    expected_output = coef * np.exp(-E / (8.314 * T))
+    assert diffusion_coeff(coef, E, T) == expected_output
+
+    # Test case 2
+    coef = 2.0
+    E = 60000
+    T = 400
+    expected_output = coef * np.exp(-E / (8.314 * T))
+    assert diffusion_coeff(coef, E, T) == expected_output
+
+    # Test case 3
+    coef = 0.8
+    E = 40000
+    T = 200
+    expected_output = coef * np.exp(-E / (8.314 * T))
+    assert diffusion_coeff(coef, E, T) == expected_output
+
+    # Test case 4
+    coef = 1.2
+    E = 55000
+    T = 500
+    expected_output = coef * np.exp(-E / (8.314 * T))
+    assert diffusion_coeff(coef, E, T) == expected_output
+
+    print("All test cases passed!")
+
 def time_increment(dx,
                    Diff_A):
     """
@@ -97,6 +144,41 @@ def time_increment(dx,
     """
     dt = (dx*dx/Diff_A)*0.1
     return dt
+
+def test_time_increment():
+    """
+    test function to test the calculation of the time increment
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    dx = 0.1
+    Diff_A = 1.5e-9
+    expected_output = (dx * dx / Diff_A) * 0.1
+    assert time_increment(dx, Diff_A) == expected_output
+
+    # Test case 2
+    dx = 0.05
+    Diff_A = 2.0e-9
+    expected_output = (dx * dx / Diff_A) * 0.1
+    assert time_increment(dx, Diff_A) == expected_output
+
+    # Test case 3
+    dx = 0.2
+    Diff_A = 0.8e-9
+    expected_output = (dx * dx / Diff_A) * 0.1
+    assert time_increment(dx, Diff_A) == expected_output
+
+    # Test case 4
+    dx = 0.15
+    Diff_A = 1.2e-9
+    expected_output = (dx * dx / Diff_A) * 0.1
+    assert time_increment(dx, Diff_A) == expected_output
+
+    print("All test cases passed!")
 
 def add_fluctuation(Nx, 
                     Ny, 
@@ -123,6 +205,52 @@ def add_fluctuation(Nx,
     c = c0 + np.random.rand(Nx, Ny)*0.01
     return c
 
+def test_add_fluctuation():
+    """
+    Function to test the added fluctuations function. A random seed is set before calling
+    the add_fluctuation function to ensure deterministic results for each test case.    
+
+    Returns
+    -------
+    None.
+
+    """
+    # Test case 1
+    Nx = 10
+    Ny = 10
+    c0 = 0.5
+    #ensure deterministic results for this test case with a random seed
+    np.random.seed(0)
+    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
+    np.random.seed(0)
+    actual_output = add_fluctuation(Nx, Ny, c0)
+    
+    assert np.allclose(actual_output, expected_output)
+     
+    # Test case 2
+    Nx = 5
+    Ny = 8
+    c0 = 0.3
+    np.random.seed(1)
+    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
+    np.random.seed(1)
+    actual_output = add_fluctuation(Nx, Ny, c0)
+    
+    assert np.allclose(actual_output, expected_output)
+
+    # Test case 3
+    Nx = 12
+    Ny = 6
+    c0 = 0.7
+    np.random.seed(2)
+    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
+    np.random.seed(2)
+    actual_output = add_fluctuation(Nx, Ny, c0)
+    
+    assert np.allclose(actual_output, expected_output)
+
+
+    
 def func_laplacian(center,
                    left,
                    right,
