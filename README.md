@@ -110,7 +110,12 @@ Once all those parameters are entered, the user can enter the parameters used fo
 The last window of the software enables the user to download the results of the simulation in a txt file.
 - The user has to enter the path of the directory in which the file will be saved **(for example : C:\user\directory\ )** (it is important to add the ** \ ** after the name of the directory)
 - Then the user has to enter the name of the file **(for example : testfile)** (without the .txt !)
+- The data will be saved by blocks for the composition matrix c at the different printed times
+- There will be 3 columns, the first on is the x (scanning through rows of the c matrix), the second one is the y (scaning through the elements of the row), and the third one is the value of the concentration c[x,y] at those coordinates. (x (resp.y) is in range Nx (resp. Ny))
 
-
-
+# How to navigate in the Software
+- Press the next and prev buttons to navigate through the pages
+- Enter the asked values in the gaps and press enter value at the end
+- One can enter the values multiple time and press 'enter values' and then 'show plots' to see how the plots change 
+- One can move the 3D plots by clicking on them with the mouse 
 
