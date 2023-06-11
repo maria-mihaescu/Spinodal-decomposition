@@ -377,35 +377,6 @@ while True:
         
         elif event == 'Show initial plots': 
             
-            """
-            #Just for testing so we don't have to enter all those parameters each time
-            #parameters specific to the material entered by the user
-            nsteps=600
-            nprint=60
-            c0 = 0.5 # average composition of B atom [atomic fraction]
-            T = 673 # temperature [K]
-
-            La=13943
-            A= 3.0e-14 # gradient coefficient [Jm2/mol]
-
-            coef_DA=1.0e-04
-            coef_DB=2.0e-05
-            E_DA=300000.0
-            E_DB=300000.0
-
-
-            #Parameters specific to the grid 
-            Nx= 32 #number of computational grids along the x direction
-            Ny= 32 #number of computational grids along the y direction
-            dx =  2.0e-9 # spacing of computational grids [m]
-            dy =  2.0e-9 # spacing of computational grids [m]
-            
-            Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
-            Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
-            dt = time_increment(dx,Diff_A)
-
-            interval=400
-            """
             #Defining a random initial composition
             c,c_t=initial_composition(Nx,Ny,c0)
             #set the figure with the initial data
