@@ -1,6 +1,23 @@
 # Software-and-computing-for-applied-physics
 Project made for the course Software and Computing for applied physics at the University of Bologna (Unibo) in the first year of the physics master degree
 
+# How to download the Software
+1- Make sure that you have all the needed packages in python3: 
+```
+pip install numpy 
+pip install matplotlib
+pip install PySimpleGUI
+```
+2- Clone the repository
+```
+git clone https://github.com/username/repository.git](https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git)
+
+```
+3- Navigate into the project directory
+4- Run the project
+```
+python3 GUI.py
+```
 # Part 1 : Multicomponent homogeneous systems
 This code and theory summary are based on the course Microscopic Kinetics and Thermodynamics from Prof. Pasquini at the University of Bologna. 
 
@@ -76,7 +93,7 @@ In order to implement this equation, a discretization by simple finite differenc
 - And the gradient term of the diffusion potential : $\mu_{i,j}^{t,grad}=-A[\frac{(c_{i+1,j}^t-2c_{i,j}^t+c_{i-1,j}^t)}{(\Delta x)^2} + \frac{(c_{i,j+1}^t-2c_{i,j}^t+c_{i,j-1}^t)}{(\Delta y)^2}]$
 
 The time increment $\Delta t$ in [s] used for each step of the update of the order parameter is calculated from the grid information entered by the user. 
-- The user can set the grid spacing in meter dx dans dy such as for a square matrix we have dx=dy. **(for example dx=dy=$2.0\text{e-}09$ m)**
+- The user can set the grid spacing in meter dx dans dy such as for a square matrix we have dx=dy. **(for example $dx=dy=2.0 \text{e-} 09$ m)**
 - Then the time interval would be $\Delta t= (dx*dx/D_a)*0.1$ in second. 
 
 Once all those parameters are entered, the user can enter the parameters used for the animation.
