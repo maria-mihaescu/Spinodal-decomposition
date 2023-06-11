@@ -75,6 +75,19 @@ In order to implement this equation, a discretization by simple finite differenc
 - Where we have the chemical term of the diffusion potential : $\mu_{i,j}^{t,chem}= RT[\ln(c_{i,j}^t)-\ln(1-c_{i,j}^t)] + L(1-2c_{i,j}^t)$
 - And the gradient term of the diffusion potential : $\mu_{i,j}^{t,grad}=-A[\frac{(c_{i+1,j}^t-2c_{i,j}^t+c_{i-1,j}^t)}{(\Delta x)^2} + \frac{(c_{i,j+1}^t-2c_{i,j}^t+c_{i,j-1}^t)}{(\Delta y)^2}]$
 
+The time increment $\Delta t$ in [s] used for each step of the update of the order parameter is calculated from the grid information entered by the user. 
+- The user can set the grid spacing in meter dx dans dy such as for a square matrix we have dx=dy. **(for example dx=dy=$2.0\text{e-}09$ m)**
+- Then the time interval would be $\Delta t= (dx*dx/D_a)*0.1$ in second. 
+
+Once all those parameters are entered, the user can enter the parameters used for the animation.
+
+- nsteps is the total number of time-steps **(for example nsteps=600)**
+- nprint is a divisor of nsteps for which when n in nsteps is a multiplicator of nprint, the concentration at that time t is stored and ploted. **(for example nprint=60)**
+- interval in [ms] is the time interval between each fram in the animation 
+
+The last window of the software enables the user to download the results of the simulation in a txt file.
+- The user has to enter the path of the directory in which the file will be saved **(for example : C:\user\directory\ )** (it is important to add the ** \ ** after the name of the directory)
+- Then the user has to enter the name of the file **(for example : testfile)** (without the .txt !)
 
 
 
