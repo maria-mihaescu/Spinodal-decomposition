@@ -7,7 +7,7 @@ Created on Mon May 29 15:46:02 2023
 
 import numpy as np
 import matplotlib
-import matplotlib.pyplot as plt
+
 
 #Defining the physical constants
 R = 8.314 # gas constant
