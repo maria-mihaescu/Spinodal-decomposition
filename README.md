@@ -20,13 +20,14 @@ Some parameters are left to be entered by the user in the interface, in order to
 - The temperature in K at which the gibb's free energy will be calculated in the (X_B, eta) space. **(for example 550 K)**
 
 The ranges for the order parameters are set:
-- The composition $X_B = \frac{1}{2}(X_B^\alpha+X_B^\beta)$ with $X_B^\alpha$ , $X_B^\beta$ fraction of sites occupied by B atoms (similarly with the A atom $X_A^\alpha$, $X_A^\beta$) is set to be between **$0 \le X_B \le 1$** moreover we have **$X_A = 1- X_B$** 
+- The composition $X_B = \frac{1}{2}(X_B^\alpha+X_B^\beta)$ with $X_B^\alpha = N_B^\alpha / N$ , $X_B^\beta = = N_B^\beta / N$ fraction of sites occupied by B atoms (similarly with the A atom $X_A^\alpha$, $X_A^\beta$) is set to be between **$0 \le X_B \le 1$** moreover we have **$X_A = 1- X_B$** 
 - The long-range order parameter (LRO) $\eta= \frac{1}{2}(X_B^\alpha-X_B^\beta)$ is set to be between **$-0.5 \le \eta \le 0.5$**, moreover we have that  | $\eta$ | $\le$ min($X_B , X_A $)
 
 Then, the calculations for the enthalpy, entropie and gibbs free energy have been done in the following way :
 - The enthalpy of mixing is $\Delta H_{mix}=N \Omega (X_A X_B +\eta^2) $
 - With $\Omega $ the interaction parameter, if $\Omega>0$ there is a miscibility gap and if $\Omega<0$ there is ordering. $\Omega=0$ corresponds to the ideal solution.
-- The entropy of mixing was calculated with Bragg-Williams-Gorsky configurational entropy : $\Delta S_{mix}=k_B \ln[\frac{(N/2)!}{N_A^\alpha !N_B^\alpha !} \cdot \frac{(N/2)!}{N_A^\beta !N_B^\beta !}]$
-- 
+- The entropy of mixing was calculated with Bragg-Williams-Gorsky configurational entropy : $\Delta S_{mix}=k_B \ln[\frac{(N/2)!}{N_A^\alpha !N_B^\alpha !} \cdot \frac{(N/2)!}{N_A^\beta !N_B^\beta !}]$ which can be writen as $\Delta S_{mix}= \frac{-k_B N}{2}(X_A^\alpha \ln(X_A^\alpha)+X_B^\alpha \ln(X_B^\alpha)+X_A^\beta \ln(X_A^\beta)+ X_B^\beta \ln(X_B^\beta))$
+- Finally Gibbs free energy can be written as $\Delta G_{mix} = \Delta H_{mix} - T\Delta S_{mix}$
+
 
 
