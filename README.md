@@ -1,19 +1,24 @@
 # Software-and-computing-for-applied-physics
 Project made for the course Software and Computing for applied physics at the University of Bologna (Unibo) in the first year of the physics master degree
 
-# How to download the Software
+# How to download and run the Software
 1- Make sure that you have all the needed packages in python3: 
 ```
 pip install numpy 
 pip install matplotlib
 pip install PySimpleGUI
 ```
-2- Clone the repository
+2- In the terminal or command prompt clone the repository
 ```
 git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
 
 ```
 3- Navigate into the project directory
+
+```
+cd repository 
+
+```
 4- Run the project
 ```
 python3 GUI.py
