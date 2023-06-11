@@ -29,5 +29,12 @@ Then, the calculations for the enthalpy, entropie and gibbs free energy have bee
 - The entropy of mixing was calculated with Bragg-Williams-Gorsky configurational entropy : $\Delta S_{mix}=k_B \ln[\frac{(N/2)!}{N_A^\alpha !N_B^\alpha !} \cdot \frac{(N/2)!}{N_A^\beta !N_B^\beta !}]$ which can be writen as $\Delta S_{mix}= \frac{-k_B N}{2}(X_A^\alpha \ln(X_A^\alpha)+X_B^\alpha \ln(X_B^\alpha)+X_A^\beta \ln(X_A^\beta)+ X_B^\beta \ln(X_B^\beta))$
 - Finally Gibbs free energy can be written as $\Delta G_{mix} = \Delta H_{mix} - T\Delta S_{mix}$
 
+# Part 2 : Spinodal decomposition : Cahn Hilliard equation
+The goal of the second part of the software is to solve Cahn Hilliard equation in order to simulate the spinodal decomposition in a virtual A-B alloy. This simulation is a two-phase field simulation. 
+
+The summary of the theory is based on the course Microscopic Kinetics and Thermodynamics from Prof. Pasquini at the University of Bologna. Moreover, the code was inspired by the model that has been developed by the Yamanaka research group of Tokyo University of Agriculture and Technology in August 2019 (see https://web.tuat.ac.jp/~yamanaka/pcoms2019/Cahn-Hilliard-2d.html). To have more informations about the model one can see the article _J. W. Cahn and J. E. Hilliard, "Free Energy of a Non-Uniform System in Interfacial Energy" Journal of Chemical Physics, 28 (1958), pp. 258-267_ as reference.
+
+The Cahn Hilliard equation governs the kinetics of concerved order parameters such as $c_B$ which is the composition of B atoms in a region. 
+
 
 
