@@ -52,8 +52,18 @@ Before solving Cahn Hilliards equation to get the concentration in function of t
 
 - Moreover, the chemical free energy density curve and the place of the average chemical composition $c_0$ will be plotted near this initial distribution.
 
-The time evolution of this initial state follows the Cahn Hilliard equation. 
-- 
+The time evolution of the concerved order parameter c follows the Cahn Hilliard equation : $\frac{\partial c}{\partial t} =\nabla \cdot (M_c \nabla \mu)$. 
+- Where $\mu = \frac{\delta G}{\delta c}$ is the diffusion potential of B atoms. Moreover, as the functional dericative of G is given by the Euler-Lagrange equation we have $\frac{\delta G}{\delta c} = \frac{\partial g}{\partial c} - \nabla \cdot \frac{\partial g}{\partial (\nabla c)}$
+
+- $M_c$ is the diffusion mobility of B atoms which is given by : $M_c=[\frac{D_A}{RT}c + \frac{D_B}{RT}(1-c)]$. Where $D_A$ and $D_B$ are the diffusion coefficients of atoms A and B in [m2/s]. They are calculated by taking in account a coefficient for the diffusion $\text{coeff}_A$ and $\text{coeff}_B$ that can be entered by the user. **(for example  $\text{coeff}_A = 1.0\text{e-}04$ and $\text{coeff}_B = 2.0\text{e-}05$)** And also by considering and activation energy $E_A$ and $E_B$ in [J] that can also be entered by the user. **(for example $E_A = E_B = 3.0\text{e}05)**
+
+In order to implement this equation, a discretization by simple finite difference method has been performed. The 1st-order Euler method was used for time-integration and the 2nd-order central finite difference method was used for the spatial derivatives (see work of the Yamanaka research group).
+
+- The discretized time evolution equation can then be written by : $c_{i,j}^{t+\Delta t}=c_{i,j}^t + M_c \cdot A_{i,j} + B_{i,j}\cdot C_{i,j}$
+- The concentration of B atom at time t and at the computational grid point  (i,j) is $c_{i,j}^{t}$
+- $M_c = \frac{D_A}{RT}[c_{i,j}^t+\frac{D_B}{D_A}(1-c_{i,j}^t)]c_{i,j}^t(1-c_{i,j}^t)$ is the discretized diffusion mobility. 
+- $A_{i,j}=\frac{\partial^2 \mu}{\partial x^2} + \frac{\partial^2 \mu}{\partial y^2}=\frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta x)^2} + \frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta y)^2} $
+
 
 
 
