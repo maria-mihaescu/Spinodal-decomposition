@@ -63,12 +63,17 @@ In order to implement this equation, a discretization by simple finite differenc
 - The concentration of B atom at time t and at the computational grid point  (i,j) is $c_{i,j}^{t}$
 
 - $M_c = \frac{D_A}{RT}[c_{i,j}^t+\frac{D_B}{D_A}(1-c_{i,j}^t)]c_{i,j}^t(1-c_{i,j}^t)$ is the discretized diffusion mobility. 
-- $A_{i,j}=\frac{\partial^2 \mu}{\partial x^2} + \frac{\partial^2 \mu}{\partial y^2}=\frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta x)^2} + \frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta y)^2} $
+
+- $A_{i,j}=\frac{\partial^2 \mu}{\partial x^2} + \frac{\partial^2 \mu}{\partial y^2}=\frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta x)^2} + \frac{\mu_{i+1,j}^t-2\mu_{i,j}^t+\mu_{i-1,j}^t}{(\Delta y)^2}$
+
 - $B_{i,j}=\frac{\partial M_c}{\partial c}=\frac{D_A}{RT} [(1-\frac{D_B}{D_A})c_{i,j}^t(1-c_{i,j}^t)+(c_{i,j}^t+\frac{D_B}{D_A}(1-c_{i,j}^t))(1-2c_{i,j}^t)]$ 
-- $C_{i,j}=\frac{\partial c}{\partial x)\frac{\partial \mu}{\partial x) + \frac{\partial c}{\partial y)\frac{\partial \mu}{\partial y) = \frac{(c_{i+1,j}^t-c_{i-1,j}^t)(\mu_{i+1,j}^t-\mu_{i-1,j}^t)}{4(\Delta x)^2} + \frac{(c_{i,j+1}^t-c_{i,j-1}^t)(\mu_{i,j+1}^t-\mu_{i,j-1}^t)}{4(\Delta y)^2} $
+
+- $C_{i,j}=\frac{\partial c}{\partial x}\frac{\partial \mu}{\partial x} + \frac{\partial c}{\partial y}\frac{\partial \mu}{\partial y} = \frac{(c_{i+1,j}^t-c_{i-1,j}^t)(\mu_{i+1,j}^t-\mu_{i-1,j}^t)}{4(\Delta x)^2} + \frac{(c_{i,j+1}^t-c_{i,j-1}^t)(\mu_{i,j+1}^t-\mu_{i,j-1}^t)}{4(\Delta y)^2}$
+
 - As we set $\mu_{i,j}^t=\mu_{i,j}^{t,chem}+\mu_{i,j}^{t,chem}$ the diffusion potential of B atom at time t on the computational grid point (i,j).
+
 - Where we have the chemical term of the diffusion potential : $\mu_{i,j}^{t,chem}= RT[\ln(c_{i,j}^t)-\ln(1-c_{i,j}^t)] + L(1-2c_{i,j}^t)$
-- And the gradient term of the diffusion potential : $$\mu_{i,j}^{t,grad}=-A[\frac{(c_{i+1,j}^t-2c_{i,j}^t+c_{i-1,j}^t)}{(\Delta x)^2} + \frac{(c_{i,j+1}^t-2c_{i,j}^t+c_{i,j-1}^t)}{(\Delta y)^2}]$
+- And the gradient term of the diffusion potential : $\mu_{i,j}^{t,grad}=-A[\frac{(c_{i+1,j}^t-2c_{i,j}^t+c_{i-1,j}^t)}{(\Delta x)^2} + \frac{(c_{i,j+1}^t-2c_{i,j}^t+c_{i,j-1}^t)}{(\Delta y)^2}]$
 
 
 
