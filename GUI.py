@@ -114,9 +114,9 @@ def make_window2():
     
     layout = [[sg.Text('3D plots of the free energy in the different spaces')],
               [sg.Button('Show 3D plots')],
+              [sg.Button('< Prev p1'), sg.Button('Next p3 >')],
               [sg.Canvas(key="-3D_(eta,X_B)-"),sg.Canvas(key="-3D_(X_B,T)-")],
-              [sg.Canvas(key="-3D_(eta,T)-")],
-               [sg.Button('< Prev p1'), sg.Button('Next p3 >')]]
+              [sg.Canvas(key="-3D_(eta,T)-")]]
 
     return sg.Window('3D plots of the free energy in the different spaces', layout,location=(0, 0),
     finalize=True,
