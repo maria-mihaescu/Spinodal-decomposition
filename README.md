@@ -46,9 +46,14 @@ The regular solution approximation is used to calculate the chemical free energy
 
 Before solving Cahn Hilliards equation to get the concentration in function of time, a random initial state is generated.
 
-- The initial concentration of B atome $c_0$ is set by the user and must be between 0 and 1. **(for example $c_0=0.5$, which means that there are as many A atoms as B atoms at t=0s)**
+- The average chemical composition of B atoms $c_0$ is set by the user and must be between 0 and 1. **(for example $c_0=0.5$, which means that there are as many A atoms as B atoms)**
 
 - The initial distribution of c is determines as $c_0$ + uniform random number. C is then a matrix of size $N_x*N_y$. The user can set the size of the two phase field matrix. in order for it to make physical sens we set $N_x = N_y$. **(for example Nx=Ny=20)** 
+
+- Moreover, the chemical free energy density curve and the place of the average chemical composition $c_0$ will be plotted near this initial distribution.
+
+The time evolution of this initial state follows the Cahn Hilliard equation. 
+- 
 
 
 
