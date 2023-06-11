@@ -26,10 +26,10 @@ python3 GUI.py
 # Part 1 : Multicomponent homogeneous systems
 This code and theory summary are based on the course Microscopic Kinetics and Thermodynamics from Prof. Pasquini at the University of Bologna. 
 
-The goal of this first part of the software is to offer a visualization of the atomistic model for binary systems in an A-B solid solution. In the quasi-chemical atomistic model. The assumptions of the model are :
+The goal of this first part of the software is to offer a visualization of the atomistic model for binary systems in an A-B solid solution. In the quasi-chemical atomistic model the assumptions are :
 
 - There are two types of atoms, type A and B, with number of atoms $N_A$ and $N_B$ with $N=N_A + N_B$ the total number of atoms (and sites as the vacancies are not considered). We consider N as Avogadro’s number so that all quantities refer to one mole.
-- Each bond has a defined energy, the like bonds are A-A and B-B bonds and the unlike bonds are A_B.
+- Each bond has a defined energy, the like bonds are A-A and B-B bonds and the unlike bonds are A-B.
 - There are two equivalent sites in the lattice $\alpha$ and $\beta$
 - Only nearest-neighbours interactions are taken into account
 - Only the configurational Bragg-Williams-Gorsky entropy is considered
@@ -55,7 +55,7 @@ Then, the calculations for the enthalpy, entropie and gibbs free energy have bee
 
 The goal of the second part of the software is to solve Cahn Hilliard equation in order to simulate the spinodal decomposition in a virtual A-B alloy. This simulation is a two-phase field simulation where the field variables are assumed to be continuous across the interfacial regions. 
 
-The summary of the theory is based on the course Microscopic Kinetics and Thermodynamics from Prof. Pasquini at the University of Bologna. Moreover, the code was inspired by the model that has been developed by the Yamanaka research group of Tokyo University of Agriculture and Technology in August 2019 (see https://web.tuat.ac.jp/~yamanaka/pcoms2019/Cahn-Hilliard-2d.html). To have more informations about the model one can see the article _J. W. Cahn and J. E. Hilliard, "Free Energy of a Non-Uniform System in Interfacial Energy" Journal of Chemical Physics, 28 (1958), pp. 258-267_ as reference.
+The code was inspired by the model that has been developed by the Yamanaka research group of Tokyo University of Agriculture and Technology in August 2019 (see https://web.tuat.ac.jp/~yamanaka/pcoms2019/Cahn-Hilliard-2d.html). To have more informations about the model one can see the article _J. W. Cahn and J. E. Hilliard, "Free Energy of a Non-Uniform System in Interfacial Energy" Journal of Chemical Physics, 28 (1958), pp. 258-267_ as reference.
 
 The Cahn Hilliard equation governs the kinetics of concerved order parameters such as $c_B$ which is the composition of B atoms in a region, which is the concentration of B atom in atomic fraction. As in the first part some parameters are left to the user.
 
