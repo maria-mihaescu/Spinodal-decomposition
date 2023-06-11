@@ -10,7 +10,7 @@ pip install PySimpleGUI
 ```
 2- Clone the repository
 ```
-git clone https://github.com/username/repository.git](https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git)
+git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
 
 ```
 3- Navigate into the project directory
