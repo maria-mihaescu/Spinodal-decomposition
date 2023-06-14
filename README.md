@@ -2,17 +2,21 @@
 Project made for the course Software and Computing for applied physics at the University of Bologna (Unibo) in the first year of the physics master degree
 
 # How to download and run the Software
-1- Make sure that you have all the needed packages in python3: 
+
+## For Linux users
+
+1- In the terminal or command prompt clone the repository
+```
+git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
+
+```
+2- Make sure that you have all the needed packages in python3: 
 ```
 pip install numpy 
 pip install matplotlib
 pip install PySimpleGUI
 ```
-2- In the terminal or command prompt clone the repository
-```
-git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
 
-```
 3- Navigate into the project directory
 
 ```
@@ -23,6 +27,22 @@ cd repository
 ```
 python3 GUI.py
 ```
+## For Anaconda users
+
+1- In the git bash clone the repository
+```
+git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
+
+```
+2- In the Anaconda Prompt, make sure that you have all the needed packages in python3: 
+```
+conda install numpy 
+conda install matplotlib
+conda install -c conda-forge pysimplegui
+```
+3- Run the GUI.py file with Spyder for example 
+
+
 # Part 1 : Multicomponent homogeneous systems
 This code and theory summary are based on the course Microscopic Kinetics and Thermodynamics from Prof. Pasquini at the University of Bologna. 
 
