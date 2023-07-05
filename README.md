@@ -18,6 +18,7 @@ git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-p
 pip install numpy 
 pip install matplotlib
 pip install PySimpleGUI
+pip install h5py
 ```
 
 3- Navigate into the project directory
@@ -42,6 +43,7 @@ git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-p
 conda install numpy 
 conda install matplotlib
 conda install -c conda-forge pysimplegui
+conda install h5py
 ```
 3- Run the GUI.py file with Spyder for example 
 
@@ -131,11 +133,10 @@ Once all those parameters are entered, the user can enter the parameters used fo
 - nprint is a divisor of nsteps for which when n in nsteps is a multiplicator of nprint, the concentration at that time t is stored and ploted. **(for example nprint=60)**
 - interval in [ms] is the time interval between each fram in the animation 
 
-The last window of the software enables the user to download the results of the simulation in a txt file.
+The last window of the software enables the user to download the results of the simulation in a HDF5 file.
 - The user has to enter the path of the directory in which the file will be saved **(for example : C:\user\directory\ )** (it is important to add the ** \ ** after the name of the directory)
-- Then the user has to enter the name of the file **(for example : testfile)** (without the .txt !)
+- Then the user has to enter the name of the file **(for example : testfile)** (without the .h5 !)
 - The data will be saved by blocks for the composition matrix c at the different printed times
-- There will be 3 columns, the first on is the x (scanning through rows of the c matrix), the second one is the y (scaning through the elements of the row), and the third one is the value of the concentration c[x,y] at those coordinates. (x (resp.y) is in range Nx (resp. Ny))
 
 # How to navigate in the Software
 
