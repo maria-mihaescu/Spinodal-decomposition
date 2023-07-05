@@ -10,13 +10,10 @@ from Binary_Alloys import free_energy_XB_T
 from Binary_Alloys import free_energy_eta_T
 from Binary_Alloys import plot_anim_3d, plot_2d
 
-from Cahn_Hillard import diffusion_coeff
-from Cahn_Hillard import time_increment
 from Cahn_Hillard import plot_chemical_free_energy_density
 from Cahn_Hillard import initial_composition
 from Cahn_Hillard import plot_initial_composition
-from Cahn_Hillard import update_order_parameter
-from Cahn_Hillard import atom_interac_cst
+
 
 # Set-up of the first part on the Binary Allow
 
