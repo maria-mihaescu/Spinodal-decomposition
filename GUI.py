@@ -16,12 +16,6 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation
 
-from Binary_Alloys import interaction_parameter
-from Binary_Alloys import free_energy_XB_eta
-from Binary_Alloys import free_energy_XB_T
-from Binary_Alloys import free_energy_eta_T
-from Binary_Alloys import plot_anim_3d, plot_2d
-
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
 from Cahn_Hillard import plot_chemical_free_energy_density
@@ -30,6 +24,8 @@ from Cahn_Hillard import plot_initial_composition
 from Cahn_Hillard import update_order_parameter
 from Cahn_Hillard import atom_interac_cst
 
+from GUI_Setup import setup_binary_alloy_fig2D
+from GUI_Setup import setup_binary_alloy_fig3D
 
 def draw_figure(canvas,
                 figure):
@@ -258,18 +254,9 @@ while True:
             X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
             T=np.arange(50,1000,50)      # Temperature space
             eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
-            
-            omega = interaction_parameter(Z,diff_eV)
-            
-            #Set parameters for the graphs in all the different spaces
-            X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega)
-            X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega)
-            eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega)
-             
-            #set the 2D figures with those parameters
-            fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
-            fig1=plot_2d(eta,G_eta_T,'eta','G vs eta for different T, X_B=0.5')
 
+            fig0, fig1= setup_binary_alloy_fig2D(Z,diff_eV,T0,X_B,eta)
+            
             #Delete the figures if they are already present 
             if figure_canvas_agg0 is not None:
                 delete_fig_agg(figure_canvas_agg0)
@@ -291,21 +278,8 @@ while True:
             break
         
         elif event == 'Show 3D plots': 
-            #Free energy surface in the (X_B,eta) space for temperature T=T0
-            fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
-                         'X_B','eta','G [ J/mole ]'
-                         ,'G vs X_B and eta')
             
-            # Free energy surface in (X_B,T) space for order parameter eta=0 
-            fig_3d_1=plot_anim_3d(X_XB_T,T_XB_T,G_XB_T,
-                         'X_B','T [K]','G [ J/mole ]'
-                         ,'G vs X_B and T, eta=0')
-            
-            #Free energy surface in (eta,T) space for equimolar composition (X_B=0.5)
-        
-            fig_3d_2=plot_anim_3d(eta_eta_T,T_eta_T,G_eta_T,
-                         'eta','T [K]','G [ J/mole ]'
-                         ,'G vs eta and T, X_B=0.5')
+            fig_3d_0, fig_3d_1, fig_3d_2= setup_binary_alloy_fig3D(Z,diff_eV,T0,X_B,eta)
             
             #Delete the figures if they are already present 
             if figure_canvas_agg_3d0 is not None:
