@@ -383,6 +383,9 @@ while True:
             fig = matplotlib.figure.Figure()
             ax = fig.add_subplot()
             
+            #Defining a random initial composition
+            c,c_t=initial_composition(Nx,Ny,c0)
+            
             #initialize the parameters and the lists
             snapshots=[]
             c_init=c
