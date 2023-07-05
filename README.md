@@ -1,5 +1,8 @@
-# Software-and-computing-for-applied-physics
-Project made for the course Software and Computing for applied physics at the University of Bologna (Unibo) in the first year of the physics master degree
+# Spinodal decomposition simulation on a multicomponent homogeneous system
+
+This software contains a guide user interface, in which, one can in a first part, have a visualization of the atomistic model for binary systems in an A-B alloy, in the quasi-chemical atomistic model. This will allow the user to have a feel of the changes of gibbs free energy in function temperature and order parameters for an A-B solid solution. 
+
+In a second part one can solve the Cahn Hilliard equation in order to simulate the spinodal decomposition in a virtual A-B alloy. This simulation is a two-phase field simulation where the field variables are assumed to be continuous across the interfacial regions. One can see a visual animation of the simulation and download the simulation result. 
 
 # How to download and run the Software
 
