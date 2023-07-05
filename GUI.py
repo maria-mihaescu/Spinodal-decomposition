@@ -6,6 +6,7 @@ Created on Thu Jun  1 18:51:10 2023
 """
 
 import numpy as np
+import h5py
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
@@ -18,9 +19,7 @@ import matplotlib.animation as animation
 
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
-from Cahn_Hillard import plot_chemical_free_energy_density
 from Cahn_Hillard import initial_composition
-from Cahn_Hillard import plot_initial_composition
 from Cahn_Hillard import update_order_parameter
 from Cahn_Hillard import atom_interac_cst
 
@@ -208,9 +207,9 @@ def make_window6():
     """
     
     layout = [[sg.Text('Save the spinodal decomposition data')],
-              [sg.Text('Path of the directory for the txt file of the composition data:'),sg.InputText(key='-IN_txt_path-')],
-              [sg.Text('Name of the txt file:'),sg.InputText(key='-IN_txt_file-')],
-              [sg.Button('Save txt')],
+              [sg.Text('Path of the directory for the HDF5 file of the composition data:'),sg.InputText(key='-IN_HDF5_path-')],
+              [sg.Text('Name of the HDF5 file:'),sg.InputText(key='-IN_HDF5_file-')],
+              [sg.Button('Save in HDF5')],
                [sg.Button('< Prev p5'), sg.Button('Exit')]]
 
     return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
@@ -436,13 +435,19 @@ while True:
         if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
             break
         
-        elif event =='Save txt':
+        elif event =='Save in HDF5':
+            
             #set the values for the path and title
-            path_txt=values['-IN_txt_path-']
-            title_txt=values['-IN_txt_file-']
+            path_h5=values['-IN_HDF5_path-']
+            title_h5=values['-IN_HDF5_file-']
             
-            path_to_file= path_txt + title_txt + '.txt'
+            path_to_file= path_h5 + title_h5 + '.h5'
             
+            with h5py.File(path_to_file, 'w') as file:
+                for i, matrix in enumerate(C_list):
+                    file.create_dataset(f'matrix_{i}', data=matrix)
+                    
+            """       
             #create a new txt file on the desired path
             with open(path_to_file, 'w') as f:
                 #For each composition matrix and each time
@@ -457,7 +462,7 @@ while True:
                         for y in range (Ny):
                             f.write(str(x)+','+str(y)+','+str(c[x,y])+ "\n")
                 f.close()
-                    
+             """
             
         elif event =='< Prev p5':
             window6.close()
