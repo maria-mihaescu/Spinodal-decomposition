@@ -26,6 +26,7 @@ from Cahn_Hillard import atom_interac_cst
 
 from GUI_Setup import setup_binary_alloy_fig2D
 from GUI_Setup import setup_binary_alloy_fig3D
+from GUI_Setup import setup_initial_composition_plots
 
 def draw_figure(canvas,
                 figure):
@@ -351,11 +352,7 @@ while True:
         
         elif event == 'Show initial plots': 
             
-            #Defining a random initial composition
-            c,c_t=initial_composition(Nx,Ny,c0)
-            #set the figure with the initial data
-            fig_chem_pot=plot_chemical_free_energy_density(c0,La)
-            fig_init_c=plot_initial_composition(c)
+            fig_chem_pot,fig_init_c = setup_initial_composition_plots(Nx,Ny,c0,La)
             
             #Delete the figures if they are already present 
             if figure_canvas_agg_chem_pot is not None:
