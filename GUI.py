@@ -27,6 +27,34 @@ from GUI_Setup import setup_binary_alloy_fig2D
 from GUI_Setup import setup_binary_alloy_fig3D
 from GUI_Setup import setup_initial_composition_plots
 
+def load_configuration(file_path):
+    
+    """
+    Function that loads the configuration file from a specific 
+    path given by the user 
+    
+
+    Parameters
+    ----------
+    file_path : TYPE str
+        DESCRIPTION. path of the configuration file of the
+        like 'C:\user\directory\filename.txt'
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    try:
+        with open(file_path, 'r') as f:
+            config = f.read()
+            # Process the configuration data as needed
+            print('Configuration loaded successfully:', config)
+    
+    except FileNotFoundError:
+        print('File not found:', file_path)
+        
 def draw_figure(canvas,
                 figure):
     """
