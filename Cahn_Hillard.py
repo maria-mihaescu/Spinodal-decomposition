@@ -140,7 +140,8 @@ def time_increment(dx,
         DESCRIPTION.time increment [s]
 
     """
-    dt = (dx*dx/Diff_A)*0.1
+    conversion_factor=0.1 #converts dt in seconds
+    dt = (dx*dx/Diff_A)*conversion_factor
     return dt
 
 def test_time_increment():
@@ -179,7 +180,8 @@ def test_time_increment():
 
 def add_fluctuation(Nx, 
                     Ny, 
-                    c0): 
+                    c0,
+                    seed=None): 
     """
     function that adds random fluctuation of the composition in a computational grid of size
     Nx*Ny, starting from an initial composition of B atoms of c0 in [atomic fraction]
@@ -192,6 +194,9 @@ def add_fluctuation(Nx,
         DESCRIPTION. number of computational grids along the y direction
     c0 : TYPE float
         DESCRIPTION. average composition of B atom [atomic fraction]
+    seed : TYPE int or None, optional
+        DESCRIPTION. random seed for reproducibility
+
 
     Returns
     -------
@@ -199,7 +204,13 @@ def add_fluctuation(Nx,
         DESCRIPTION. Composition matrix where c[x,y] is the composition at point of coordinate (x,y)
 
     """
-    c = c0 + np.random.rand(Nx, Ny)*0.01
+    if seed is not None:
+        np.random.seed(seed)
+        
+    conversion_factor=0.01 #gets the composition in atomic fraction
+    
+    c = c0 + np.random.rand(Nx, Ny)*conversion_factor
+    
     return c
 
 def test_add_fluctuation():
