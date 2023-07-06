@@ -68,25 +68,25 @@ def make_window1():
         [sg.Text('Number of nearest neighbours Z'), sg.InputText(key='-IN_Z-',default_text=Z_str)],
         [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-',default_text=diff_eV_str)],
         [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-',default_text=T0_str)],
-        [sg.Text('Composition range, chemical order parameter range X :')]
+        [sg.Text('Composition range, chemical order parameter range X :')],
         [sg.Text('Minimum of the composition range, X_B_min :'), sg.InputText(key='-IN_X_B_min-',default_text=X_B_min_str)],
         [sg.Text('Maximum of the composition range, X_B_max :'), sg.InputText(key='-IN_X_B_max-',default_text=X_B_max_str)],
         [sg.Text('Step of the composition range, X_B_step :'), sg.InputText(key='-IN_X_B_step-',default_text=X_B_step_str)],
-        [sg.Text('Temperature range T:')]
+        [sg.Text('Temperature range T:')],
         [sg.Text('Minimum of the temperature range, T_min :'), sg.InputText(key='-IN_T_min-',default_text=T_min_str)],
         [sg.Text('Maximum of the temperature range, T_max :'), sg.InputText(key='-IN_T_max-',default_text=T_max_str)],
         [sg.Text('Step of the temperature range, X_B_step :'), sg.InputText(key='-IN_T_step-',default_text=T_step_str)],
-        [sg.Text('Structural order parameter range eta :')]
+        [sg.Text('Structural order parameter range eta :')],
         [sg.Text('Minimum of the order parameter range, eta_min :'), sg.InputText(key='-IN_eta_min-',default_text=eta_min_str)],
         [sg.Text('Maximum of the order parameter range, eta_max :'), sg.InputText(key='-IN_eta_max-',default_text=eta_max_str)],
         [sg.Text('Step of the order parameter range, eta_step :'), sg.InputText(key='-IN_eta_step-',default_text=eta_step_str)],
    
-        [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
-        [sg.Button('< Prev p0'),sg.Button('Show Plots'),sg.Button('Next p2 >')],
+        
+        [sg.Button('< Prev p0'),sg.Button('Save values'),sg.Button('Next p2 >')],
     ]
 
     return sg.Window(
-        "Free energy in function of composition for different T",
+        "Binary Alloy simulation parameters",
         layout,
         location=(0, 0),
         finalize=True,
@@ -103,9 +103,28 @@ def make_window2():
 
     """
     
+    layout = [ [sg.Text("Free energy of a binary alloy in the Quasi-chemical atomistic model")],
+               [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
+               [sg.Button('< Prev p1'),sg.Button('Show 2D plots'),sg.Button('Next p3 >')]]
+
+    return sg.Window("Free energy in function of composition for different T", layout,location=(0, 0),
+    finalize=True,
+    element_justification="center")
+
+def make_window3():
+    """
+    Make the third window of the GUI
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    
     layout = [[sg.Text('3D plots of the free energy in the different spaces')],
               [sg.Button('Show 3D plots')],
-              [sg.Button('< Prev p1'), sg.Button('Next p3 >')],
+              [sg.Button('< Prev p2'), sg.Button('Next p4 >')],
               [sg.Canvas(key="-3D_(eta,X_B)-"),sg.Canvas(key="-3D_(X_B,T)-")],
               [sg.Canvas(key="-3D_(eta,T)-")]]
 
@@ -114,9 +133,9 @@ def make_window2():
     element_justification="center")
 
 
-def make_window3():
+def make_window4():
     """
-    Make the third window of the GUI
+    Make the fourth window of the GUI
 
     Returns
     -------
@@ -149,28 +168,9 @@ def make_window3():
               [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText(key='-IN_Nprint-',default_text=nprint_str)],
               [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText(key='-IN_Interval-',default_text=interval_str)],
               
-              [sg.Button('enter values'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
+              [sg.Button('< Prev p3'), sg.Button('enter values'), sg.Button('Next p5 >')]]
 
     return sg.Window('Parameters for the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
-    finalize=True, element_justification="center")
-
-def make_window4():
-    """
-    Make the fourth window of the GUI
-
-    Returns
-    -------
-    TYPE
-        DESCRIPTION.
-
-    """
-    
-    layout = [[sg.Text('Initial states:')],
-              [sg.Button('Show initial plots')],
-              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_composition-")],
-               [sg.Button('< Prev p3'), sg.Button('Next p5 >')]]
-
-    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
 def make_window5():
@@ -184,9 +184,9 @@ def make_window5():
 
     """
     
-    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
-              [sg.Button('Show animation')],
-              [sg.Canvas(key="-anim-")],
+    layout = [[sg.Text('Initial states:')],
+              [sg.Button('Show initial plots')],
+              [sg.Canvas(key="-c0_chemical_potential-"),sg.Canvas(key="-initial_composition-")],
                [sg.Button('< Prev p4'), sg.Button('Next p6 >')]]
 
     return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
@@ -194,7 +194,26 @@ def make_window5():
 
 def make_window6():
     """
-    Make the 6th window of the GUI
+    Make the sixth window of the GUI
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    
+    layout = [[sg.Text('Animation of the spinodal decomposition solving Cahn Hilliards equations in 2D:')],
+              [sg.Button('Show animation')],
+              [sg.Canvas(key="-anim-")],
+               [sg.Button('< Prev p5'), sg.Button('Next p7 >')]]
+
+    return sg.Window('Initial states of the spinodal decomposition solving Cahn Hilliards equations', layout, location=(0, 0),
+    finalize=True, element_justification="center")
+
+def make_window7():
+    """
+    Make the 7th window of the GUI
 
     Returns
     -------
@@ -207,14 +226,14 @@ def make_window6():
               [sg.Text('Path of the directory for the HDF5 file of the composition data:'),sg.InputText(key='-IN_HDF5_path-')],
               [sg.Text('Name of the HDF5 file:'),sg.InputText(key='-IN_HDF5_file-')],
               [sg.Button('Save in HDF5')],
-               [sg.Button('< Prev p5'), sg.Button('Exit')]]
+               [sg.Button('< Prev p6'), sg.Button('Exit')]]
 
     return sg.Window('Save the spinodal decomposition data', layout, location=(0, 0),
     finalize=True, element_justification="center")
 
 
 #Make the first window and set the others windows to none 
-window0, window1, window2, window3, window4, window5, window6 = make_window0(), None, None, None, None, None, None
+window0, window1, window2, window3, window4, window5, window6, window7 = make_window0(), None, None, None, None, None, None, None
 
 #Set the figure drawings to None in order to be able to update them each time 
 figure_canvas_agg0 = None
@@ -286,7 +305,7 @@ while True:
         if event== sg.WIN_CLOSED : # if user closes window close the programm
             break
         
-        elif event == 'Show Plots': #if user goes on the button show plots
+        elif event == 'Save values': #if user goes on the button save the entered values
             
             #set values to the entered user values
             Z=(int(values['-IN_Z-']))
@@ -306,18 +325,6 @@ while True:
             #ranges for composition, temperature and order parameter
             X_B,T,eta=ranges(X_B_min,X_B_max,X_B_step,T_min,T_max,T_step,eta_min,eta_max,eta_step)
 
-            fig0, fig1= setup_binary_alloy_fig2D(Z,diff_eV,T0,X_B,eta)
-            
-            #Delete the figures if they are already present 
-            if figure_canvas_agg0 is not None:
-                delete_fig_agg(figure_canvas_agg0)
-            if figure_canvas_agg1 is not None:
-                delete_fig_agg(figure_canvas_agg1)
-                
-            #Draw the computed figures on the empty canvas
-            figure_canvas_agg0 = draw_figure(window["-FIG0-"].TKCanvas, fig0) 
-            figure_canvas_agg1 = draw_figure(window["-FIG1-"].TKCanvas, fig1)
-
 
         elif event == 'Next p2 >':
             window1.hide()
@@ -333,9 +340,36 @@ while True:
         if event == sg.WIN_CLOSED : # if user closes the window
             break
         
+        elif event == 'Next p3 >':
+            window2.hide()
+            window3 = make_window3()
+
+        elif event =='< Prev p1':
+            window2.close()
+            window1.un_hide()
+        
+        if event == 'Show 2D plots':
+            fig0, fig1= setup_binary_alloy_fig2D(Z,diff_eV,T0,X_B,eta,T)
+            
+            #Delete the figures if they are already present 
+            if figure_canvas_agg0 is not None:
+                delete_fig_agg(figure_canvas_agg0)
+            if figure_canvas_agg1 is not None:
+                delete_fig_agg(figure_canvas_agg1)
+                
+            #Draw the computed figures on the empty canvas
+            figure_canvas_agg0 = draw_figure(window["-FIG0-"].TKCanvas, fig0) 
+            figure_canvas_agg1 = draw_figure(window["-FIG1-"].TKCanvas, fig1)
+
+            
+    if window == window3:
+        
+        if event == sg.WIN_CLOSED : # if user closes the window
+            break
+        
         elif event == 'Show 3D plots': 
             
-            fig_3d_0, fig_3d_1, fig_3d_2= setup_binary_alloy_fig3D(Z,diff_eV,T0,X_B,eta)
+            fig_3d_0, fig_3d_1, fig_3d_2= setup_binary_alloy_fig3D(Z,diff_eV,T0,X_B,eta,T)
             
             #Delete the figures if they are already present 
             if figure_canvas_agg_3d0 is not None:
@@ -351,16 +385,16 @@ while True:
             figure_canvas_agg_3d2= draw_figure(window["-3D_(eta,T)-"].TKCanvas, fig_3d_2)
             
            
-        elif event == 'Next p3 >':
-            window2.hide()
-            window3 = make_window3()
+        elif event == 'Next p4 >':
+            window3.hide()
+            window4 = make_window4()
 
-        elif event =='< Prev p1':
-            window2.close()
-            window1.un_hide()
+        elif event =='< Prev p2':
+            window3.close()
+            window2.un_hide()
             
 
-    if window == window3:
+    if window == window4:
         
         if event == sg.WIN_CLOSED : # if user closes window
             break
@@ -392,17 +426,17 @@ while True:
             dt = time_increment(dx,Diff_A)
 
             
-        elif event == 'Next p4 >':
-            window3.hide()
-            window4 = make_window4()
+        elif event == 'Next p5 >':
+            window4.hide()
+            window5 = make_window5()
            
             
-        elif event == '< Prev p2':
-            window3.close()
-            window2.un_hide()
+        elif event == '< Prev p3':
+            window4.close()
+            window3.un_hide()
 
 
-    if window == window4:
+    if window == window5:
         if event== sg.WIN_CLOSED : # if user closes window 
             break
         
@@ -421,17 +455,17 @@ while True:
             figure_canvas_agg_init_c=draw_figure(window["-initial_composition-"].TKCanvas, fig_init_c)
            
         
-        elif event == 'Next p5 >':
-            window4.hide()
-            window5 = make_window5()
+        elif event == 'Next p6 >':
+            window5.hide()
+            window6 = make_window6()
 
             
-        elif event =='< Prev p3':        
-            window4.close()
-            window3.un_hide()
+        elif event =='< Prev p4':        
+            window5.close()
+            window4.un_hide()
 
             
-    if window == window5:
+    if window == window6:
         if event == sg.WIN_CLOSED : # if user closes window or clicks cancel
             break
         
@@ -479,15 +513,15 @@ while True:
             anim = animation.ArtistAnimation(fig,snapshots,interval, blit=True,repeat_delay=10)
 
                           
-        elif event == '< Prev p4':
-            window5.close()
-            window4.un_hide()
+        elif event == '< Prev p5':
+            window6.close()
+            window5.un_hide()
             
-        elif event == 'Next p6 >':
-            window5.hide()
-            window6 = make_window6()
+        elif event == 'Next p7 >':
+            window6.hide()
+            window7 = make_window7()
 
-    if window == window6:
+    if window == window7:
         
         if event == sg.WIN_CLOSED or event=='Exit': # if user closes window or presses exit
             break
@@ -505,7 +539,7 @@ while True:
                     file.create_dataset(f'matrix_{i}', data=matrix)
                     
             
-        elif event =='< Prev p5':
+        elif event =='< Prev p6':
             window6.close()
             window5.un_hide()
 
