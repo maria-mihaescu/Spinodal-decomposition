@@ -14,6 +14,8 @@ import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.animation as animation
 
+from Binary_Alloys import ranges
+
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
 from Cahn_Hillard import initial_composition
@@ -290,13 +292,19 @@ while True:
             Z=(int(values['-IN_Z-']))
             diff_eV=(float(values['-IN_X-']))
             T0=(float(values['-IN_T-']))
-
+            X_B_min=(float(values['-IN_X_B_min-']))
+            X_B_max=(float(values['-IN_X_B_max-']))
+            X_B_step=(float(values['-IN_X_B_step-']))
+            eta_min=(float(values['-IN_eta_min-']))
+            eta_max=(float(values['-IN_eta_max-']))
+            eta_step=(float(values['-IN_eta_step-']))
+            T_min=(float(values['-IN_T_min-']))
+            T_max=(float(values['-IN_T_max-']))
+            T_step=(float(values['-IN_T_step-']))
             
             #set parameters for the plots
             #ranges for composition, temperature and order parameter
-            X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
-            T=np.arange(50,1000,50)      # Temperature space
-            eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
+            X_B,T,eta=ranges(X_B_min,X_B_max,X_B_step,T_min,T_max,T_step,eta_min,eta_max,eta_step)
 
             fig0, fig1= setup_binary_alloy_fig2D(Z,diff_eV,T0,X_B,eta)
             
