@@ -108,7 +108,8 @@ def setup_binary_alloy_fig2D(Z,
                              diff_eV,
                              T0,
                              X_B,
-                             eta):
+                             eta,
+                             T):
     """
     Function to setup the figures for the 2D representation of the binary alloy parameters in the GUI,
     with the user entered parameters. 
@@ -125,6 +126,8 @@ def setup_binary_alloy_fig2D(Z,
         DESCRIPTION. Composition (chemical order parameter)
     eta : TYPE array
         DESCRIPTION. Order parameter (structural)
+    T : TYPE array
+        DESCRIPTION. temperature range
 
     Returns
     -------
@@ -137,9 +140,9 @@ def setup_binary_alloy_fig2D(Z,
     #Setup the interaction parameter
     omega = interaction_parameter(Z,diff_eV)
     #Set parameters for the graphs in all the different spaces
-    X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega)
-    X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega)
-    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega)
+    X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega,X_B,eta)
+    X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega,X_B,T)
+    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,eta,T)
      
     #set the 2D figures with those parameters
     fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
@@ -150,7 +153,8 @@ def setup_binary_alloy_fig3D(Z,
                              diff_eV,
                              T0,
                              X_B,
-                             eta):
+                             eta,
+                             T):
     """
     Function to setup the figures for the 3D representation of the binary alloy parameters in the GUI,
     with the user entered parameters. 
@@ -167,6 +171,8 @@ def setup_binary_alloy_fig3D(Z,
         DESCRIPTION. Composition (chemical order parameter)
     eta : TYPE array
         DESCRIPTION. Order parameter (structural)
+    T : TYPE array
+        DESCRIPTION. temperature range
 
     Returns
     -------
@@ -185,9 +191,9 @@ def setup_binary_alloy_fig3D(Z,
     omega = interaction_parameter(Z,diff_eV)
     
     #Set parameters for the graphs in all the different spaces
-    X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega)
-    X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega)
-    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega)
+    X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega,X_B,eta)
+    X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega,X_B,T)
+    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,eta,T)
      
     #Free energy surface in the (X_B,eta) space for temperature T=T0
     fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
