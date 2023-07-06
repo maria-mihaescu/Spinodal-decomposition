@@ -898,7 +898,8 @@ def test_update_order_parameter():
 
 def initial_composition(Nx,
                           Ny,
-                          c0):
+                          c0,
+                          seed=None):
     """
     Function that sets the initial matrix for the composition c and c_t
     at zero. Then, adds a random initial composition of B atoms in a grid of size Nx*Ny 
@@ -912,6 +913,8 @@ def initial_composition(Nx,
         DESCRIPTION. number of computational grids along the y direction
     c0 : TYPE float
         DESCRIPTION. average composition of B atom [atomic fraction]
+    seed : TYPE int or None, optional
+        DESCRIPTION. random seed for reproducibility
 
     Returns
     -------
@@ -928,7 +931,7 @@ def initial_composition(Nx,
     c_t= np.zeros((Nx,Ny))
     
     #adding random fluctuations 
-    c = add_fluctuation(Nx,Ny,c0)
+    c = add_fluctuation(Nx,Ny,c0,seed)
     
     return c,c_t
 
