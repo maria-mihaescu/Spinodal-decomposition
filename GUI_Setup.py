@@ -215,7 +215,8 @@ def setup_binary_alloy_fig3D(Z,
 def setup_initial_composition_plots(Nx,
                               Ny,
                               c0,
-                              La):
+                              La,
+                              seed=None):
     """
     Function that return the plots and image describing the initial composition from which
     the spinodal decomposition starts from
@@ -230,6 +231,8 @@ def setup_initial_composition_plots(Nx,
         DESCRIPTION. average composition of B atom [atomic fraction]
     La : TYPE float 
         DESCRIPTION.atomic interaction constante [J/mol]
+    seed : TYPE int or None, optional
+        DESCRIPTION. random seed for reproducibility
 
     Returns
     -------
@@ -241,7 +244,7 @@ def setup_initial_composition_plots(Nx,
 
     """
     #Defining a random initial composition
-    c,c_t=initial_composition(Nx,Ny,c0)
+    c,c_t=initial_composition(Nx,Ny,c0,seed)
     #set the figure with the initial data
     fig_chem_pot=plot_chemical_free_energy_density(c0,La)
     fig_init_c=plot_initial_composition(c)
