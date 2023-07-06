@@ -24,43 +24,41 @@ from Cahn_Hillard import plot_initial_composition
 #Set-up of the GUI functions
 
 def load_configuration(file_path):
-    
     """
-    Function that loads the configuration file from a specific 
-    path given by the user 
-    
+    Function that loads the configuration file from a specific path given by the user
 
     Parameters
     ----------
-    file_path : TYPE str
-                DESCRIPTION. path of the configuration file 
+    file_path : str
+        Path of the configuration file
 
-    Returns 
+    Returns
     -------
-    Names : TYPE list of str
-            DESCRIPTION list of the name of the values
-            
-    Values : TYPE list of str
-            DESCRIPTION list of the values 
+    Names : list of str
+        List of the names of the values
+    Values : list of str
+        List of the values
     """
-    
+
+    Names = []
+    Values = []
+
     try:
-        Names=[]
-        Values=[]
         with open(file_path, 'r') as file:
-            for line in file :
-                #ignoring the lines in the configuration file starting with %
+            for line in file:
+                # Ignoring the lines in the configuration file starting with %
                 if not line.startswith("%"):
-                    
                     values = line.strip().split(",")
-                    Names.append(str(values[0]))
-                    Values.append(str(values[1]))
-        
-        return Names,Values
-                
+                    if len(values) >= 2:
+                        Names.append(values[0].strip())
+                        Values.append(values[1].strip())
+
+        return Names, Values
+
     except FileNotFoundError:
         print('File not found:', file_path)
-        
+        return [], []        
+    
 def draw_figure(canvas,
                 figure):
     """
@@ -142,7 +140,7 @@ def setup_binary_alloy_fig2D(Z,
     #Set parameters for the graphs in all the different spaces
     X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega,X_B,eta)
     X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega,X_B,T)
-    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,eta,T)
+    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,X_B,eta,T)
      
     #set the 2D figures with those parameters
     fig0=plot_2d(X_B,G_XB_T,'X_B','G vs X_B for different T, eta=0')
@@ -193,7 +191,7 @@ def setup_binary_alloy_fig3D(Z,
     #Set parameters for the graphs in all the different spaces
     X_XB_eta,eta_XB_eta,G_XB_eta= free_energy_XB_eta(T0,omega,X_B,eta)
     X_XB_T,T_XB_T,G_XB_T= free_energy_XB_T(T0,omega,X_B,T)
-    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,eta,T)
+    eta_eta_T,T_eta_T,G_eta_T = free_energy_eta_T(T0,omega,X_B,eta,T)
      
     #Free energy surface in the (X_B,eta) space for temperature T=T0
     fig_3d_0=plot_anim_3d(X_XB_eta,eta_XB_eta,G_XB_eta,
