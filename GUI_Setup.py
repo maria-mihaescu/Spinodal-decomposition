@@ -4,6 +4,13 @@ Created on Wed Jul  5 18:20:54 2023
 
 @author: Maria Mihaescu
 """
+
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt 
+
+
 from Binary_Alloys import interaction_parameter
 from Binary_Alloys import free_energy_XB_eta
 from Binary_Alloys import free_energy_XB_T
@@ -14,7 +21,74 @@ from Cahn_Hillard import plot_chemical_free_energy_density
 from Cahn_Hillard import initial_composition
 from Cahn_Hillard import plot_initial_composition
 
+#Set-up of the GUI functions
 
+def load_configuration(file_path):
+    
+    """
+    Function that loads the configuration file from a specific 
+    path given by the user 
+    
+
+    Parameters
+    ----------
+    file_path : TYPE str
+                DESCRIPTION. path of the configuration file 
+
+    Returns
+    -------
+    None.
+    """
+    
+    try:
+        with open(file_path, 'r') as f:
+            config = f.read()
+            # Process the configuration data as needed
+            print('Configuration loaded successfully:', config)
+    
+    except FileNotFoundError:
+        print('File not found:', file_path)
+        
+def draw_figure(canvas,
+                figure):
+    """
+    Function that draws the wanted figure in the empty canvas of the window
+
+    Parameters
+    ----------
+    canvas : TYPE PySimpleGUI.Canvas(canvas, background_color, size)
+        DESCRIPTION. drawable panel on the surface of the PySimpleGUI application window
+    figure : TYPE matplotlib.figure.Figure()
+        DESCRIPTION. figure we want to draw on the panel 
+
+    Returns
+    -------
+    figure_canvas_agg : TYPE FigureCanvasTkAgg(figure, canvas)
+        DESCRIPTION. figure drawn on the canvas
+
+    """
+    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
+    return figure_canvas_agg
+
+
+def delete_fig_agg(fig_agg):
+    """
+    Function to delet the figure drawn on the canvas 
+
+    Parameters
+    ----------
+    fig_agg : TYPE FigureCanvasTkAgg(figure, canvas)
+        DESCRIPTION. figure drawn on the canvas
+
+    Returns
+    -------
+    None.
+
+    """
+    fig_agg.get_tk_widget().forget()
+    plt.close('all')
 # Set-up of the first part on the Binary Allow
 
 def setup_binary_alloy_fig2D(Z,
