@@ -47,6 +47,10 @@ conda install h5py
 ```
 3- Run the GUI.py file with Spyder for example 
 
+# Configuration file
+
+To enter the parameters of the simulations, the user can use the configuration file provided. In the first window of the software, one has to enter the path to the configuration file which will pre-fill all the parameters. One can change those parameters directly from the file or from the sofware windows. 
+- The user has to enter the path of the configuration file  **(for example : C:\user\directory\configuration.txt )** 
 
 # Part 1 : Multicomponent homogeneous systems
 
@@ -67,7 +71,7 @@ Some parameters are left to be entered by the user in the interface, in order to
 - The interaction parameter is then $\Omega = Z*E[eV]*1,60218 \text{e-}19$ in [J] 
 - The temperature in K at which the Gibb's free energy will be calculated in the (X_B, eta) space. **(for example 550 K)**
 
-The ranges for the order parameters are set:
+The ranges for the order parameters can also be set by the user, however the length of the three ranges have to be the same and in the configuration file we have :
 - The composition $X_B = \frac{1}{2}(X_B^\alpha+X_B^\beta)$ with $X_B^\alpha = N_B^\alpha / N$ , $X_B^\beta = N_B^\beta / N$ fraction of sites occupied by B atoms (similarly with the A atom $X_A^\alpha$, $X_A^\beta$) is set to be between **$0 \le X_B \le 1$** moreover we have **$X_A = 1- X_B$** 
 - The long-range order parameter (LRO) $\eta= \frac{1}{2}(X_B^\alpha-X_B^\beta)$ is set to be between **$-0.5 \le \eta \le 0.5$**, moreover we have that  | $\eta$ | $\le$ min($X_B , X_A$)
 
@@ -96,7 +100,7 @@ Before solving Cahn Hilliards equation to get the concentration in function of t
 
 - The average chemical composition of B atoms $c_0$ is set by the user and must be between 0 and 1. **(for example $c_0=0.5$, which means that there are as many A atoms as B atoms)**
 
-- The initial distribution of c is determines as $c_0$ + uniform random number. C is then a matrix of size $N_x*N_y$. The user can set the size of the two phase field matrix. in order for it to make physical sens we set $N_x = N_y$. **(for example Nx=Ny=20)** 
+- The initial distribution of c is determines as $c_0$ + uniform random number. The user can set the seed of the uniform random number generation in order to perform the same simulation multiple times. C is then a matrix of size $N_x*N_y$. The user can set the size of the two phase field matrix. in order for it to make physical sens we set $N_x = N_y$. **(for example Nx=Ny=20)** 
 
 - Moreover, the chemical free energy density curve and the place of the average chemical composition $c_0$ will be plotted near this initial distribution.
 
@@ -131,7 +135,7 @@ Once all those parameters are entered, the user can enter the parameters used fo
 
 - nsteps is the total number of time-steps **(for example nsteps=600)**
 - nprint is a divisor of nsteps for which when n in nsteps is a multiplicator of nprint, the concentration at that time t is stored and ploted. **(for example nprint=60)**
-- interval in [ms] is the time interval between each fram in the animation 
+- interval in [ms] is the time interval between each fram in the animation. **(for example interval=400ms)**
 
 The last window of the software enables the user to download the results of the simulation in a HDF5 file.
 - The user has to enter the path of the directory in which the file will be saved **(for example : C:\user\directory\ )** (it is important to add the ** \ ** after the name of the directory)
