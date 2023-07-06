@@ -8,13 +8,10 @@ Created on Thu Jun  1 18:51:10 2023
 import numpy as np
 import h5py
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
 
 import matplotlib
 matplotlib.use("TkAgg")
-
-import matplotlib.pyplot as plt 
 import matplotlib.animation as animation
 
 from Cahn_Hillard import diffusion_coeff
@@ -23,76 +20,14 @@ from Cahn_Hillard import initial_composition
 from Cahn_Hillard import update_order_parameter
 from Cahn_Hillard import atom_interac_cst
 
+from GUI_Setup import load_configuration
+from GUI_Setup import draw_figure
+from GUI_Setup import delete_fig_agg
+
 from GUI_Setup import setup_binary_alloy_fig2D
 from GUI_Setup import setup_binary_alloy_fig3D
 from GUI_Setup import setup_initial_composition_plots
 
-def load_configuration(file_path):
-    
-    """
-    Function that loads the configuration file from a specific 
-    path given by the user 
-    
-
-    Parameters
-    ----------
-    file_path : TYPE str
-                DESCRIPTION. path of the configuration file 
-
-    Returns
-    -------
-    None.
-    """
-    
-    try:
-        with open(file_path, 'r') as f:
-            config = f.read()
-            # Process the configuration data as needed
-            print('Configuration loaded successfully:', config)
-    
-    except FileNotFoundError:
-        print('File not found:', file_path)
-        
-def draw_figure(canvas,
-                figure):
-    """
-    Function that draws the wanted figure in the empty canvas of the window
-
-    Parameters
-    ----------
-    canvas : TYPE PySimpleGUI.Canvas(canvas, background_color, size)
-        DESCRIPTION. drawable panel on the surface of the PySimpleGUI application window
-    figure : TYPE matplotlib.figure.Figure()
-        DESCRIPTION. figure we want to draw on the panel 
-
-    Returns
-    -------
-    figure_canvas_agg : TYPE FigureCanvasTkAgg(figure, canvas)
-        DESCRIPTION. figure drawn on the canvas
-
-    """
-    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
-    figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side="top", fill="both", expand=1)
-    return figure_canvas_agg
-
-
-def delete_fig_agg(fig_agg):
-    """
-    Function to delet the figure drawn on the canvas 
-
-    Parameters
-    ----------
-    fig_agg : TYPE FigureCanvasTkAgg(figure, canvas)
-        DESCRIPTION. figure drawn on the canvas
-
-    Returns
-    -------
-    None.
-
-    """
-    fig_agg.get_tk_widget().forget()
-    plt.close('all')
     
 # Define the window layout
 def make_window0():
@@ -107,8 +42,7 @@ def make_window0():
     """
     layout = [
     [sg.Text('Configuration File Path:'), sg.Input(key='-FILE-'), sg.FileBrowse()],
-    [sg.Button('Load Configuration')]
-    [sg.Button('Next p1 >')]]
+    [sg.Button('Load Configuration'),sg.Button('Next p1 >')]]
 
     return sg.Window(
         "Configuration reader",
@@ -282,9 +216,14 @@ while True:
     
     #read all the events, windows and values entered on the windows
     window,event,values = sg.read_all_windows()
+    
     if window==window0:
         if event== sg.WIN_CLOSED : # if user closes window close the programm
             break
+        
+        elif event == 'Load Configuration':
+            file_path = values['-FILE-']
+            load_configuration(file_path)
         
         elif event == 'Next p1 >':
             window0.hide()
