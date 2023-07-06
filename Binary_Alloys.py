@@ -778,6 +778,7 @@ def test_T_entropie_eta_T():
     
 def free_energy_eta_T(T0,
                       omega,
+                      X_B,
                       eta,
                       T):
     
@@ -795,6 +796,8 @@ def free_energy_eta_T(T0,
         DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
     omega : TYPE float
         DESCRIPTION. Interaction parameter in J 
+    X_B : TYPE array
+        DESCRIPTION. composition range
     eta : TYPE array
         DESCRIPTION. structural order parameter range
     T : TYPE array
@@ -811,7 +814,7 @@ def free_energy_eta_T(T0,
 
     """
     
-    X_XB_T,T_XB_T,G_XB_T = free_energy_XB_T(T0,omega)
+    X_XB_T,T_XB_T,G_XB_T = free_energy_XB_T(T0,omega,X_B,T)
     
     #Functions in (eta,T) space for X_B=0.5
     
@@ -836,10 +839,11 @@ def test_free_energy_eta_T():
     # Test input values
     T0 = 300.0
     omega = 1.0
+    X_B=np.array(0,1,0.1)
     eta=np.arrange(-0.5,0.5,0.01)
     T=np.arrange(50,1000,50)
     # Call the function
-    eta_eta_T, T_eta_T, G_eta_T = free_energy_eta_T(T0, omega, eta, T)
+    eta_eta_T, T_eta_T, G_eta_T = free_energy_eta_T(T0, omega, X_B,eta, T)
     print(eta_eta_T)
     # Perform assertions
     assert isinstance(eta_eta_T, np.ndarray)
@@ -851,7 +855,7 @@ def test_free_energy_eta_T():
     assert eta_eta_T.shape == G_eta_T.shape
 
     #assertion for eta_eta_T calculation
-    X_XB_T,T_XB_T,G_XB_T = free_energy_XB_T(T0,omega)
+    X_XB_T,T_XB_T,G_XB_T = free_energy_XB_T(T0,omega,X_B,T)
     expected_eta_eta_T = enthalpie_eta_T(eta_eta_T, T0, omega) - T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
     
     assert not np.allclose(eta_eta_T, expected_eta_eta_T,equal_nan=True)
