@@ -37,13 +37,11 @@ def load_configuration(file_path):
     Parameters
     ----------
     file_path : TYPE str
-        DESCRIPTION. path of the configuration file of the
-        like 'C:\user\directory\filename.txt'
+                DESCRIPTION. path of the configuration file 
 
     Returns
     -------
     None.
-
     """
     
     try:
@@ -97,6 +95,27 @@ def delete_fig_agg(fig_agg):
     plt.close('all')
     
 # Define the window layout
+def make_window0():
+    """
+    Make the initial window of the GUI
+    in which the user can enter the configuration file
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
+    layout = [
+    [sg.Text('Configuration File Path:'), sg.Input(key='-FILE-'), sg.FileBrowse()],
+    [sg.Button('Load Configuration')]
+    [sg.Button('Next p1 >')]]
+
+    return sg.Window(
+        "Configuration reader",
+        layout,
+        location=(0, 0),
+        finalize=True,
+        element_justification="center")
 
 def make_window1():
     """
@@ -115,7 +134,7 @@ def make_window1():
         [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
        
         [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
-        [sg.Button('Show Plots'),sg.Button('Next p2 >')],
+        [sg.Button('< Prev p0'),sg.Button('Show Plots'),sg.Button('Next p2 >')],
     ]
 
     return sg.Window(
@@ -245,7 +264,7 @@ def make_window6():
 
 
 #Make the first window and set the others windows to none 
-window1, window2, window3, window4, window5, window6 = make_window1(), None, None, None, None, None
+window0, window1, window2, window3, window4, window5, window6 = make_window0(), None, None, None, None, None, None
 
 #Set the figure drawings to None in order to be able to update them each time 
 figure_canvas_agg0 = None
@@ -263,7 +282,14 @@ while True:
     
     #read all the events, windows and values entered on the windows
     window,event,values = sg.read_all_windows()
-    
+    if window==window0:
+        if event== sg.WIN_CLOSED : # if user closes window close the programm
+            break
+        
+        elif event == 'Next p1 >':
+            window0.hide()
+            window1 = make_window1()
+            
     if window==window1:
               
         if event== sg.WIN_CLOSED : # if user closes window close the programm
@@ -299,6 +325,11 @@ while True:
         elif event == 'Next p2 >':
             window1.hide()
             window2 = make_window2()
+            
+        
+        elif event == '< Prev p0':
+            window1.close()
+            window0.un_hide()
             
     if window == window2:
         
