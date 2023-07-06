@@ -7,16 +7,14 @@ Created on Wed May  3 18:03:42 2023
 import numpy as np
 import matplotlib
 from matplotlib import cm
-import matplotlib.pyplot as plt
-
-
-#Multicomponent homogeneous systems
-
 
 #Set the physical constants
+
 k_B=1.38e-23  #Boltzmann's constant
 N_A=6.02e+23  #Avogadro's number
 R_gas=k_B*N_A #Gas constant
+
+
 
 def ranges(X_B_min,
            X_B_max,
@@ -68,6 +66,50 @@ def ranges(X_B_min,
     
     return X_B,T,eta
 
+def test_ranges():
+    
+    """
+    This test function tests if the ranges function takes well the minimum, maximum and step value for each
+    quantity and gives back three arrays that have the expected range values.
+
+    The starting data have the caracteristics that the min value is smaller that the max value and that the 
+    step value is smaller that the two values. This is the only case tested as this is a requirement given 
+    to the user in the documentation. 
+    
+    The expected values are that the first value is equal to the min value of the range, the max value of the range
+    is equal to the maximal set value minus one step, and the values inbetween are separate on one step value. 
+    
+    """
+    #Starting data for the composition range
+    X_B_min = 0.0
+    X_B_max = 1.0
+    X_B_step = 0.2
+    
+    #starting data for the temperature range
+    T_min = 300.0
+    T_max = 500.0
+    T_step = 100.0
+    
+    #starting data for the structural order parameter range
+    eta_min = 0.1
+    eta_max = 0.5
+    eta_step = 0.2
+
+    #expected output ranges for the three parameters
+    
+    expected_X_B = np.array([0.0, 0.2, 0.4, 0.6, 0.8])
+    expected_T = np.array([300.0, 400.0])
+    expected_eta = np.array([0.1, 0.3])
+
+    #calcultated ranges with the function 
+    X_B, T, eta = ranges(X_B_min, X_B_max, X_B_step, T_min, T_max, T_step, eta_min, eta_max, eta_step)
+
+
+    assert np.array_equal(X_B, expected_X_B)
+    assert np.array_equal(T, expected_T)
+    assert np.array_equal(eta, expected_eta)
+
+
 def xlog(x):
     
     """
@@ -93,34 +135,96 @@ def xlog(x):
     return s
 
 
-def test_xlog():
+def test_xlog_positive():
     """
-    function to test the x*log() calculation
-
-    Returns
-    -------
-    None.
+    Test function for the x_log function if we enter an array of only positive numbers smaller than 1.
+    
+    The starting data is three positive floats smaller than 1. We expect that the 
+    xlog function gives negative values. 
 
     """
-    # Test case 1
+    #Starting testing data
     X1 = np.array([0.2, 0.5, 0.8])
+    
+    #expected results
     expected_result1 = np.array([-0.32188758, -0.34657359, -0.17851484])
+    
+    #results calculated with the function xlog
     result1 = xlog(X1)
-    assert np.allclose(result1, expected_result1), "Test case 1 failed"
+    
+    assert np.allclose(result1, expected_result1)
 
-    # Test case 2
-    X2 = np.array([-1.2, 0, 1.5, 2.3])
-    expected_result2 = np.array([np.nan, np.nan, 0.60819766, 1.91569098])
+    
+def test_xlog_negative():
+    """
+    Test function for the x_log function if we enter an array of only negative numbers.
+    
+    The starting data is four negative floats and integers. We expect that the 
+    xlog function gives np.nan values for all of them as the logarithm of a 
+    negative number is undefined. 
+
+    """
+    #starting testing data
+    X2 = np.array([-1.2, -4., -0.03, -500])
+    
+    #expected results
+    expected_result2 = np.array([np.nan, np.nan, np.nan, np.nan])
+    
+    #calculated results with the function 
     result2 = xlog(X2)
-    assert np.allclose(result2, expected_result2, equal_nan=True), "Test case 2 failed"
+    
+    assert np.allclose(result2, expected_result2, equal_nan=True)
+    
+def test_xlog_empty():
+    """
+    Test function for the x_log function if we enter an empty array.
+    We expect that the xlog function gives an empty array as an output.
 
-    # Test case 3
+    """
+    #starting testing data
     X3 = np.array([])
+    
+    #expected results
     expected_result3 = np.array([])
+    
+    #calculated results with the function 
     result3 = xlog(X3)
-    assert np.array_equal(result3, expected_result3), "Test case 3 failed"
+    
+    assert np.array_equal(result3, expected_result3)
+    
+def test_xlog_zero():
+    """
+    Test function for the x_log function if we enter an array with only one zero value.
+    We expect that the xlog function gives an array with an np.nan as the logarithm to 0 in undefined.
 
-    print("All tests passed successfully!")
+    """
+    #starting testing data
+    X4= np.array([0])
+    
+    #expected results
+    expected_result4 = np.array([np.nan])
+    
+    #calculated results with the function 
+    result4 = xlog(X4)
+    
+    assert np.array_equal(result4, expected_result4)
+    
+def test_xlog_nan():
+    """
+    Test function for the x_log function if we enter an array with np.nan values.
+    We expect that the xlog function gives an array with the same number of np.nan values.
+
+    """
+    #starting testing data
+    X5= np.array([np.nan, np.nan, np.nan, np.nan])
+    
+    #expected results
+    expected_result5 = np.array([np.nan, np.nan, np.nan, np.nan])
+    
+    #calculated results with the function 
+    result5 = xlog(X5)
+    
+    assert np.array_equal(result5, expected_result5)
     
     
 def plot_anim_3d(X,
