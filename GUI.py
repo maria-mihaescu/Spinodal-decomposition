@@ -137,7 +137,7 @@ def make_window3():
               [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText(key='-IN_E_DB-',default_text=E_DB_str)],
               
               [sg.Text('Parameters specific to the grid :')],
-              [sg.Text('Seed for the random generation of concentration'),sg.InputText(key='-IN_Seed-',default_text=seed_str)],
+              [sg.Text('Seed for the random generation of concentration'),sg.InputText(key='-IN_seed-',default_text=seed_str)],
              
               [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText(key='-IN_Nx-',default_text=Nx_str)],
               [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText(key='-IN_Ny-',default_text=Ny_str)],
@@ -375,7 +375,7 @@ while True:
             E_DA=float(values['-IN_E_DA-'])
             coef_DB=float(values['-IN_coef_DB-'])
             E_DB=float(values['-IN_E_DB-'])
-            Seed=int(values['-IN_Seed-'])
+            seed=int(values['-IN_seed-'])
             Nx=int(values['-IN_Nx-'])
             Ny=int(values['-IN_Ny-'])
             dx=float(values['-IN_dx-'])
@@ -408,7 +408,7 @@ while True:
         
         elif event == 'Show initial plots': 
             
-            fig_chem_pot,fig_init_c = setup_initial_composition_plots(Nx,Ny,c0,La)
+            fig_chem_pot,fig_init_c = setup_initial_composition_plots(Nx,Ny,c0,La,seed)
             
             #Delete the figures if they are already present 
             if figure_canvas_agg_chem_pot is not None:
@@ -440,7 +440,7 @@ while True:
             ax = fig.add_subplot()
             
             #Defining a random initial composition
-            c,c_t=initial_composition(Nx,Ny,c0)
+            c,c_t=initial_composition(Nx,Ny,c0,seed)
             
             #initialize the parameters and the lists
             snapshots=[]
@@ -504,22 +504,6 @@ while True:
                 for i, matrix in enumerate(C_list):
                     file.create_dataset(f'matrix_{i}', data=matrix)
                     
-            """       
-            #create a new txt file on the desired path
-            with open(path_to_file, 'w') as f:
-                #For each composition matrix and each time
-                for c,t in zip(C_list,Time):
-                    f.write("composition at time {}".format(t))
-                    f.write('\n')
-                    #print the coordinates of the matrix cell and the composition of that cell
-                    #x sets the row and y sets the place on the row
-                    f.write('x'+','+'y'+','+'c[x,y]'+ "\n")
-                    f.write('\n')
-                    for x in range (Nx):
-                        for y in range (Ny):
-                            f.write(str(x)+','+str(y)+','+str(c[x,y])+ "\n")
-                f.close()
-             """
             
         elif event =='< Prev p5':
             window6.close()
