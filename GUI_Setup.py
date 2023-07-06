@@ -40,7 +40,7 @@ def load_configuration(file_path):
     Names : TYPE list of str
             DESCRIPTION list of the name of the values
             
-    Values : TYPE list of float
+    Values : TYPE list of str
             DESCRIPTION list of the values 
     """
     
@@ -49,10 +49,13 @@ def load_configuration(file_path):
         Values=[]
         with open(file_path, 'r') as file:
             for line in file :
+                #ignoring the lines in the configuration file starting with %
                 if not line.startswith("%"):
+                    
                     values = line.strip().split(",")
                     Names.append(str(values[0]))
-                    Values.append(float(values[1]))
+                    Values.append(str(values[1]))
+        
         return Names,Values
                 
     except FileNotFoundError:
@@ -98,6 +101,7 @@ def delete_fig_agg(fig_agg):
     """
     fig_agg.get_tk_widget().forget()
     plt.close('all')
+    
 # Set-up of the first part on the Binary Allow
 
 def setup_binary_alloy_fig2D(Z,
