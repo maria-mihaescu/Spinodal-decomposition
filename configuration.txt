@@ -1,0 +1,34 @@
+%Binary alloy
+Z,8
+diff_eV,0.02
+T0,550
+X_B_min,0
+X_B_max,1
+X_B_step,0.01
+eta_min,-0.5
+eta_max,0.5
+eta_step,0.01
+T_min,50
+T_max,1000
+T_step,50
+
+%Spinodal decomposition
+seed,0
+c0,0.5
+T,673
+A,3e-14
+coef_DA,1e-4
+E_DA,3e05
+coef_DB,2e-05
+E_DB,3e05
+Nx,20
+Ny,20
+dx,2e-09
+dy,2e-09
+nsteps,600
+nprint,60
+interval,400
+
+
+
+
