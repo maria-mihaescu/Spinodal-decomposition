@@ -223,7 +223,7 @@ def make_window7():
     """
     
     layout = [[sg.Text('Save the spinodal decomposition data')],
-              [sg.Text('Path of the directory for the HDF5 file of the composition data:'),sg.InputText(key='-IN_HDF5_path-')],
+              [sg.Text('Path of the directory for the HDF5 file of the composition data:'),sg.InputText(key='-IN_HDF5_path-'),sg.FileBrowse()],
               [sg.Text('Name of the HDF5 file:'),sg.InputText(key='-IN_HDF5_file-')],
               [sg.Button('Save in HDF5')],
                [sg.Button('< Prev p6'), sg.Button('Exit')]]
