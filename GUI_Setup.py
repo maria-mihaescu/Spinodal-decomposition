@@ -35,17 +35,26 @@ def load_configuration(file_path):
     file_path : TYPE str
                 DESCRIPTION. path of the configuration file 
 
-    Returns
+    Returns 
     -------
-    None.
+    Names : TYPE list of str
+            DESCRIPTION list of the name of the values
+            
+    Values : TYPE list of float
+            DESCRIPTION list of the values 
     """
     
     try:
-        with open(file_path, 'r') as f:
-            config = f.read()
-            # Process the configuration data as needed
-            print('Configuration loaded successfully:', config)
-    
+        Names=[]
+        Values=[]
+        with open(file_path, 'r') as file:
+            for line in file :
+                if not line.startswith("%"):
+                    values = line.strip().split(",")
+                    Names.append(str(values[0]))
+                    Values.append(float(values[1]))
+        return Names,Values
+                
     except FileNotFoundError:
         print('File not found:', file_path)
         
