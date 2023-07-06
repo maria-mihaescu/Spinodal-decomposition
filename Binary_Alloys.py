@@ -515,30 +515,75 @@ def entropie_scal(eta,
         s=-(R_gas/2)*(xlog(x+e)+xlog(x-e)+ xlog(1-x+e)+xlog(1-x-e))
     return s
 
-def test_entropie_scal():
+
+def test_entropie_scal_physical():
     """
-    function to test the validity condition and the calculation of the entropie
-    Returns
-    -------
-    None.
+    This test case verifies the calculation of the enthalpy when the absolute value
+    of the order parameter (eta) is lower than the composition (x) and (1-x), as stated in the model.
+    It checks if the calculated enthalpy matches the expected value in the physical region.
 
     """
-    eta = 0.2  # example value for eta
-    composition = 0.5  # example value for composition
-    omega = 1.5  # example value for omega
-    T0 = 300  # example value for T0
+    # Input values
+    eta = 0.2
+    composition = 0.4
+    omega = 10.0
+    T0 = 300.0
 
+    # Expected output
+    expected_s = 4.874127449315975
+
+    # Calculated output
     s = entropie_scal(eta, composition, omega, T0)
 
-    # Calculate the expected entropy value
-    if abs(eta) >= composition or abs(eta) >= (1 - composition):
-        expected_s = np.nan
-    else:
-        expected_s = -(R_gas / 2) * (xlog(composition + eta) + xlog(composition - eta) +
-                                     xlog(1 - composition + eta) + xlog(1 - composition - eta))
+    assert np.isclose(s, expected_s)
 
-    # Assert that the calculated entropy matches the expected value
-    assert np.isnan(s) and np.isnan(expected_s) or np.isclose(s, expected_s)
+
+def test_entropie_scal_unphysical():
+    
+    """
+    Test function for the entropie_scal() function with unphysical inputs.
+    It checks if the calculated entropy is set to NaN as expected.
+
+    Test Case:
+    - Unphysical input values where abs(eta) >= x or abs(eta) >= (1 - x).
+
+    """
+    # Input values
+    eta = 0.6
+    composition = 0.8
+    omega = 5.0
+    T0 = 400.0
+
+    # Expected output (NaN for unphysical input)
+    expected_s = np.nan
+
+    # Calculated output
+    s = entropie_scal(eta, composition, omega, T0)
+
+    assert np.isclose(s,expected_s,equal_nan=True)
+
+def test_entropie_scal_equal():
+    """
+    This test case verifies the calculation of the entropie when the absolute value
+    of the order parameter (eta) is equal to the composition (x), it is a limit case
+    as eta is smaler than (1-x) but not smaler than x.
+    We expect the output value to be not a number as it is in the unphysical region
+
+    """
+
+    #Input data
+    eta = 0.1
+    composition = 0.1
+    omega = 2.0
+    T0 = 400.0
+
+    #expected output
+    expected_s = np.nan
+
+    #calculated output
+    s = entropie_scal(eta, composition, omega, T0)
+
+    assert np.isclose(s, expected_s,equal_nan=True)
 
 
 def free_energy_XB_eta(T0,
