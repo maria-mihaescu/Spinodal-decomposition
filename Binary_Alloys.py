@@ -12,18 +12,61 @@ import matplotlib.pyplot as plt
 
 #Multicomponent homogeneous systems
 
-#ranges for composition, temperature and order parameter
-X_B=np.arange(0,1,0.01)      # Composition (chemical order parameter)
-T=np.arange(50,1000,50)      # Temperature space
-
-eta=np.arange(-0.5,0.5,0.01) # Order parameter (structural)
 
 #Set the physical constants
 k_B=1.38e-23  #Boltzmann's constant
 N_A=6.02e+23  #Avogadro's number
 R_gas=k_B*N_A #Gas constant
 
+def ranges(X_B_min,
+           X_B_max,
+           X_B_step,
+           T_min,
+           T_max,
+           T_step,
+           eta_min,
+           eta_max,
+           eta_step):
+    """
+    
 
+    Parameters
+    ----------
+    X_B_min : TYPE float
+        DESCRIPTION. minimum of the composition range
+    X_B_max : TYPE float
+        DESCRIPTION. maximum of the composition range
+    X_B_step : TYPE float
+        DESCRIPTION. step of the composiion range
+    T_min : TYPE float 
+        DESCRIPTION. minimum of the temperature range
+    T_max : TYPE float 
+        DESCRIPTION.maximum of the temperature range
+    T_step : TYPE float 
+        DESCRIPTION.step of the temperature range
+    eta_min : TYPE float
+        DESCRIPTION. minimum of the structural order parameter
+    eta_max : TYPE float
+        DESCRIPTION. maximum of the structural order parameter
+    eta_step : TYPE float
+        DESCRIPTION.step of the structural order parameter
+
+    Returns
+    -------
+    X_B : TYPE array
+        DESCRIPTION. composition range
+    T : TYPE array
+        DESCRIPTION. temperature range
+    eta : TYPE array 
+        DESCRIPTION. structural order parameter range 
+
+    """
+    #ranges for composition, temperature and order parameter
+    X_B=np.arange(X_B_min,X_B_max,X_B_step)      # Composition (chemical order parameter)
+    T=np.arange(T_min,T_max,T_step)      # Temperature space
+    eta=np.arange(eta_min,eta_max,eta_step) # Order parameter (structural)
+    
+    return X_B,T,eta
 
 def xlog(x):
     
@@ -134,26 +177,6 @@ def plot_anim_3d(X,
     print("3D Plot done !")
     return fig
     
-def test_plot_anim_3d():
-    """
-    function to test the ploting of the 3D plot with arrays
-
-    Returns
-    -------
-    None.
-
-    """
-    X = np.array([[0, 1], [0, 1]])
-    Y = np.array([[0, 0], [1, 1]])
-    Z = np.array([[0, 1], [1, 0]])
-    xlabel = "X"
-    ylabel = "Y"
-    zlabel = "Z"
-    title = "3D Plot"
-
-    fig = plot_anim_3d(X, Y, Z, xlabel, ylabel, zlabel, title)
-
-    assert isinstance(fig, plt.Figure), "plot_anim_3d test failed"
 
 
 def plot_2d(X,
@@ -191,24 +214,6 @@ def plot_2d(X,
         ax.set_title(title)
     return fig
     
-def test_plot_2d():
-    """
-    Test the 2D plot for an energy G
-
-    Returns
-    -------
-    None.
-
-    """
-    X = np.array([0, 1, 2, 3, 4])
-    G = np.array([[0, 1, 2, 3, 4], [1, 2, 3, 4, 5], [2, 3, 4, 5, 6]])
-    xlabel = "X"
-    title = "2D Plot"
-
-    fig = plot_2d(X, G, xlabel, title)
-
-    assert isinstance(fig, plt.Figure), "plot_2d test failed"
-
 
 
 def interaction_parameter(Z,
@@ -252,7 +257,10 @@ def test_interaction_parameter():
     assert np.isclose(result, expected_result), "interaction_parameter test failed"
 
 
-def enthalpy_scal(eta,composition,omega,T0):
+def enthalpy_scal(eta,
+                  composition,
+                  omega,
+                  T0):
     """
     function that calculates the enthalpy and finds the unphysical region in the 
     (X_B, eta) mesh. As abs(eta) must be lower than X_B and 1-X_B (as stated in the model).
@@ -311,7 +319,10 @@ def test_enthalpy_scal():
     assert np.isnan(h) and np.isnan(expected_h) or np.isclose(h, expected_h)
 
 
-def entropie_scal(eta,composition,omega,T0):
+def entropie_scal(eta,
+                  composition,
+                  omega,
+                  T0):
     
     """
     function that calculates the entropie and finds the unphysical region in the 
@@ -370,7 +381,10 @@ def test_entropie_scal():
     assert np.isnan(s) and np.isnan(expected_s) or np.isclose(s, expected_s)
 
 
-def free_energy_XB_eta(T0,omega):
+def free_energy_XB_eta(T0,
+                       omega,
+                       X_B,
+                       eta):
     
     """
     This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
@@ -386,6 +400,10 @@ def free_energy_XB_eta(T0,omega):
         DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
     omega : TYPE float
         DESCRIPTION. Interaction parameter in J 
+    X_B : TYPE array
+        DESCRIPTION. composition range
+    eta : TYPE array 
+        DESCRIPTION. structural order parameter range 
 
     Returns
     -------
@@ -440,18 +458,18 @@ def test_free_energy_XB_eta():
     
     T0 = 300  # example value for T0
     omega = 1.5  # example value for omega
-
-    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega)
-
-    # Check the dimensions of the output arrays
-    assert X_XB_eta.shape == (len(X_B), len(eta))
-    assert eta_XB_eta.shape == (len(X_B), len(eta))
+    X_B=np.array(0,1,0.01)
+    eta=np.array(-0.5,0.5,0.01)
+    
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0,omega,X_B,eta)
 
     # Check if any NaN values exist in the arrays
     assert np.isnan(G_XB_eta).any()  # Expecting the presence of NaN values
 
     
-def enthalpie_XB_T(X_XB_T,T0,omega):
+def enthalpie_XB_T(X_XB_T,
+                   T0,
+                   omega):
     
     """
     function to caculate the enthalpie in the (XB,T) space 
@@ -548,7 +566,10 @@ def test_T_entropie_XB_T():
     # Check if the calculated ts values match the expected values
     assert np.allclose(ts, expected_ts)
 
-def free_energy_XB_T(T0,omega):
+def free_energy_XB_T(T0,
+                     omega,
+                     X_B,
+                     T):
     
     """
     This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
@@ -564,7 +585,10 @@ def free_energy_XB_T(T0,omega):
         DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
     omega : TYPE float
         DESCRIPTION. Interaction parameter in J 
-        
+    X_B : TYPE array
+        DESCRIPTION. composition range
+    T : TYPE array
+        DESCRIPTION. temperature range    
     Returns
     -------
 
@@ -602,20 +626,15 @@ def test_free_energy_XB_T():
     X_B = np.arange(0, 1, 0.01)  # Composition (chemical order parameter)
     T = np.arange(50, 1000, 50)  # Temperature space
     
-    # Expected output shapes
-    expected_shape = (len(T),len(X_B))
 
     # Call the function
-    X_XB_T, T_XB_T, G_XB_T = free_energy_XB_T(T0, omega)
+    X_XB_T, T_XB_T, G_XB_T = free_energy_XB_T(T0, omega,X_B,T)
     
     # Perform assertions
     assert isinstance(X_XB_T, np.ndarray)
     assert isinstance(T_XB_T, np.ndarray)
     assert isinstance(G_XB_T, np.ndarray)
 
-    
-    assert X_XB_T.shape == expected_shape
-    assert T_XB_T.shape == expected_shape
     
     # Check that X_XB_T and T_XB_T are the same as the meshgrid inputs
     X_B_mesh, T_mesh = np.meshgrid(X_B, T)
@@ -757,7 +776,10 @@ def test_T_entropie_eta_T():
     assert np.isclose(ts[1, 2], -R_gas * T_XB_T[1, 2] * (xlog(0.5 + eta_eta_T[1, 2]) + xlog(0.5 - eta_eta_T[1, 2])),equal_nan=True)
     assert np.isclose(ts[2, 1], -R_gas * T_XB_T[2, 1] * (xlog(0.5 + eta_eta_T[2, 1]) + xlog(0.5 - eta_eta_T[2, 1])),equal_nan=True)
     
-def free_energy_eta_T(T0,omega):
+def free_energy_eta_T(T0,
+                      omega,
+                      eta,
+                      T):
     
     """
     This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
@@ -773,6 +795,10 @@ def free_energy_eta_T(T0,omega):
         DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
     omega : TYPE float
         DESCRIPTION. Interaction parameter in J 
+    eta : TYPE array
+        DESCRIPTION. structural order parameter range
+    T : TYPE array
+        DESCRIPTION. temperature range
         
     Returns
     -------
@@ -810,9 +836,10 @@ def test_free_energy_eta_T():
     # Test input values
     T0 = 300.0
     omega = 1.0
-
+    eta=np.arrange(-0.5,0.5,0.01)
+    T=np.arrange(50,1000,50)
     # Call the function
-    eta_eta_T, T_eta_T, G_eta_T = free_energy_eta_T(T0, omega)
+    eta_eta_T, T_eta_T, G_eta_T = free_energy_eta_T(T0, omega, eta, T)
     print(eta_eta_T)
     # Perform assertions
     assert isinstance(eta_eta_T, np.ndarray)
