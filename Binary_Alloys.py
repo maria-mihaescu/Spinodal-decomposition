@@ -105,9 +105,9 @@ def test_ranges():
     X_B, T, eta = ranges(X_B_min, X_B_max, X_B_step, T_min, T_max, T_step, eta_min, eta_max, eta_step)
 
 
-    assert np.array_equal(X_B, expected_X_B)
-    assert np.array_equal(T, expected_T)
-    assert np.array_equal(eta, expected_eta)
+    assert np.allclose(X_B, expected_X_B)
+    assert np.allclose(T, expected_T)
+    assert np.allclose(eta, expected_eta)
 
 
 def xlog(x):
@@ -126,12 +126,11 @@ def xlog(x):
         DESCRIPTION. calculated array  
 
     """
-    try:
-       s = np.where((x > 0) & (~np.isnan(x)), x * np.log(x), np.nan)
+    #condition to suppress the runtime warning. 
+    #This ensures that the calculation proceeds without raising an exception and replaces the undefined logarithmic values with NaN
     
-    except RuntimeWarning:
-        # Handle the warning, e.g., assign NaN values
-        s = np.nan * np.ones_like(x)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        s = np.where((x > 0) & (~np.isnan(x)), x * np.log(x), np.nan)   
     return s
 
 
@@ -151,8 +150,9 @@ def test_xlog_positive():
     
     #results calculated with the function xlog
     result1 = xlog(X1)
-    
+
     assert np.allclose(result1, expected_result1)
+    
 
     
 def test_xlog_negative():
@@ -207,7 +207,7 @@ def test_xlog_zero():
     #calculated results with the function 
     result4 = xlog(X4)
     
-    assert np.array_equal(result4, expected_result4)
+    assert np.array_equal(result4, expected_result4,equal_nan=True)
     
 def test_xlog_nan():
     """
@@ -224,7 +224,7 @@ def test_xlog_nan():
     #calculated results with the function 
     result5 = xlog(X5)
     
-    assert np.array_equal(result5, expected_result5)
+    assert np.array_equal(result5, expected_result5,equal_nan=True)
     
     
 def plot_anim_3d(X,
@@ -339,23 +339,31 @@ def interaction_parameter(Z,
         DESCRIPTION.In teraction parameter in J 
 
     """
-    omega= -Z*diff_eV*1.6e-19
+    conversion_factor= 1.6e-19 #conversion factor from eV to J
+    omega= -Z*diff_eV*conversion_factor
 
     return omega
 
 def test_interaction_parameter():
+    
     """
-    test the calculation of the interaction parameter 
-
-    Returns
-    -------
-    None.
-
+    test the calculation of the interaction parameter.
+    
+    The input data is that Z is a positive integer, diff_eV a positive float 
+    and that the expected result is the multiplication of the two with the conversion
+    from eV to Joules.
+    
+    This is the only case tested as those are requirements given to the user in the documentation. 
+    We expect a negative value as the output as we multiply three positive values between themselves and -1. 
     """
+    #Starting data
     Z = 10
     diff_eV = 0.5
+    
+    #expected result
     expected_result = -8e-18
 
+    #result calculated with the function
     result = interaction_parameter(Z, diff_eV)
 
     assert np.isclose(result, expected_result), "interaction_parameter test failed"
@@ -389,38 +397,86 @@ def enthalpy_scal(eta,
     """
     x=composition
     e=eta
+    
     if abs(e)>=x or abs(e)>=(1-x):
         h=np.nan
+        
     else:
+        
         h=N_A*omega*(x*(1-x)+e**2)
+        
     return h
 
 
-def test_enthalpy_scal():
+
+def test_enthalpy_scal_physical_region():
     
     """
-    test the calculation of the enthalpy
-
-    Returns
-    -------
-    None.
+    This test case verifies the calculation of the enthalpy when the absolute value
+    of the order parameter (eta) is lower than the composition (x) and (1-x), as stated in the model.
+    It checks if the calculated enthalpy matches the expected value in the physical region.
 
     """
-    eta = 0.2  # example value for eta
-    composition = 0.5  # example value for composition
-    omega = 1.5  # example value for omega
-    T0 = 300  # example value for T0
+    #input values
+    eta = 0.2
+    composition = 0.4
+    omega = 10.0
+    T0 = 300.0
 
+    #expected output
+    expected_h = 1.6856e24
+
+    #calculated output 
     h = enthalpy_scal(eta, composition, omega, T0)
 
-    # Calculate the expected enthalpy value
-    if abs(eta) >= composition or abs(eta) >= (1 - composition):
-        expected_h = np.nan
-    else:
-        expected_h = N_A * omega * (composition * (1 - composition) + eta ** 2)
+    assert np.isclose(h, expected_h)
 
-    # Assert that the calculated enthalpy matches the expected value
-    assert np.isnan(h) and np.isnan(expected_h) or np.isclose(h, expected_h)
+
+def test_enthalpy_scal_unphysical_region():
+    
+    """
+    This test case verifies the handling of the unphysical region in the (X_B, eta) mesh.
+    When the absolute value of the order parameter (eta) is greater than or equal to the composition (x)
+    or (1-x), the enthalpy should be set to "Not a Number" (NaN) to avoid plotting non-physical values.
+    It checks if the calculated enthalpy matches the expected NaN value.
+    """
+    
+    #input data
+    eta = 0.5
+    composition = 0.8
+    omega = 5.0
+    T0 = 500.0
+
+    #expected output
+    expected_h = np.nan
+
+    #calculated value
+    h = enthalpy_scal(eta, composition, omega, T0)
+
+    assert np.isclose(h, expected_h,equal_nan=True)
+
+def test_enthalpy_scal_equal():
+    """
+    This test case verifies the calculation of the enthalpy when the absolute value
+    of the order parameter (eta) is equal to the composition (x), it is a limit case
+    as eta is smaler than (1-x) but not smaler than x.
+    We expect the output value to be not a number as it is in the unphysical region
+
+    """
+
+    #Input data
+    eta = 0.1
+    composition = 0.1
+    omega = 2.0
+    T0 = 400.0
+
+    #expected output
+    expected_h = np.nan
+
+    #calculated output
+    h = enthalpy_scal(eta, composition, omega, T0)
+
+    assert np.isclose(h, expected_h,equal_nan=True)
 
 
 def entropie_scal(eta,
