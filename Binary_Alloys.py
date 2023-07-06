@@ -585,15 +585,10 @@ def test_entropie_scal_equal():
 
     assert np.isclose(s, expected_s,equal_nan=True)
 
-
-def free_energy_XB_eta(T0,
-                       omega,
-                       X_B,
-                       eta):
-    
+def free_energy_XB_eta(T0, omega, X_B, eta):
     """
     This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
-    The assumptions taken in the model are :
+    The assumptions taken in the model are:
         - Only nearest-neighbours interactions are taken into account
         - Only the configurational Bragg-Williams-Gorsky entropy is considered
         - Strain energy due to atomic size mismatch and vibrational entropy are neglected
@@ -601,54 +596,50 @@ def free_energy_XB_eta(T0,
 
     Parameters
     ----------
-    T0 : TYPE float 
-        DESCRIPTION. Temperature for calculation of free energy surface in (X_B,eta) space
-    omega : TYPE float
-        DESCRIPTION. Interaction parameter in J 
-    X_B : TYPE array
-        DESCRIPTION. composition range
-    eta : TYPE array 
-        DESCRIPTION. structural order parameter range 
+    T0 : float
+        Temperature for calculation of free energy surface in (X_B,eta) space
+    omega : float
+        Interaction parameter in J
+    X_B : numpy.ndarray
+        Composition range
+    eta : numpy.ndarray
+        Structural order parameter range
 
     Returns
     -------
-    X_XB_eta : TYPE numpy.ndarray
-        DESCRIPTION. Composition in the (X_B,eta) space 
-    eta_XB_eta : TYPE numpy.ndarray
-        DESCRIPTION. Structural order parameter eta in the (X_B,eta) space 
-    G_XB_eta : TYPE numpy.ndarray
-        DESCRIPTION. Gibbs free energy G in the (X_B,eta) space 
-
+    X_XB_eta : numpy.ndarray
+        Composition in the (X_B,eta) space
+    eta_XB_eta : numpy.ndarray
+        Structural order parameter eta in the (X_B,eta) space
+    G_XB_eta : numpy.ndarray
+        Gibbs free energy G in the (X_B,eta) space
     """
-    
-    # Functions in (X_B,eta) space for T=T0
-    X_XB_eta,eta_XB_eta = np.meshgrid(X_B,eta)  # defines the (X_B, eta) grid
-     
-    H0=[]
-    S0=[]
-    G0=[]
-     
-    for xbg,etag in zip(X_XB_eta,eta_XB_eta):
-        h0=[]
-        s0=[]
-        g0=[]
-      
-        for x,e in zip(xbg,etag):
-            h=enthalpy_scal(e,x,omega,T0)
-            s=entropie_scal(e,x,omega,T0)
-            g=h-T0*s
-                 
-            h0.append(h)
-            s0.append(s)
-            g0.append(g)
-             
-        H0.append(h0) #Enthalpy
-        S0.append(s0) #Entropy
-        G0.append(g0) #Gibbs free energy
-     
-    G_XB_eta= np.array(G0)
-    
+
+    # Create meshgrid in (X_B,eta) space
+    X_XB_eta, eta_XB_eta = np.meshgrid(X_B, eta)
+
+    # Calculate enthalpy, entropy, and free energy for each (X_B,eta) pair
+    H_XB_eta = np.zeros_like(X_XB_eta)
+    S_XB_eta = np.zeros_like(X_XB_eta)
+    G_XB_eta = np.zeros_like(X_XB_eta)
+
+    for i in range(X_XB_eta.shape[0]):
+        for j in range(X_XB_eta.shape[1]):
+            
+            x = X_XB_eta[i, j]
+            e = eta_XB_eta[i, j]
+
+            h = enthalpy_scal(e, x, omega, T0)
+            s = entropie_scal(e, x, omega, T0)
+
+            H_XB_eta[i, j] = h
+            S_XB_eta[i, j] = s
+            G_XB_eta[i, j] = h - T0 * s
+
     return X_XB_eta, eta_XB_eta, G_XB_eta
+
+
+
 
 def test_free_energy_XB_eta():
     
