@@ -63,21 +63,21 @@ def make_window1():
     """
     layout = [
         [sg.Text("Free energy of a binary alloy in the Quasi-chemical atomistic model")],
-        [sg.Text('Number of nearest neighbours Z'), sg.InputText(key='-IN_Z-')],
-        [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-')],
-        [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
+        [sg.Text('Number of nearest neighbours Z'), sg.InputText(key='-IN_Z-',default_text=Z_str)],
+        [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-',default_text=diff_eV_str)],
+        [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-',default_text=T0_str)],
         [sg.Text('Composition range, chemical order parameter range X :')]
-        [sg.Text('Minimum of the composition range, X_B_min :'), sg.InputText(key='-IN_X_B_min-')],
-        [sg.Text('Maximum of the composition range, X_B_max :'), sg.InputText(key='-IN_X_B_max-')],
-        [sg.Text('Step of the composition range, X_B_step :'), sg.InputText(key='-IN_X_B_step-')],
+        [sg.Text('Minimum of the composition range, X_B_min :'), sg.InputText(key='-IN_X_B_min-',default_text=X_B_min_str)],
+        [sg.Text('Maximum of the composition range, X_B_max :'), sg.InputText(key='-IN_X_B_max-',default_text=X_B_max_str)],
+        [sg.Text('Step of the composition range, X_B_step :'), sg.InputText(key='-IN_X_B_step-',default_text=X_B_step_str)],
         [sg.Text('Temperature range T:')]
-        [sg.Text('Minimum of the temperature range, T_min :'), sg.InputText(key='-IN_T_min-')],
-        [sg.Text('Maximum of the temperature range, T_max :'), sg.InputText(key='-IN_T_max-')],
-        [sg.Text('Step of the temperature range, X_B_step :'), sg.InputText(key='-IN_T_step-')],
+        [sg.Text('Minimum of the temperature range, T_min :'), sg.InputText(key='-IN_T_min-',default_text=T_min_str)],
+        [sg.Text('Maximum of the temperature range, T_max :'), sg.InputText(key='-IN_T_max-',default_text=T_max_str)],
+        [sg.Text('Step of the temperature range, X_B_step :'), sg.InputText(key='-IN_T_step-',default_text=T_step_str)],
         [sg.Text('Structural order parameter range eta :')]
-        [sg.Text('Minimum of the order parameter range, eta_min :'), sg.InputText(key='-IN_eta_min-')],
-        [sg.Text('Maximum of the order parameter range, eta_max :'), sg.InputText(key='-IN_eta_max-')],
-        [sg.Text('Step of the order parameter range, eta_step :'), sg.InputText(key='-IN_eta_step-')],
+        [sg.Text('Minimum of the order parameter range, eta_min :'), sg.InputText(key='-IN_eta_min-',default_text=eta_min_str)],
+        [sg.Text('Maximum of the order parameter range, eta_max :'), sg.InputText(key='-IN_eta_max-',default_text=eta_max_str)],
+        [sg.Text('Step of the order parameter range, eta_step :'), sg.InputText(key='-IN_eta_step-',default_text=eta_step_str)],
    
         [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
         [sg.Button('< Prev p0'),sg.Button('Show Plots'),sg.Button('Next p2 >')],
@@ -125,27 +125,27 @@ def make_window3():
     
     layout = [[sg.Text('2D Spinodal decomposition solving Cahn Hilliards equations')],
               [sg.Text('Parameters specific to the material :')],
-              [sg.Text('Average composition of atom B [at. frac]: c0'),sg.InputText(key='-IN_c0-')],
-              [sg.Text('Temperature of the BiAlloy  [K] : T0'),sg.InputText(key='-IN_T0-')],
-              [sg.Text('Gradient coefficient [J*M^2/mol] : A'),sg.InputText(key='-IN_A-')],
+              [sg.Text('Average composition of atom B [at. frac]: c0'),sg.InputText(key='-IN_c0-',default_text=c0_str)],
+              [sg.Text('Temperature of the BiAlloy  [K] : T0'),sg.InputText(key='-IN_T0-',default_text=T_str)],
+              [sg.Text('Gradient coefficient [J*M^2/mol] : A'),sg.InputText(key='-IN_A-',default_text=A_str)],
               
-              [sg.Text('Coefficient for diffusion coefficient calculation of A atoms [M^2/s] : coef_DA'),sg.InputText(key='-IN_coef_DA-')],
-              [sg.Text('Activation energy for diffusion coefficient of A atoms [J/mol] : E_DA'),sg.InputText(key='-IN_E_DA-')],
-              [sg.Text('Coefficient for diffusion coefficient calculation of B atoms [M^2/s] : coef_DB'),sg.InputText(key='-IN_coef_DB-')],
-              [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText(key='-IN_E_DB-')],
+              [sg.Text('Coefficient for diffusion coefficient calculation of A atoms [M^2/s] : coef_DA'),sg.InputText(key='-IN_coef_DA-',default_text=coef_DA_str)],
+              [sg.Text('Activation energy for diffusion coefficient of A atoms [J/mol] : E_DA'),sg.InputText(key='-IN_E_DA-',default_text=E_DA_str)],
+              [sg.Text('Coefficient for diffusion coefficient calculation of B atoms [M^2/s] : coef_DB'),sg.InputText(key='-IN_coef_DB-',default_text=coef_DB_str)],
+              [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText(key='-IN_E_DB-',default_text=E_DB_str)],
               
               [sg.Text('Parameters specific to the grid :')],
-              [sg.Text('Seed for the random generation of concentration'),sg.InputText(key='-IN_Seed-')],
+              [sg.Text('Seed for the random generation of concentration'),sg.InputText(key='-IN_Seed-',default_text=seed_str)],
              
-              [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText(key='-IN_Nx-')],
-              [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText(key='-IN_Ny-')],
-              [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText(key='-IN_dx-')],
-              [sg.Text('Spacing of computational grids along the y direction [M] : dy'),sg.InputText(key='-IN_dy-')],
+              [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText(key='-IN_Nx-',default_text=Nx_str)],
+              [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText(key='-IN_Ny-',default_text=Ny_str)],
+              [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText(key='-IN_dx-',default_text=dx_str)],
+              [sg.Text('Spacing of computational grids along the y direction [M] : dy'),sg.InputText(key='-IN_dy-',default_text=dy_str)],
               
               [sg.Text('Parameters specific to the animation :')],
-              [sg.Text('Total number of time-steps  : Nsteps'),sg.InputText(key='-IN_Nsteps-')],
-              [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText(key='-IN_Nprint-')],
-              [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText(key='-IN_Interval-')],
+              [sg.Text('Total number of time-steps  : Nsteps'),sg.InputText(key='-IN_Nsteps-',default_text=nsteps_str)],
+              [sg.Text('Divisor of Nsteps used for printing : Nprint'),sg.InputText(key='-IN_Nprint-',default_text=nprint_str)],
+              [sg.Text('Interval between each frame [ms]: Interval'),sg.InputText(key='-IN_Interval-',default_text=interval_str)],
               
               [sg.Button('enter values'),sg.Button('< Prev p2'), sg.Button('Next p4 >')]]
 
@@ -244,34 +244,35 @@ while True:
             #assigning the str values from the configuration file
             
             #Binary Alloy
-            Z=Values_config[0]
-            diff_eV=Values_config[1]
-            T0=Values_config[2]
-            X_B_min=Values_config[3]
-            X_B_max=Values_config[4]
-            X_B_step=Values_config[5]
-            eta_min=Values_config[6]
-            eta_max=Values_config[7]
-            eta_step=Values_config[8]
-            T_min=Values_config[9]
-            T_max=Values_config[10]
-            T_step=Values_config[11]
+            Z_str=Values_config[0]
+            diff_eV_str=Values_config[1]
+            T0_str=Values_config[2]
+            X_B_min_str=Values_config[3]
+            X_B_max_str=Values_config[4]
+            X_B_step_str=Values_config[5]
+            eta_min_str=Values_config[6]
+            eta_max_str=Values_config[7]
+            eta_step_str=Values_config[8]
+            T_min_str=Values_config[9]
+            T_max_str=Values_config[10]
+            T_step_str=Values_config[11]
             
             #Spinodal decomposition
-            seed=Values_config[12]
-            c0=Values_config[13]
-            T=Values_config[14]
-            A=Values_config[15]
-            coef_DA=Values_config[16]
-            E_DA=Values_config[17]
-            coef_DB=Values_config[18]
-            E_DB=Values_config[19]
-            Nx=Values_config[20]
-            Ny=Values_config[21]
-            dx=Values_config[22]
-            nsteps=Values_config[23]
-            nprint=Values_config[24]
-            interval=Values_config[25]
+            seed_str=Values_config[12]
+            c0_str=Values_config[13]
+            T_str=Values_config[14]
+            A_str=Values_config[15]
+            coef_DA_str=Values_config[16]
+            E_DA_str=Values_config[17]
+            coef_DB_str=Values_config[18]
+            E_DB_str=Values_config[19]
+            Nx_str=Values_config[20]
+            Ny_str=Values_config[21]
+            dx_str=Values_config[22]
+            dy_str=Values_config[23]
+            nsteps_str=Values_config[24]
+            nprint_str=Values_config[25]
+            interval_str=Values_config[26]
             
         elif event == 'Next p1 >':
             
