@@ -66,7 +66,19 @@ def make_window1():
         [sg.Text('Number of nearest neighbours Z'), sg.InputText(key='-IN_Z-')],
         [sg.Text('Fraction of energy difference in eV'), sg.InputText(key='-IN_X-')],
         [sg.Text('Temperature in [K] for calculation of G in (X_B, eta) space'), sg.InputText(key='-IN_T-')],
-       
+        [sg.Text('Composition range, chemical order parameter range X :')]
+        [sg.Text('Minimum of the composition range, X_B_min :'), sg.InputText(key='-IN_X_B_min-')],
+        [sg.Text('Maximum of the composition range, X_B_max :'), sg.InputText(key='-IN_X_B_max-')],
+        [sg.Text('Step of the composition range, X_B_step :'), sg.InputText(key='-IN_X_B_step-')],
+        [sg.Text('Temperature range T:')]
+        [sg.Text('Minimum of the temperature range, T_min :'), sg.InputText(key='-IN_T_min-')],
+        [sg.Text('Maximum of the temperature range, T_max :'), sg.InputText(key='-IN_T_max-')],
+        [sg.Text('Step of the temperature range, X_B_step :'), sg.InputText(key='-IN_T_step-')],
+        [sg.Text('Structural order parameter range eta :')]
+        [sg.Text('Minimum of the order parameter range, eta_min :'), sg.InputText(key='-IN_eta_min-')],
+        [sg.Text('Maximum of the order parameter range, eta_max :'), sg.InputText(key='-IN_eta_max-')],
+        [sg.Text('Step of the order parameter range, eta_step :'), sg.InputText(key='-IN_eta_step-')],
+   
         [sg.Canvas(key='-FIG0-'),sg.Canvas(key='-FIG1-')],
         [sg.Button('< Prev p0'),sg.Button('Show Plots'),sg.Button('Next p2 >')],
     ]
@@ -123,6 +135,8 @@ def make_window3():
               [sg.Text('Activation energy for diffusion coefficient of B atoms [J/mol] : E_DB'),sg.InputText(key='-IN_E_DB-')],
               
               [sg.Text('Parameters specific to the grid :')],
+              [sg.Text('Seed for the random generation of concentration'),sg.InputText(key='-IN_Seed-')],
+             
               [sg.Text('Number of computational grids along the x direction : Nx'),sg.InputText(key='-IN_Nx-')],
               [sg.Text('Number of computational grids along the y direction : Ny'),sg.InputText(key='-IN_Ny-')],
               [sg.Text('Spacing of computational grids along the x direction [M] : dx'),sg.InputText(key='-IN_dx-')],
@@ -209,6 +223,7 @@ figure_canvas_agg_3d2=None
 figure_canvas_agg_chem_pot=None
 figure_canvas_agg_init_c=None
 figure_canvas_agg = None
+
 #set the color bar to None in order to be able to update it later
 cbar=None
 
@@ -222,10 +237,44 @@ while True:
             break
         
         elif event == 'Load Configuration':
+            
             file_path = values['-FILE-']
-            load_configuration(file_path)
-        
+            Names_config,Values_config=load_configuration(file_path)
+            
+            #assigning the str values from the configuration file
+            
+            #Binary Alloy
+            Z=Values_config[0]
+            diff_eV=Values_config[1]
+            T0=Values_config[2]
+            X_B_min=Values_config[3]
+            X_B_max=Values_config[4]
+            X_B_step=Values_config[5]
+            eta_min=Values_config[6]
+            eta_max=Values_config[7]
+            eta_step=Values_config[8]
+            T_min=Values_config[9]
+            T_max=Values_config[10]
+            T_step=Values_config[11]
+            
+            #Spinodal decomposition
+            seed=Values_config[12]
+            c0=Values_config[13]
+            T=Values_config[14]
+            A=Values_config[15]
+            coef_DA=Values_config[16]
+            E_DA=Values_config[17]
+            coef_DB=Values_config[18]
+            E_DB=Values_config[19]
+            Nx=Values_config[20]
+            Ny=Values_config[21]
+            dx=Values_config[22]
+            nsteps=Values_config[23]
+            nprint=Values_config[24]
+            interval=Values_config[25]
+            
         elif event == 'Next p1 >':
+            
             window0.hide()
             window1 = make_window1()
             
@@ -317,6 +366,7 @@ while True:
             E_DA=float(values['-IN_E_DA-'])
             coef_DB=float(values['-IN_coef_DB-'])
             E_DB=float(values['-IN_E_DB-'])
+            Seed=int(values['-IN_Seed-'])
             Nx=int(values['-IN_Nx-'])
             Ny=int(values['-IN_Ny-'])
             dx=float(values['-IN_dx-'])
