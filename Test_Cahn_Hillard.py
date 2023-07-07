@@ -14,6 +14,7 @@ from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
 
 from Cahn_Hillard import add_fluctuation
+from Cahn_Hillard import func_laplacian
 
 #####################################################################################################################
 
@@ -204,6 +205,39 @@ def test_add_fluctuation():
 
 
 #####################################################################################################################
+
+def test_func_laplacian():
+    
+    """
+    Test function for the func_laplacian function.
+    This test case verifies the calculation of the gradient term for a given quantity at a matrix point.
+    It checks if the calculated gradient term matches the expected result.
+
+    The input values include the quantity at the center point and its surrounding points (left, right, up, down),
+    as well as the grid spacing in the x and y directions (dx, dy).
+    
+    All those quantities have to be positive, and the grid spacing cannot be equal to 0.
+
+    """
+
+    # Input values
+    center = 2.0
+    left = 1.0
+    right = 6
+    up = 4.0
+    down = 0.5
+    dx = 0.1
+    dy = 0.2
+
+    # Expected result
+    expected_lap = 312.5
+    
+    # Calculated result with the function
+    lap = func_laplacian(center, left, right, up, down, dx, dy)
+
+    # Compare the calculated result with expected result
+    assert np.isclose(lap, expected_lap)
+
 
 #####################################################################################################################
 

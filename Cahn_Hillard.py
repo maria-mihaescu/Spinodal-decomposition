@@ -154,47 +154,6 @@ def func_laplacian(center,
     lap=(right-2*center+left)/dx/dx + (up -2*center+down) /dy/dy
     return lap
 
-def test_func_laplacian():
-    """
-    Test function to calculate the laplacian of a quantity at a given matrix point
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    center = 1.0
-    left = 0.5
-    right = 1.5
-    up = 1.2
-    down = 0.8
-    dx = 0.1
-    dy = 0.2
-    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
-    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
-
-    # Test case 2
-    center = 2.0
-    left = 1.5
-    right = 2.5
-    up = 2.2
-    down = 1.8
-    dx = 0.2
-    dy = 0.3
-    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
-    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
-
-    # Test case 3
-    center = 0.5
-    left = 0.3
-    right = 0.7
-    up = 0.4
-    down = 0.2
-    dx = 0.05
-    dy = 0.1
-    expected_output = (right - 2 * center + left) / dx / dx + (up - 2 * center + down) / dy / dy
-    assert func_laplacian(center, left, right, up, down, dx, dy) == expected_output
 
 
 def chemical_free_energy_density(c,
