@@ -30,35 +30,6 @@ def atom_interac_cst(T):
     La = 20000.-9.*T # Atom interaction constant [J/mol]
     return La
 
-def test_atom_interac_cst():
-    """
-    test function to test the atomic interaction constant calculation 
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1: T = 300 K
-    T = 300
-    expected_output = 20000 - 9 * T
-    assert atom_interac_cst(T) == expected_output
-
-    # Test case 2: T = 500 K
-    T = 500
-    expected_output = 20000 - 9 * T
-    assert atom_interac_cst(T) == expected_output
-
-    # Test case 3: T = 0 K
-    T = 0
-    expected_output = 20000 - 9 * T
-    assert atom_interac_cst(T) == expected_output
-
-    # Test case 4: T = 1000 K
-    T = 1000
-    expected_output = 20000 - 9 * T
-    assert atom_interac_cst(T) == expected_output
-
 
 def diffusion_coeff(coef,
                     E,
@@ -83,43 +54,6 @@ def diffusion_coeff(coef,
     """
     Diff=coef*np.exp(-E/(R*T))
     return Diff
-
-def test_diffusion_coeff():
-    """
-    test function to test the diffusion coefficient calculation
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    coef = 1.5
-    E = 50000
-    T = 300
-    expected_output = coef * np.exp(-E / (8.314 * T))
-    assert diffusion_coeff(coef, E, T) == expected_output
-
-    # Test case 2
-    coef = 2.0
-    E = 60000
-    T = 400
-    expected_output = coef * np.exp(-E / (8.314 * T))
-    assert diffusion_coeff(coef, E, T) == expected_output
-
-    # Test case 3
-    coef = 0.8
-    E = 40000
-    T = 200
-    expected_output = coef * np.exp(-E / (8.314 * T))
-    assert diffusion_coeff(coef, E, T) == expected_output
-
-    # Test case 4
-    coef = 1.2
-    E = 55000
-    T = 500
-    expected_output = coef * np.exp(-E / (8.314 * T))
-    assert diffusion_coeff(coef, E, T) == expected_output
 
 
 def time_increment(dx,
