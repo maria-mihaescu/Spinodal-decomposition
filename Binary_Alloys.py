@@ -586,6 +586,7 @@ def test_entropie_scal_equal():
     assert np.isclose(s, expected_s,equal_nan=True)
 
 def free_energy_XB_eta(T0, omega, X_B, eta):
+    
     """
     This function calculates the free energy of a binary alloy in the "quasi-chemical" atomistic model.
     The assumptions taken in the model are:
@@ -640,27 +641,109 @@ def free_energy_XB_eta(T0, omega, X_B, eta):
 
 
 
-
-def test_free_energy_XB_eta():
-    
+def test_free_energy_XB_eta_positive():
     """
-    Test function for the definition of the free energy in the (XB,eta) space
-
-    Returns
-    -------
-    None.
-
+    Test function for the free_energy_XB_eta function with positive values of eta.
+    This test case verifies the calculation of free energy for specific input values.
+    It checks if the calculated free energy matches the expected values.
+    The length of the X_B and eta arrays have to be the same. 
+    The composition values have to be positive and between 0 and 1 to have physical sense.
+    In this case, we took positive values of eta between 0 and 0.5.
+    
+    In the combinations where abs(eta) is greater than or equal to the composition (x) or (1-x),
+    we expect np.nan values. This is the case for four combinations of eta and x, namely:
+        - e=0.3 > x=0.2
+        - e=0.5 > x=0.4
+        - e=0.5 > (1-x)=1-0.6=0.4
+        - e=0.5 > x=0.2
     """
-    
-    T0 = 300  # example value for T0
-    omega = 1.5  # example value for omega
-    X_B=np.array(0,1,0.01)
-    eta=np.array(-0.5,0.5,0.01)
-    
-    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0,omega,X_B,eta)
+    # Input values
+    T0 = 300.0
+    omega = 10.0
+    X_B = np.array([0.2, 0.4, 0.6])
+    eta = np.array([0.1, 0.3, 0.5])
 
-    # Check if any NaN values exist in the arrays
-    assert np.isnan(G_XB_eta).any()  # Expecting the presence of NaN values
+    # Expected results
+    expected_X_XB_eta = np.array([[0.2, 0.4, 0.6],
+                                  [0.2, 0.4, 0.6],
+                                  [0.2, 0.4, 0.6]])
+
+    expected_eta_XB_eta = np.array([[0.1, 0.1, 0.1],
+                                    [0.3, 0.3, 0.3],
+                                    [0.5, 0.5, 0.5]])
+
+    expected_G_XB_eta = np.array([[1.0234e24, 1.5050e24, 1.5050e24],
+                                  [np.nan, 1.5050e24, 1.9866e24],
+                                  [np.nan, np.nan, np.nan]])
+
+    
+    # Check if specific elements in the expected value matrix have NaN values
+    nan_indices = np.isnan(expected_G_XB_eta)
+    expected_nan_mask = np.array([[False, False, False],
+                                  [True, False, False],
+                                  [True, True, True]])
+    
+    # Calculated results with the function
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
+    
+    
+    # Compare the calculated results with expected results
+    
+    assert np.allclose(X_XB_eta, expected_X_XB_eta)
+    assert np.allclose(eta_XB_eta, expected_eta_XB_eta)
+    assert np.allclose(nan_indices, expected_nan_mask)
+
+def test_free_energy_XB_eta_negative():
+    """
+    Test function for the free_energy_XB_eta function with negative values of eta.
+    This test case verifies the calculation of free energy for specific input values.
+    It checks if the calculated free energy matches the expected values.
+    The length of the X_B and eta arrays have to be the same.
+    The composition values have to be positive and between 0 and 1 to have physical sense.
+    In this case, we took negative values of eta between -0.5 and 0.
+
+    In the combinations where abs(eta) is greater than or equal to the composition (x) or (1-x),
+    we expect np.nan values. This is the case for four combinations of eta and x, namely:
+        - abs(e)= 0.3 > x=0.1
+        - abs(e)= 0.4 > x=0.3
+        - abs(e)= 0.3 = x=0.3
+        - abs(e)= 0.4 > x=0.1
+    """
+    # Input values
+    T0 = 300.0
+    omega = 10.0
+    X_B = np.array([0.1, 0.3, 0.5])
+    eta = np.array([-0.4, -0.3, -0.1])
+
+    # Expected results
+    expected_X_XB_eta = np.array([[0.1, 0.3, 0.5],
+                                  [0.1, 0.3, 0.5],
+                                  [0.1, 0.3, 0.5]])
+
+    expected_eta_XB_eta = np.array([[-0.4, -0.4, -0.4],
+                                    [-0.3, -0.3, -0.3],
+                                    [-0.1, -0.1, -0.1]])
+
+    expected_G_XB_eta = np.array([[np.nan, np.nan, 2.4682e+24],
+                                  [np.nan, np.nan, 2.0468e+24],
+                                  [np.nan, 1.3244e+24, 1.5652e+24]])
+
+    # Check if specific elements in the expected value matrix have NaN values
+    nan_indices = np.isnan(expected_G_XB_eta)
+    
+    expected_nan_mask = np.array([[True, True, False],
+                                  [True, True, False],
+                                  [True, False, False]])
+    
+
+    # Calculated results with the function
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
+
+    
+    # Compare the calculated results with expected results
+    assert np.allclose(X_XB_eta, expected_X_XB_eta)
+    assert np.allclose(eta_XB_eta, expected_eta_XB_eta)
+    assert np.allclose(nan_indices, expected_nan_mask)
 
     
 def enthalpie_XB_T(X_XB_T,
