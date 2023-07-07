@@ -15,6 +15,7 @@ from Cahn_Hillard import time_increment
 
 from Cahn_Hillard import add_fluctuation
 from Cahn_Hillard import func_laplacian
+from Cahn_Hillard import chemical_free_energy_density
 
 #####################################################################################################################
 
@@ -206,7 +207,7 @@ def test_add_fluctuation():
 
 #####################################################################################################################
 
-def test_func_laplacian():
+def test_func_laplacian_positive():
     
     """
     Test function for the func_laplacian function.
@@ -241,6 +242,35 @@ def test_func_laplacian():
 
 #####################################################################################################################
 
+def test_chemical_free_energy_density_positive():
+    """
+    Test function for the chemical_free_energy_density function.
+    This test case verifies the calculation of the chemical potential at a specific point with concentration c.
+    It checks if the calculated chemical free energy density matches the expected result.
+
+    The input values include the 
+        -composition of B atom (c), that has to be strictly between 0 and 1
+        -the temperature (T), that has to be strictly positive
+        -the atomic interaction constant (La) That has to be positive
+        
+    This is the only physically valid inputs, thus it is the only case tested.
+
+    """
+
+    # Input values
+    c = 0.3
+    T = 300.0
+    La = 20000.0
+
+    # Expected result
+    expected_chem_pot = 2676.3822
+
+    # Calculated result with the function
+    chem_pot = chemical_free_energy_density(c, T, La)
+
+    # Compare the calculated result with expected result
+    assert np.isclose(chem_pot, expected_chem_pot)
+    
 #####################################################################################################################
 
 #####################################################################################################################

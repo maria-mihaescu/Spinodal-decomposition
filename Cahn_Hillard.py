@@ -155,7 +155,6 @@ def func_laplacian(center,
     return lap
 
 
-
 def chemical_free_energy_density(c,
                        T,
                        La):
@@ -181,37 +180,7 @@ def chemical_free_energy_density(c,
     chem_pot= R*T*(c*np.log(c)+(1-c)*np.log(1-c))+La*c*(1-c)
     return chem_pot
 
-def test_chemical_free_energy_density():
-    """
-    Test function to test the calculation of the free energy density with some example cases
 
-    Returns
-    -------
-    None.
-
-    """
-    import numpy as np
-    # Test case 1
-    c = 0.2
-    T = 673 
-    La = 10
-    R = 8.314  # Gas constant
-    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
-    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
-
-    # Test case 2
-    c = 0.6
-    T = 673 
-    La = 5
-    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
-    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
-
-    # Test case 3
-    c = 0.8
-    T = 673 
-    La = 20
-    expected_output = R * T * (c * np.log(c) + (1 - c) * np.log(1 - c)) + La * c * (1 - c)
-    assert np.isclose(chemical_free_energy_density(c, T, La), expected_output)
 
 
 def plot_chemical_free_energy_density(c0,
