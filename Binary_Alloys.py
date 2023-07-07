@@ -641,14 +641,61 @@ def free_energy_XB_eta(T0, omega, X_B, eta):
 
 
 
-def test_free_energy_XB_eta_positive():
+def test_free_energy_XB_eta_physical():
     """
-    Test function for the free_energy_XB_eta function with positive values of eta.
+    Test function for the free_energy_XB_eta in the physical range.
+    
+    The physical range is defines by abs(eta) strictly smaller than the composition (x) or (1-x)
+    
     This test case verifies the calculation of free energy for specific input values.
     It checks if the calculated free energy matches the expected values.
     The length of the X_B and eta arrays have to be the same. 
+    
     The composition values have to be positive and between 0 and 1 to have physical sense.
-    In this case, we took positive values of eta between 0 and 0.5.
+    and eta has to have values between -0.5 and 0.5.
+
+    """
+    # Input values
+    T0 = 300.0
+    omega = 10.0
+    X_B = np.array([0.2, 0.4, 0.6])
+    eta = np.array([-0.1, 0, 0.1])
+
+    # Expected results
+    expected_X_XB_eta = np.array([[0.2, 0.4, 0.6],
+                                  [0.2, 0.4, 0.6],
+                                  [0.2, 0.4, 0.6]])
+
+    expected_eta_XB_eta = np.array([[-0.1, -0.1, -0.1],
+                                    [0, 0, 0],
+                                    [0.1 ,0.1, 0.1]])
+
+    expected_G_XB_eta = np.array([[1.0234e24, 1.5050e24, 1.5050e24],
+                                  [9.6320e23, 1.4448e24, 1.4448e24],
+                                  [1.0234e24, 1.5050e24, 1.5050e24]])
+
+    
+    # Calculated results with the function
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
+    
+    # Compare the calculated results with expected results
+    
+    assert np.allclose(X_XB_eta, expected_X_XB_eta)
+    assert np.allclose(eta_XB_eta, expected_eta_XB_eta)
+    assert np.allclose(G_XB_eta, expected_G_XB_eta)
+    
+    
+def test_free_energy_XB_eta_unphysical():
+    
+    """
+    Test function for the free_energy_XB_eta in the unphysical range.
+    
+    This test case verifies the calculation of free energy for specific input values.
+    It checks if the calculated free energy matches the expected values.
+    The length of the X_B and eta arrays have to be the same. 
+    
+    The composition values have to be positive and between 0 and 1 to have physical sense.
+    and eta has to have values between -0.5 and 0.5.
     
     In the combinations where abs(eta) is greater than or equal to the composition (x) or (1-x),
     we expect np.nan values. This is the case for four combinations of eta and x, namely:
@@ -656,6 +703,8 @@ def test_free_energy_XB_eta_positive():
         - e=0.5 > x=0.4
         - e=0.5 > (1-x)=1-0.6=0.4
         - e=0.5 > x=0.2
+        
+    This test looks at were the nan values are and if they are at the expected place for the free energy.
     """
     # Input values
     T0 = 300.0
@@ -672,79 +721,20 @@ def test_free_energy_XB_eta_positive():
                                     [0.3, 0.3, 0.3],
                                     [0.5, 0.5, 0.5]])
 
-    expected_G_XB_eta = np.array([[1.0234e24, 1.5050e24, 1.5050e24],
-                                  [np.nan, 1.5050e24, 1.9866e24],
-                                  [np.nan, np.nan, np.nan]])
-
-    
-    # Check if specific elements in the expected value matrix have NaN values
-    nan_indices = np.isnan(expected_G_XB_eta)
     expected_nan_mask = np.array([[False, False, False],
                                   [True, False, False],
                                   [True, True, True]])
     
-    # Calculated results with the function
-    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
+    # Calculated results with the function and looks where the np.nan values are
     
+    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
+    nan_indices = np.isnan(G_XB_eta)
     
     # Compare the calculated results with expected results
     
     assert np.allclose(X_XB_eta, expected_X_XB_eta)
     assert np.allclose(eta_XB_eta, expected_eta_XB_eta)
     assert np.allclose(nan_indices, expected_nan_mask)
-
-def test_free_energy_XB_eta_negative():
-    """
-    Test function for the free_energy_XB_eta function with negative values of eta.
-    This test case verifies the calculation of free energy for specific input values.
-    It checks if the calculated free energy matches the expected values.
-    The length of the X_B and eta arrays have to be the same.
-    The composition values have to be positive and between 0 and 1 to have physical sense.
-    In this case, we took negative values of eta between -0.5 and 0.
-
-    In the combinations where abs(eta) is greater than or equal to the composition (x) or (1-x),
-    we expect np.nan values. This is the case for four combinations of eta and x, namely:
-        - abs(e)= 0.3 > x=0.1
-        - abs(e)= 0.4 > x=0.3
-        - abs(e)= 0.3 = x=0.3
-        - abs(e)= 0.4 > x=0.1
-    """
-    # Input values
-    T0 = 300.0
-    omega = 10.0
-    X_B = np.array([0.1, 0.3, 0.5])
-    eta = np.array([-0.4, -0.3, -0.1])
-
-    # Expected results
-    expected_X_XB_eta = np.array([[0.1, 0.3, 0.5],
-                                  [0.1, 0.3, 0.5],
-                                  [0.1, 0.3, 0.5]])
-
-    expected_eta_XB_eta = np.array([[-0.4, -0.4, -0.4],
-                                    [-0.3, -0.3, -0.3],
-                                    [-0.1, -0.1, -0.1]])
-
-    expected_G_XB_eta = np.array([[np.nan, np.nan, 2.4682e+24],
-                                  [np.nan, np.nan, 2.0468e+24],
-                                  [np.nan, 1.3244e+24, 1.5652e+24]])
-
-    # Check if specific elements in the expected value matrix have NaN values
-    nan_indices = np.isnan(expected_G_XB_eta)
-    
-    expected_nan_mask = np.array([[True, True, False],
-                                  [True, True, False],
-                                  [True, False, False]])
-    
-
-    # Calculated results with the function
-    X_XB_eta, eta_XB_eta, G_XB_eta = free_energy_XB_eta(T0, omega, X_B, eta)
-
-    
-    # Compare the calculated results with expected results
-    assert np.allclose(X_XB_eta, expected_X_XB_eta)
-    assert np.allclose(eta_XB_eta, expected_eta_XB_eta)
-    assert np.allclose(nan_indices, expected_nan_mask)
-
     
 def enthalpie_XB_T(X_XB_T,
                    T0,
@@ -837,7 +827,7 @@ def T_entropie_XB_T(X_XB_T, T_XB_T,T0,omega):
     return ts
 
 
-def test_T_entropie_XB_T_valid():
+def test_T_entropie_XB_T_defined():
     
     """
     Test function for the T_entropie_XB_T function with valid input values.
@@ -848,10 +838,11 @@ def test_T_entropie_XB_T_valid():
     a reference temperature (T0), and an interaction parameter (omega).
     
     The composition has to be between 0 and 1 to have physical sense.
+    The entropie is defined if the composition is strictly superior at 0 and strictly inferior 
+    at 1.
+    
     T_XB_T and T0 have to be positive, and omega can be any real value.
 
-    This is the only case tested as those are requirements on the input values given to the user
-    in the documentation. 
     """
 
     # Input values
@@ -869,13 +860,58 @@ def test_T_entropie_XB_T_valid():
     expected_ts = np.array([[540.13186195, 1039.28579345, 1522.44488273],
                             [1956.8891037, 2303.35580689, 2516.00027618],
                             [2537.40813788, 2286.42874558, 1620.39558585]])
+    
+    
 
     # Calculated results with the function
     ts = T_entropie_XB_T(X_XB_T, T_XB_T, T0, omega)
 
     # Compare the calculated results with expected results
     assert np.allclose(ts, expected_ts)
+    
+    
+def test_T_entropie_XB_T_undefined():
+    
+    """
+    Test function for the T_entropie_XB_T function with valid input values.
+    This test case verifies the calculation of temperature times entropy for valid input values.
+    It checks if the calculated values match the expected results.
 
+    The input values include a composition array (XB), a temperature array (T_XB_T),
+    a reference temperature (T0), and an interaction parameter (omega).
+    
+    We expect np.nan values for x=0 and x=1 because of the limits of the xlog function.
+    And for negative compositions or composition bigger than 1 that don't have physical sense.
+    
+    The entropie is not defined in this limit.
+    
+    T_XB_T and T0 have to be positive, and omega can be any real value.
+
+    """
+
+    # Input values
+    X_XB_T = np.array([[0, 0, 0],
+                       [0.5, 0.1, -5],
+                       [0.9, 1.2, 1]])
+    
+    T_XB_T = np.array([[200, 250, 300],
+                       [350, 400, 450],
+                       [500, 550, 600]])
+    T0 = 300.0
+    omega = 10.0
+
+    # Expected results
+    
+    expected_nan_mask = np.array([[True, True, True],
+                                  [False, False, True],
+                                  [False, True, True]])
+
+    # Calculated results with the function
+    ts = T_entropie_XB_T(X_XB_T, T_XB_T, T0, omega)
+    nan_indices = np.isnan(ts)
+
+    # Compare the calculated results with expected results
+    assert np.allclose(nan_indices, expected_nan_mask)
 
 def free_energy_XB_T(T0,
                      omega,
@@ -1006,14 +1042,14 @@ def test_enthalpie_eta_T_valid():
     T0 = 300.0
     omega = 10.0
     
-    eta_eta_T = np.array([[0.1, 0.2, 0.3],
-                          [0.4, 0.5, 0.6],
-                          [0.7, 0.8, 0.9]])
+    eta_eta_T = np.array([[-0.5, -0.3, -0.1],
+                          [0, 0.2, 0.3],
+                          [0.4, 0.5, 0]])
 
     # Expected results
-    expected_h = np.array([[1.5652e24, 1.7458e24, 2.0468e24],
-                           [2.4682e24, 3.0100e24, 3.6722e24],
-                           [4.4548e24, 5.3578e24, 6.3812e24]])
+    expected_h = np.array([[3.0100e24, 2.0468e24, 1.5652e24],
+                           [1.5050e24, 1.7458e24, 2.0468e24],
+                           [2.4682e24, 3.0100e24, 1.5050e24]])
 
     # Calculated results with the function
     h = enthalpie_eta_T(eta_eta_T, T0, omega)
@@ -1049,46 +1085,86 @@ def T_entropie_eta_T(eta_eta_T,T_XB_T,T0,omega):
     
     return ts
 
-# def test_T_entropie_eta_T():
-#     """
-#     test function to test the caltulation of T*entropie in the (eta,T) space
 
-#     Returns
-#     -------
-#     None.
+def test_T_entropie_eta_T_defined():
+    
+    """
+    Test function for the T_entropie_eta_T function with valid input values.
+    This test case verifies the calculation of temperature times entropy for valid input values in the defined range.
+    It checks if the calculated values match the expected results.
 
-#     """
-#     # Test input values
-#     eta_eta_T = np.array([[0.1, 0.2, 0.3],
-#                           [0.4, 0.5, 0.6],
-#                           [0.7, 0.8, 0.9]])
-#     T_XB_T = np.array([[300, 400, 500],
-#                        [600, 700, 800],
-#                        [900, 1000, 1100]])
-#     T0 = 300.0
-#     omega = 1.0
+    The input values include a structural order parameter array (eta_eta_T),
+    a temperature array (T_XB_T), a reference temperature (T0), and an interaction parameter (omega).
+    The structural order parameter values, temperature values, and reference temperature have to be within the appropriate ranges.
+           - eta strictly between -0.5 and 0.5 (the entropie is not defined for eta=-0.5 or eta=0.5 or eta outside the range)
+           - positive temperatures
+    """
+
+    # Input values
+    T0 = 300.0
+    omega = 10.0
     
-#     # Expected output shape
-#     expected_shape = eta_eta_T.shape
+    eta_eta_T = np.array([[-0.36, -0.1, -0.47],
+                          [0, 0.16, 0.28],
+                          [0.49, 0.48, -0.49]])
     
-#     # Call the function
-#     ts = T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
-#     print(ts)
-#     # Perform assertions
-#     assert isinstance(ts, np.ndarray)
-#     assert ts.shape == expected_shape
+    T_XB_T = np.array([[200, 250, 300],
+                       [350, 400, 450],
+                       [500, 550, 600]])
+
+    # Expected results
     
-#     # Check calculated values against expected values
-#     expected_ts = -R_gas * (np.multiply(T_XB_T, (xlog(0.5 + eta_eta_T) + xlog(0.5 - eta_eta_T))))
-#     print(expected_ts)
-#     assert np.allclose(ts, expected_ts,equal_nan=True)
+    expected_ts = np.array([[672.8549297, 1397.77793121, 335.81521091],
+                            [2015.43633103, 2130.18653442, 1969.80326117],
+                            [232.6191734, 447.95835562, 279.14300808]])
+
+    # Calculated results with the function
+    ts = T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
+
+    # Compare the calculated results with expected results
+    assert np.allclose(ts, expected_ts)
+
+def test_T_entropie_eta_T_undefined():
     
+    """
+    Test function for the T_entropie_eta_T function with valid input values.
+    This test case verifies the calculation of temperature times entropy for valid input values in the undefined range.
+    It checks if the calculated values match the expected results.
+
+    The input values include a structural order parameter array (eta_eta_T),
+    a temperature array (T_XB_T), a reference temperature (T0), and an interaction parameter (omega).
+    The structural order parameter values, temperature values, and reference temperature have to be within the appropriate ranges.
+           - the entropie is not defined for eta=-0.5 or eta=0.5 or eta outside the range
+           -we expect np.nan values of the entropie for those values of eta
+           - positive temperatures
+    """
+
+    # Input values
+    T0 = 300.0
+    omega = 10.0
     
-#     # Check specific values
-#     assert np.isclose(ts[0, 0], -R_gas * T_XB_T[0, 0] * (xlog(0.5 + eta_eta_T[0, 0]) + xlog(0.5 - eta_eta_T[0, 0])),equal_nan=True)
-#     assert np.isclose(ts[1, 2], -R_gas * T_XB_T[1, 2] * (xlog(0.5 + eta_eta_T[1, 2]) + xlog(0.5 - eta_eta_T[1, 2])),equal_nan=True)
-#     assert np.isclose(ts[2, 1], -R_gas * T_XB_T[2, 1] * (xlog(0.5 + eta_eta_T[2, 1]) + xlog(0.5 - eta_eta_T[2, 1])),equal_nan=True)
+    eta_eta_T = np.array([[-0.5, -0.1, -0.47],
+                          [0, 0.16, 0.6],
+                          [-0.9, 0.5, -0.49]])
     
+    T_XB_T = np.array([[200, 250, 300],
+                       [350, 400, 450],
+                       [500, 550, 600]])
+
+    # Expected results
+    
+    expected_nan_mask = np.array([[True, False, False],
+                                  [False, False, True],
+                                  [True, True, False]])
+
+    # Calculated results with the function
+    ts = T_entropie_eta_T(eta_eta_T, T_XB_T, T0, omega)
+    nan_indices = np.isnan(ts)
+
+    # Compare the calculated results with expected results
+    assert np.allclose(nan_indices, expected_nan_mask)
+
+
 def free_energy_eta_T(T0,
                       omega,
                       X_B,
