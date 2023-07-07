@@ -78,38 +78,6 @@ def time_increment(dx,
     dt = (dx*dx/Diff_A)*conversion_factor
     return dt
 
-def test_time_increment():
-    """
-    test function to test the calculation of the time increment
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    dx = 0.1
-    Diff_A = 1.5e-9
-    expected_output = (dx * dx / Diff_A) * 0.1
-    assert time_increment(dx, Diff_A) == expected_output
-
-    # Test case 2
-    dx = 0.05
-    Diff_A = 2.0e-9
-    expected_output = (dx * dx / Diff_A) * 0.1
-    assert time_increment(dx, Diff_A) == expected_output
-
-    # Test case 3
-    dx = 0.2
-    Diff_A = 0.8e-9
-    expected_output = (dx * dx / Diff_A) * 0.1
-    assert time_increment(dx, Diff_A) == expected_output
-
-    # Test case 4
-    dx = 0.15
-    Diff_A = 1.2e-9
-    expected_output = (dx * dx / Diff_A) * 0.1
-    assert time_increment(dx, Diff_A) == expected_output
 
 
 def add_fluctuation(Nx, 

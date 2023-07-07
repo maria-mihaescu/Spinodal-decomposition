@@ -11,7 +11,7 @@ R = 8.314 # gas constant
 
 from Cahn_Hillard import atom_interac_cst
 from Cahn_Hillard import diffusion_coeff
-
+from Cahn_Hillard import time_increment
 
 #####################################################################################################################
 
@@ -141,6 +141,31 @@ def test_diffusion_coeff_zero_energy():
 
 
 #####################################################################################################################
+
+def test_time_increment_positive():
+    """
+    Test function for the time_increment function with positive inputs.
+    This test case verifies the calculation of the time increment for positive input values.
+    It checks if the calculated time increment matches the expected result.
+    
+    This is the only physically valid case as dx has to be positive and different to zero,
+    and the diffusion coefficient has to be positive and defferent than zero.
+
+    """
+
+    # Input values
+    dx = 0.1
+    Diff_A = 1.0
+
+    # Expected result
+    expected_dt = 0.001  
+
+    # Calculated result with the function
+    dt = time_increment(dx, Diff_A)
+    
+    # Compare the calculated result with the expected result
+    assert np.allclose(dt, expected_dt)
+
 
 #####################################################################################################################
 
