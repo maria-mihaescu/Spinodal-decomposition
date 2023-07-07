@@ -115,52 +115,7 @@ def add_fluctuation(Nx,
     
     return c
 
-def test_add_fluctuation():
-    """
-    Function to test the added fluctuations function. A random seed is set before calling
-    the add_fluctuation function to ensure deterministic results for each test case.    
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    Nx = 10
-    Ny = 10
-    c0 = 0.5
-    #ensure deterministic results for this test case with a random seed
-    np.random.seed(0)
-    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
-    np.random.seed(0)
-    actual_output = add_fluctuation(Nx, Ny, c0)
-    
-    assert np.allclose(actual_output, expected_output)
-     
-    # Test case 2
-    Nx = 5
-    Ny = 8
-    c0 = 0.3
-    np.random.seed(1)
-    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
-    np.random.seed(1)
-    actual_output = add_fluctuation(Nx, Ny, c0)
-    
-    assert np.allclose(actual_output, expected_output)
-
-    # Test case 3
-    Nx = 12
-    Ny = 6
-    c0 = 0.7
-    np.random.seed(2)
-    expected_output = c0 + np.random.rand(Nx, Ny) * 0.01
-    np.random.seed(2)
-    actual_output = add_fluctuation(Nx, Ny, c0)
-    
-    assert np.allclose(actual_output, expected_output)
-
-
-    
+  
 def func_laplacian(center,
                    left,
                    right,

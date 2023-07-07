@@ -13,6 +13,8 @@ from Cahn_Hillard import atom_interac_cst
 from Cahn_Hillard import diffusion_coeff
 from Cahn_Hillard import time_increment
 
+from Cahn_Hillard import add_fluctuation
+
 #####################################################################################################################
 
 def test_atom_interac_cst_positive():
@@ -168,6 +170,38 @@ def test_time_increment_positive():
 
 
 #####################################################################################################################
+
+def test_add_fluctuation():
+    """
+    Test function for the add_fluctuation function.
+    
+    This test case verifies the addition of random fluctuations to the composition matrix.
+    It checks if the resulting composition matrix falls within the expected range and if the seed produces reproducible results.
+
+    """
+
+    # Input values
+    Nx = 10
+    Ny = 10
+    c0 = 0.5
+    seed = 123  # Set a specific seed for reproducibility
+
+    # Expected range
+    expected_min = c0
+    expected_max = c0 + 0.01  # Fluctuation range specified in the function
+
+    # Calculated results with the function
+    c1 = add_fluctuation(Nx, Ny, c0, seed=seed)
+    c2 = add_fluctuation(Nx, Ny, c0, seed=seed)
+
+    # Check if the composition matrices fall within the expected range
+    assert np.all(c1 >= expected_min) and np.all(c1 <= expected_max)
+    assert np.all(c2 >= expected_min) and np.all(c2 <= expected_max)
+
+    # Check if the results with the same seed are reproducible
+    assert np.array_equal(c1, c2)
+
+
 
 #####################################################################################################################
 
