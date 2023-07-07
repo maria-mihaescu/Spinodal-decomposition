@@ -66,7 +66,7 @@ def ranges(X_B_min,
     
     return X_B,T,eta
 
-def test_ranges():
+def test_ranges_valid():
     
     """
     This test function tests if the ranges function takes well the minimum, maximum and step value for each
@@ -344,7 +344,7 @@ def interaction_parameter(Z,
 
     return omega
 
-def test_interaction_parameter():
+def test_interaction_parameter_valid():
     
     """
     test the calculation of the interaction parameter.
@@ -929,8 +929,9 @@ def test_free_energy_XB_T_valid():
 
     The input values include a composition array (X_B), a temperature array (T),
     a reference temperature (T0), and an interaction parameter (omega).
+    
     The composition and temperature values have to be within the appropriate ranges given to the user 
-    in the documentation.
+    in the documentation. (Composition between 0 and 1 and positive temperatures)
 
     """
 
@@ -988,40 +989,38 @@ def enthalpie_eta_T(eta_eta_T,T0,omega):
     
     return h
 
-# def test_enthalpie_eta_T():
-#     """
-#     test function to test the calculation of the enthalpie in the (eta,T) space 
 
-#     Returns
-#     -------
-#     None.
+def test_enthalpie_eta_T_valid():
+    """
+    Test function for the enthalpie_eta_T function with valid input values.
+    This test case verifies the calculation of enthalpy for valid input values.
+    It checks if the calculated values match the expected results.
 
-#     """
-#     # Test input values
-#     eta_eta_T = np.array([[0.1, 0.2, 0.3],
-#                           [0.4, 0.5, 0.6],
-#                           [0.7, 0.8, 0.9]])
-#     T0 = 300.0
-#     omega = 1.0
-    
-#     # Expected output shape
-#     expected_shape = eta_eta_T.shape
-    
-#     # Call the function
-#     h = enthalpie_eta_T(eta_eta_T, T0, omega)
-    
-#     # Perform assertions
-#     assert isinstance(h, np.ndarray)
-#     assert h.shape == expected_shape
+    The input values include a structural order parameter array (eta_eta_T),
+    a reference temperature (T0), and an interaction parameter (omega).
+    The structural order parameter values and temperature values have to be within the appropriate ranges.
+    (eta between -0.5 and 0.5 and positive temperatures) to have physical sens.
+    """
 
-#     # Check calculated values against expected values
-#     expected_h = N_A * omega * (0.25 + np.multiply(eta_eta_T, eta_eta_T))
-#     assert np.allclose(h, expected_h)
+    # Input values
+    T0 = 300.0
+    omega = 10.0
     
-#     # Check specific values
-#     assert np.isclose(h[0, 0], N_A * omega * (0.25 + eta_eta_T[0, 0] * eta_eta_T[0, 0]))
-#     assert np.isclose(h[1, 2], N_A * omega * (0.25 + eta_eta_T[1, 2] * eta_eta_T[1, 2]))
-#     assert np.isclose(h[2, 1], N_A * omega * (0.25 + eta_eta_T[2, 1] * eta_eta_T[2, 1]))
+    eta_eta_T = np.array([[0.1, 0.2, 0.3],
+                          [0.4, 0.5, 0.6],
+                          [0.7, 0.8, 0.9]])
+
+    # Expected results
+    expected_h = np.array([[1.5652e24, 1.7458e24, 2.0468e24],
+                           [2.4682e24, 3.0100e24, 3.6722e24],
+                           [4.4548e24, 5.3578e24, 6.3812e24]])
+
+    # Calculated results with the function
+    h = enthalpie_eta_T(eta_eta_T, T0, omega)
+
+    # Compare the calculated results with expected results
+    assert np.allclose(h, expected_h)
+
 
 def T_entropie_eta_T(eta_eta_T,T_XB_T,T0,omega):
     
