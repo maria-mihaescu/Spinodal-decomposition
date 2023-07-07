@@ -5,9 +5,6 @@ Created on Fri Jul  7 15:26:03 2023
 @author: Maria Mihaescu
 """
 import numpy as np
-import matplotlib
-from matplotlib import cm
-
 
 from Binary_Alloys import ranges
 from Binary_Alloys import xlog
