@@ -18,6 +18,7 @@ from Cahn_Hillard import func_laplacian
 from Cahn_Hillard import chemical_free_energy_density
 
 from Cahn_Hillard import boundary_conditions
+from Cahn_Hillard import composition_nearest_neighbours
 #####################################################################################################################
 
 def test_atom_interac_cst_positive():
@@ -399,6 +400,146 @@ def test_boundary_conditions_bottom():
 
 
 #####################################################################################################################
+
+def test_composition_nearest_neighbours_left_border():
+    """
+    Test function to verify the correctness of the composition_nearest_neighbours function for the left border.
+    This test case checks the composition values of the nearest neighbors of a matrix, specifically for the left border.
+
+    The composition matrix (c) has a size of 3x3.
+    The coordinates (x, y) represent a cell on the left border, where x = 0.
+
+    The expected composition values of the nearest neighbors are:
+    c_center = 0.3, c_left = 0.9 (same cell), c_right = 0.6, c_up = 0.4, c_down = 0.2
+
+    The calculated composition values are obtained by calling the composition_nearest_neighbours function with the input values.
+
+    The function compares the calculated composition values with the expected composition values using the assert statement.
+    """
+
+    # Input values
+    c = np.array([[0.2, 0.3, 0.4],
+                  [0.5, 0.6, 0.7],
+                  [0.8, 0.9, 1.0]])
+    x = 0
+    y = 1
+    Nx = 3
+    Ny = 3
+    
+    #expected result 
+    expected_output = (0.3, 0.9, 0.6, 0.4, 0.2)
+    
+    #calculated result
+    calculated_output = composition_nearest_neighbours(c, x, y, Nx, Ny)
+    
+    assert  calculated_output == expected_output
+
+
+def test_composition_nearest_neighbours_right_border():
+    """
+    Test function to verify the correctness of the composition_nearest_neighbours function for the right border.
+    This test case checks the composition values of the nearest neighbors of a matrix, specifically for the right border.
+
+    The composition matrix (c) has a size of 4x4.
+    The coordinates (x, y) represent a cell on the right border, where x = 3.
+
+    The expected composition values of the nearest neighbors are:
+    c_center = 0.4, c_left = 0.9, c_right = 0.3 (same cell), c_up = 0.6, c_down = 0.3 (same cell)
+
+    The calculated composition values are obtained by calling the composition_nearest_neighbours function with the input values.
+
+    The function compares the calculated composition values with the expected composition values using the assert statement.
+    """
+
+    # Test case
+    c = np.array([[0.1, 0.2, 0.3, 0.5],
+                  [0.4, 0.5, 0.6, 0.9],
+                  [0.7, 0.8, 0.9, 1.0],
+                  [0.2, 0.3, 0.4, 0.6]])
+    x = 3
+    y = 2
+    Nx = 4
+    Ny = 4
+    
+    #expected result 
+    expected_output = (0.4, 0.9, 0.3, 0.6, 0.3)
+    
+    #calculated result
+    calculated_output = composition_nearest_neighbours(c, x, y, Nx, Ny)
+    
+    assert  calculated_output == expected_output
+
+def test_composition_nearest_neighbours_top_border():
+    """
+    Test function to verify the correctness of the composition_nearest_neighbours function for the top border.
+    This test case checks the composition values of the nearest neighbors of a matrix, specifically for the top border.
+
+    The composition matrix (c) has a size of 5x5.
+    The coordinates (x, y) represent a cell on the top border, where y = 4.
+
+    The expected composition values of the nearest neighbors are:
+    c_center = 0.2, c_left = 0.3, c_right = 0.7, c_up = 0.4 (same cell), c_down = 0.4
+
+    The calculated composition values are obtained by calling the composition_nearest_neighbours function with the input values.
+
+    The function compares the calculated composition values with the expected composition values using the assert statement.
+    """
+
+    # Test case
+    c = np.array([[0.3, 0.2, 0.1, 0.8, 0.5],
+                  [0.5, 0.6, 0.7, 0.6, 0.3],
+                  [0.4, 0.5, 0.6, 0.4, 0.2],
+                  [0.6, 0.7, 0.8, 0.9, 0.7],
+                  [0.8, 0.9, 1.0, 0.7, 0.6]])
+    x = 2
+    y = 4
+    Nx = 5
+    Ny = 5
+    
+    #expected result
+    expected_output = (0.2, 0.3, 0.7, 0.4, 0.4)
+    
+    
+    #calculated result
+    calculated_output = composition_nearest_neighbours(c, x, y, Nx, Ny)
+    
+    assert  calculated_output == expected_output
+
+
+def test_composition_nearest_neighbours_bottom_border():
+    """
+    Test function to verify the correctness of the composition_nearest_neighbours function for the bottom border.
+    This test case checks the composition values of the nearest neighbors of a matrix, specifically for the bottom border.
+
+    The composition matrix (c) has a size of 5x5.
+    The coordinates (x, y) represent a cell on the bottom border, where y = 0.
+
+    The expected composition values of the nearest neighbors are:
+    c_center = 0.2, c_left = 0.4, c_right = 0.5, c_up = 0.3 (same cell), c_down = 0.4
+
+    The calculated composition values are obtained by calling the composition_nearest_neighbours function with the input values.
+
+    The function compares the calculated composition values with the expected composition values using the assert statement.
+    """
+
+    # Test case
+    c = np.array([[0.5, 0.9, 0.7, 0.4, 0.3],
+                  [0.6, 0.7, 0.8, 0.5, 0.2],
+                  [0.4, 0.5, 0.6, 0.3, 0.1],
+                  [0.2, 0.3, 0.4, 0.5, 0.4],
+                  [0.5, 0.6, 0.7, 0.5, 0.3]])
+    x = 3
+    y = 0
+    Nx = 5
+    Ny = 5
+    
+    #expected result 
+    expected_output = (0.2, 0.4, 0.5, 0.3, 0.4)
+    
+    #calculated result
+    calculated_output = composition_nearest_neighbours(c, x, y, Nx, Ny)
+    
+    assert  calculated_output == expected_output
 
 #####################################################################################################################
 

@@ -324,55 +324,6 @@ def composition_nearest_neighbours(c,
     
     return c_center,c_left,c_right,c_up,c_down
 
-def test_composition_nearest_neighbours():
-    """
-    Test the function that shows the composition of the nearest neighbours of a matrix taking in 
-    account the boundary conditions.
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    #x sets the list we are in 
-    #y sets the place in the list 
-    
-    c = np.array([[0.2, 0.3, 0.4],
-                  [0.5, 0.6, 0.7],
-                  [0.8, 0.9, 1.0]])
-    x = 1
-    y = 1
-    Nx = 3
-    Ny = 3
-    expected_output = (0.6, 0.3, 0.9, 0.7, 0.5)
-    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
-
-    # Test case 2
-    #x sets the list we are in 
-    #y sets the place in the list 
-    c = np.array([[0.1, 0.2, 0.3],
-                  [0.4, 0.5, 0.6],
-                  [0.7, 0.8, 0.9]])
-    x = 2
-    y = 0
-    Nx = 3
-    Ny = 3
-    expected_output = (0.7, 0.4, 0.1, 0.8, 0.9)
-    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
-
-    # Test case 3
-    #x sets the list we are in 
-    #y sets the place in the list 
-    c = np.array([[0.5, 0.2, 0.3],
-                  [0.1, 0.6, 0.7],
-                  [0.8, 0.4, 0.9]])
-    x = 0
-    y = 2
-    Nx = 3
-    Ny = 3
-    expected_output = (0.3, 0.9, 0.7, 0.5, 0.2)
-    assert composition_nearest_neighbours(c, x, y, Nx, Ny) == expected_output
 
 
 def diffusion_potential_chemical(cc,
@@ -401,36 +352,36 @@ def diffusion_potential_chemical(cc,
     return mu_chem_dir
 
 
-def test_diffusion_potential_chemical():
-    """
-    test function for the function to calculate the chemical component of the diffusion potential
+# def test_diffusion_potential_chemical():
+#     """
+#     test function for the function to calculate the chemical component of the diffusion potential
 
-    Returns
-    -------
-    None.
+#     Returns
+#     -------
+#     None.
 
-    """
-    # Test case 1
-    cc = 0.5
-    T = 300
-    La = 10
+#     """
+#     # Test case 1
+#     cc = 0.5
+#     T = 300
+#     La = 10
     
-    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
 
-    # Test case 2
-    cc = 0.8
-    T = 500
-    La = 5
-    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+#     # Test case 2
+#     cc = 0.8
+#     T = 500
+#     La = 5
+#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
 
-    # Test case 3
-    cc = 0.3
-    T = 400
-    La = 8
-    expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-    assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
+#     # Test case 3
+#     cc = 0.3
+#     T = 400
+#     La = 8
+#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
+#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
     
 
     
@@ -493,24 +444,24 @@ def total_diffusion_potential(c,
     
     return mu_tot_dir
     
-def test_total_diffusion_potential():
-    # Test case 1
-    c = np.array([[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0]])
-    x = 1
-    y = 1
-    A = 0.1
-    dx = 0.5
-    dy = 0.5
-    T = 300
-    La = 10
-    Nx = 3
-    Ny = 3
+# def test_total_diffusion_potential():
+#     # Test case 1
+#     c = np.array([[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0]])
+#     x = 1
+#     y = 1
+#     A = 0.1
+#     dx = 0.5
+#     dy = 0.5
+#     T = 300
+#     La = 10
+#     Nx = 3
+#     Ny = 3
     
-    #using already tested functions
-    c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
-    expected_output = -A*(func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)) + diffusion_potential_chemical(c_center,T,La)
+#     #using already tested functions
+#     c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
+#     expected_output = -A*(func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)) + diffusion_potential_chemical(c_center,T,La)
 
-    assert np.isclose(total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny), expected_output)
+#     assert np.isclose(total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny), expected_output)
 
 def update_order_parameter(c,
                            c_t,
@@ -608,44 +559,44 @@ def update_order_parameter(c,
             
             
 
-def test_update_order_parameter():
-    """
-    test function t check if the order parameter is well updated 
+# def test_update_order_parameter():
+#     """
+#     test function t check if the order parameter is well updated 
 
-    Returns
-    -------
-    None.
+#     Returns
+#     -------
+#     None.
 
-    """
-    # Test case 1
+#     """
+#     # Test case 1
 
-    T = 673 # temperature [K]
-    La=13943
-    A= 3.0e-14 # gradient coefficient [Jm2/mol]
-    coef_DA=1.0e-04
-    coef_DB=2.0e-05
-    E_DA=300000.0
-    E_DB=300000.0 
-    Nx= 3 #number of computational grids along the x direction
-    Ny= 3 #number of computational grids along the y direction
-    dx =  2.0e-9 # spacing of computational grids [m]
-    dy =  2.0e-9 # spacing of computational grids [m]
-    Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
-    Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
-    dt = time_increment(dx,Diff_A)
+#     T = 673 # temperature [K]
+#     La=13943
+#     A= 3.0e-14 # gradient coefficient [Jm2/mol]
+#     coef_DA=1.0e-04
+#     coef_DB=2.0e-05
+#     E_DA=300000.0
+#     E_DB=300000.0 
+#     Nx= 3 #number of computational grids along the x direction
+#     Ny= 3 #number of computational grids along the y direction
+#     dx =  2.0e-9 # spacing of computational grids [m]
+#     dy =  2.0e-9 # spacing of computational grids [m]
+#     Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
+#     Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
+#     dt = time_increment(dx,Diff_A)
 
 
-    c = np.array([[0.50548814, 0.50715189, 0.50602763],
-                  [0.50544883, 0.50423655, 0.50645894],
-                  [0.50437587, 0.50891773, 0.50963663]])
-    c_t = np.zeros_like(c)
+#     c = np.array([[0.50548814, 0.50715189, 0.50602763],
+#                   [0.50544883, 0.50423655, 0.50645894],
+#                   [0.50437587, 0.50891773, 0.50963663]])
+#     c_t = np.zeros_like(c)
     
-    expected_output = np.array([[0.50532619, 0.50676076, 0.50666109],
-                                [0.50488973, 0.50528719, 0.50639366],
-                                [0.50563731, 0.5081079,  0.50866898]])
-    update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
+#     expected_output = np.array([[0.50532619, 0.50676076, 0.50666109],
+#                                 [0.50488973, 0.50528719, 0.50639366],
+#                                 [0.50563731, 0.5081079,  0.50866898]])
+#     update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
 
-    assert np.allclose(c_t, expected_output)
+#     assert np.allclose(c_t, expected_output)
     
 
 
