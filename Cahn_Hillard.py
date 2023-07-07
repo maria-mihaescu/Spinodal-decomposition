@@ -275,38 +275,6 @@ def boundary_conditions(x,
         
     return x,y,x_plus,x_min,y_plus,y_min
 
-def test_boundary_conditions():
-    """
-    test the boundary condition function
-
-    Returns
-    -------
-    None.
-
-    """
-    # Test case 1
-    x = 3
-    y = 5
-    Nx = 10
-    Ny = 8
-    expected_output = (3, 5, 4, 2, 6, 4)
-    assert boundary_conditions(x, y, Nx, Ny) == expected_output
-
-    # Test case 2
-    x = 0
-    y = 0
-    Nx = 7
-    Ny = 7
-    expected_output = (0, 0, 1, 6, 1, 6)
-    assert boundary_conditions(x, y, Nx, Ny) == expected_output
-
-    # Test case 3
-    x = 8
-    y = 2
-    Nx = 9
-    Ny = 5
-    expected_output = (8, 2, 0, 7, 3, 1)
-    assert boundary_conditions(x, y, Nx, Ny) == expected_output
 
 def composition_nearest_neighbours(c,
                                      x,

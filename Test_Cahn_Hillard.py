@@ -17,6 +17,7 @@ from Cahn_Hillard import add_fluctuation
 from Cahn_Hillard import func_laplacian
 from Cahn_Hillard import chemical_free_energy_density
 
+from Cahn_Hillard import boundary_conditions
 #####################################################################################################################
 
 def test_atom_interac_cst_positive():
@@ -272,6 +273,130 @@ def test_chemical_free_energy_density_positive():
     assert np.isclose(chem_pot, expected_chem_pot)
     
 #####################################################################################################################
+
+def test_boundary_conditions_right():
+    """
+    Test function to verify the correctness of the boundary_conditions function for cells on the right side of the grid.
+    This test case ensures that when the central cell is at the rightmost edge of the grid, the neighboring cell on
+    the right side wraps around to the opposite edge.
+
+    The input values include the coordinate positions (x, y) of the central cell, and the size of the computational grid (Nx * Ny).
+
+    The expected output values are the coordinates of the central cell (x, y) and its neighboring cells (x_plus, x_min, y_plus, y_min).
+
+    The calculated output values are obtained by calling the boundary_conditions function with the input values.
+
+    The function compares the calculated output values with the expected output values using the assert statement.
+    """
+
+    # Test case
+    x = 6
+    y = 3
+    Nx = 6
+    Ny = 6
+
+    # Expected results
+    expected_output = (6, 3, 1, 5, 4, 2)
+
+    # Calculated results with the function
+    calculated_output = boundary_conditions(x, y, Nx, Ny)
+
+    # Compare the calculated results with the expected results
+    assert calculated_output == expected_output
+
+
+def test_boundary_conditions_left():
+    """
+    Test function to verify the correctness of the boundary_conditions function for cells on the left side of the grid.
+    This test case ensures that when the central cell is at the leftmost edge of the grid, the neighboring cell on
+    the left side wraps around to the opposite edge.
+
+    The input values include the coordinate positions (x, y) of the central cell, and the size of the computational grid (Nx * Ny).
+
+    The expected output values are the coordinates of the central cell (x, y) and its neighboring cells (x_plus, x_min, y_plus, y_min).
+
+    The calculated output values are obtained by calling the boundary_conditions function with the input values.
+
+    The function compares the calculated output values with the expected output values using the assert statement.
+    """
+
+    # Test case
+    x = 0
+    y = 4
+    Nx = 7
+    Ny = 7
+
+    # Expected results
+    expected_output = (0, 4, 1, 6, 5, 3)
+
+    # Calculated results with the function
+    calculated_output = boundary_conditions(x, y, Nx, Ny)
+
+    # Compare the calculated results with the expected results
+    assert calculated_output == expected_output
+
+
+def test_boundary_conditions_top():
+    """
+    Test function to verify the correctness of the boundary_conditions function for cells on the top side of the grid.
+    This test case ensures that when the central cell is at the top edge of the grid, the neighboring cell above wraps
+    around to the opposite edge.
+
+    The input values include the coordinate positions (x, y) of the central cell, and the size of the computational grid (Nx * Ny).
+
+    The expected output values are the coordinates of the central cell (x, y) and its neighboring cells (x_plus, x_min, y_plus, y_min).
+
+    The calculated output values are obtained by calling the boundary_conditions function with the input values.
+
+    The function compares the calculated output values with the expected output values using the assert statement.
+    """
+
+    # Test case
+    x = 3
+    y = 8
+    Nx = 8
+    Ny = 8
+
+    # Expected results
+    expected_output = (3, 8, 4, 2, 1, 7)
+
+    # Calculated results with the function
+    calculated_output = boundary_conditions(x, y, Nx, Ny)
+
+    # Compare the calculated results with the expected results
+    assert calculated_output == expected_output
+
+
+def test_boundary_conditions_bottom():
+    """
+    Test function to verify the correctness of the boundary_conditions function for cells on the bottom side of the grid.
+    This test case ensures that when the central cell is at the bottom edge of the grid, the neighboring cell below wraps
+    around to the opposite edge.
+
+    The input values include the coordinate positions (x, y) of the central cell, and the size of the computational grid (Nx * Ny).
+
+    The expected output values are the coordinates of the central cell (x, y) and its neighboring cells (x_plus, x_min, y_plus, y_min).
+
+    The calculated output values are obtained by calling the boundary_conditions function with the input values.
+
+    The function compares the calculated output values with the expected output values using the assert statement.
+    """
+
+    # Test case
+    x = 5
+    y = 1
+    Nx = 6
+    Ny = 6
+
+    # Expected results
+    expected_output = (5, 1, 0, 4, 2, 0)
+
+    # Calculated results with the function
+    calculated_output = boundary_conditions(x, y, Nx, Ny)
+
+    # Compare the calculated results with the expected results
+    assert calculated_output == expected_output
+
 
 #####################################################################################################################
 
