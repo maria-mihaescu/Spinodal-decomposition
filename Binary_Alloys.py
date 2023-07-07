@@ -776,26 +776,36 @@ def enthalpie_XB_T(X_XB_T,
 
 def test_enthalpie_XB_T():
     """
-    Test the calculation of the enthalpie for the (XB,T) space
+    Test function for the enthalpie_XB_T function.
+    This test case verifies the calculation of enthalpy for specific input values.
+    It checks if the calculated enthalpy matches the expected values.
 
-    Returns
-    -------
-    None.
+    The input values include a composition array (XB) and a temperature array (T).
+    the composition has to be between 0 and 1 to have physical sens.
+    T0 is a temperature in kelvin and has to be positive  of a few 100 of K to have physical sens.
+    We only test this case which will give positive expected values of the enthalpie
 
     """
-    X_XB_T = np.array([0.2, 0.4, 0.6])  # example values for X_XB_T
-    T0 = 300  # example value for T0
-    omega = 1.5  # example value for omega
 
+    # Input values
+    X_XB_T = np.array([[0.1, 0.2, 0.3],
+                       [0.4, 0.5, 0.6],
+                       [0.7, 0.8, 0.9]])
+    T0 = 300.0
+    omega = 10.0
+
+    # Expected results
+    expected_h = np.array([[5.4180e23, 9.6320e23, 1.2642e24],
+                           [1.4448e24, 1.5050e24, 1.4448e24],
+                           [1.2642e24, 9.6320e23, 5.4180e23]])
+
+    # Calculated results with the function
     h = enthalpie_XB_T(X_XB_T, T0, omega)
 
-    # Calculate the expected enthalpy values
-    expected_h = N_A * omega * (X_XB_T * (1 - X_XB_T))
-
-    # Check if the calculated enthalpy matches the expected values
+    # Compare the calculated results with expected results
     assert np.allclose(h, expected_h)
-    
-    
+
+
 def T_entropie_XB_T(X_XB_T, T_XB_T,T0,omega):
     
     """
