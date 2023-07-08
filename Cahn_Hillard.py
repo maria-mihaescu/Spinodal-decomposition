@@ -509,46 +509,6 @@ def update_order_parameter(c,
             
             
 
-# def test_update_order_parameter():
-#     """
-#     test function t check if the order parameter is well updated 
-
-#     Returns
-#     -------
-#     None.
-
-#     """
-#     # Test case 1
-
-#     T = 673 # temperature [K]
-#     La=13943
-#     A= 3.0e-14 # gradient coefficient [Jm2/mol]
-#     coef_DA=1.0e-04
-#     coef_DB=2.0e-05
-#     E_DA=300000.0
-#     E_DB=300000.0 
-#     Nx= 3 #number of computational grids along the x direction
-#     Ny= 3 #number of computational grids along the y direction
-#     dx =  2.0e-9 # spacing of computational grids [m]
-#     dy =  2.0e-9 # spacing of computational grids [m]
-#     Diff_A = diffusion_coeff(coef_DA,E_DA,T)# diffusion coefficient of A atom [m2/s]
-#     Diff_B = diffusion_coeff(coef_DB,E_DB,T) # diffusion coefficient of B atom [m2/s]
-#     dt = time_increment(dx,Diff_A)
-
-
-#     c = np.array([[0.50548814, 0.50715189, 0.50602763],
-#                   [0.50544883, 0.50423655, 0.50645894],
-#                   [0.50437587, 0.50891773, 0.50963663]])
-#     c_t = np.zeros_like(c)
-    
-#     expected_output = np.array([[0.50532619, 0.50676076, 0.50666109],
-#                                 [0.50488973, 0.50528719, 0.50639366],
-#                                 [0.50563731, 0.5081079,  0.50866898]])
-#     update_order_parameter(c, c_t, Nx, Ny, A, dx, dy, T, La, Diff_A, Diff_B, dt)
-
-#     assert np.allclose(c_t, expected_output)
-    
-
 
 def initial_composition(Nx,
                           Ny,
