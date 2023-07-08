@@ -21,7 +21,7 @@ from Cahn_Hillard import boundary_conditions
 from Cahn_Hillard import composition_nearest_neighbours
 
 from Cahn_Hillard import diffusion_potential_chemical
-
+from Cahn_Hillard import total_diffusion_potential
 
 #####################################################################################################################
 
@@ -599,6 +599,73 @@ def test_diffusion_potential_chemical_cc_0_8():
     assert calculated_output == expected_output
 
 #####################################################################################################################
+
+
+def test_total_diffusion_potential_cc_0_5():
+    """
+    Test function to verify the correctness of the total_diffusion_potential function when the composition (c_center) is 0.5.
+
+    For cc=0.5 there is the same amount of A and B atoms. 
+    We expect the ouput to be 0 for the chemical potential so the todal diffusion potential is expected
+    to be equal to the gradient of the chemical potential.
+        
+    The function compares the calculated output with the expected output using the assert statement.
+    """
+
+    # Test case
+    c = np.array([[0.2, 0.3, 0.4],
+                  [0.5, 0.5, 0.7],
+                  [0.8, 0.9, 1.0]])
+    x = 1
+    y = 1
+    A = 0.2
+    dx = 0.1
+    dy = 0.1
+    T = 500.0
+    La = 300.0
+    Nx = 3
+    Ny = 3
+    expected_output = -7.999999999999999
+
+    # Calculated output with the function
+    calculated_output = total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny)
+
+    # Compare the calculated output with the expected output
+    assert calculated_output == expected_output
+
+    
+def test_total_diffusion_potential_cc_0_8():
+    
+    """
+    Test function to verify the correctness of the total_diffusion_potential function when the composition (c_center) is 0.8.
+
+    For cc=0.8, we expect a non-zero chemical potential term in the total diffusion potential, in addition to the gradient term.
+
+    The function compares the calculated output with the expected output using the assert statement.
+    """
+
+    # Test case
+    c = np.array([[0.2, 0.3, 0.4],
+                  [0.8, 0.8, 0.7],
+                  [0.8, 0.9, 1.0]])
+    x = 1
+    y = 1
+    A = 0.2
+    dx = 0.1
+    dy = 0.1
+    T = 500.0
+    La = 300.0
+    Nx = 3
+    Ny = 3
+    expected_output = 5592.825659175386
+
+    # Calculated output with the function
+    calculated_output = total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny)
+
+
+    # Compare the calculated output with the expected output
+    assert calculated_output == expected_output
+
 
 #####################################################################################################################
 

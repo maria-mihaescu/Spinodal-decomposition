@@ -412,24 +412,6 @@ def total_diffusion_potential(c,
     
     return mu_tot_dir
     
-# def test_total_diffusion_potential():
-#     # Test case 1
-#     c = np.array([[0.2, 0.3, 0.4], [0.5, 0.6, 0.7], [0.8, 0.9, 1.0]])
-#     x = 1
-#     y = 1
-#     A = 0.1
-#     dx = 0.5
-#     dy = 0.5
-#     T = 300
-#     La = 10
-#     Nx = 3
-#     Ny = 3
-    
-#     #using already tested functions
-#     c_center,c_left,c_right,c_up,c_down = composition_nearest_neighbours(c,x,y,Nx,Ny)
-#     expected_output = -A*(func_laplacian(c_center,c_left,c_right,c_up,c_down,dx,dy)) + diffusion_potential_chemical(c_center,T,La)
-
-#     assert np.isclose(total_diffusion_potential(c, x, y, A, dx, dy, T, La, Nx, Ny), expected_output)
 
 def update_order_parameter(c,
                            c_t,
