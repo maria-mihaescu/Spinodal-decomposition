@@ -19,6 +19,10 @@ from Cahn_Hillard import chemical_free_energy_density
 
 from Cahn_Hillard import boundary_conditions
 from Cahn_Hillard import composition_nearest_neighbours
+
+from Cahn_Hillard import diffusion_potential_chemical
+
+
 #####################################################################################################################
 
 def test_atom_interac_cst_positive():
@@ -542,6 +546,57 @@ def test_composition_nearest_neighbours_bottom_border():
     assert  calculated_output == expected_output
 
 #####################################################################################################################
+
+
+def test_diffusion_potential_chemical_cc_0_5():
+    """
+    Test function to verify the correctness of the diffusion_potential_chemical function when the composition (cc) is 0.5.
+    The composition has to be strictly between 0 and 1 to make physical sens.
+
+    For cc=0.5 there is the same amount of A and B atoms. 
+    We expect the ouput to be 0.
+
+    The function compares the calculated output with the expected output using the assert statement.
+    """
+
+    # Test case
+    cc = 0.5
+    T = 400.0
+    La = 150000.0
+    
+    #Expected result
+    expected_output = 0.0
+
+    # Calculated output with the function
+    calculated_output = diffusion_potential_chemical(cc, T, La)
+
+    # Compare the calculated output with the expected output
+    assert calculated_output == expected_output
+
+
+def test_diffusion_potential_chemical_cc_0_8():
+    """
+    Test function to verify the correctness of the diffusion_potential_chemical function when the composition (cc) is 0.8.
+    The composition has to be strictly between 0 and 1 to make physical sens.
+
+    For cc=0.8 there are more B atoms than A atoms.
+
+    The function compares the calculated output with the expected output using the assert statement.
+    """
+
+    # Test case
+    cc = 0.8
+    T = 400.0
+    La = 150000.0
+    
+    #Expected result
+    expected_output = -85389.73947265971
+
+    # Calculated output with the function
+    calculated_output = diffusion_potential_chemical(cc, T, La)
+
+    # Compare the calculated output with the expected output
+    assert calculated_output == expected_output
 
 #####################################################################################################################
 

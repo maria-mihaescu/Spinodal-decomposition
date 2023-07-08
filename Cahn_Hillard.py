@@ -352,38 +352,6 @@ def diffusion_potential_chemical(cc,
     return mu_chem_dir
 
 
-# def test_diffusion_potential_chemical():
-#     """
-#     test function for the function to calculate the chemical component of the diffusion potential
-
-#     Returns
-#     -------
-#     None.
-
-#     """
-#     # Test case 1
-#     cc = 0.5
-#     T = 300
-#     La = 10
-    
-#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
-
-#     # Test case 2
-#     cc = 0.8
-#     T = 500
-#     La = 5
-#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
-
-#     # Test case 3
-#     cc = 0.3
-#     T = 400
-#     La = 8
-#     expected_output = R*T*(np.log(cc)-np.log(1.0-cc))+ La*(1.0-2.0*cc)
-#     assert np.isclose(diffusion_potential_chemical(cc, T, La), expected_output)
-    
-
     
 def total_diffusion_potential(c,
                               x,
