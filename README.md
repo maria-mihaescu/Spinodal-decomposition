@@ -10,7 +10,7 @@ In a second part one can solve the Cahn Hilliard equation in order to simulate t
 
 1- In the terminal or command prompt clone the repository
 ```
-git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
+git clone https://github.com/maria-mihaescu/Spinodal-decomposition.git
 
 ```
 2- Make sure that you have all the needed packages in python3: 
