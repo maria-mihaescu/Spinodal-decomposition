@@ -35,7 +35,7 @@ python3 GUI.py
 
 1- In the git bash clone the repository
 ```
-git clone https://github.com/maria-mihaescu/Software-and-computing-for-applied-physics.git
+git clone https://github.com/maria-mihaescu/Spinodal-decomposition.git
 
 ```
 2- In the Anaconda Prompt, make sure that you have all the needed packages in python3: 
