@@ -109,9 +109,9 @@ def add_fluctuation(Nx,
     if seed is not None:
         np.random.seed(seed)
         
-    conversion_factor=0.01 #gets the composition in atomic fraction
+    range_fluctuation=0.01 
     
-    c = c0 + np.random.rand(Nx, Ny)*conversion_factor
+    c = c0 + np.random.rand(Nx, Ny)*range_fluctuation
     
     return c
 
