@@ -138,9 +138,14 @@ Once all those parameters are entered, the user can enter the parameters used fo
 - interval in [ms] is the time interval between each fram in the animation. **(for example interval=400ms)**
 
 The last window of the software enables the user to download the results of the simulation in a HDF5 file.
+
+For Anaconda Users :
 - The user has to enter the path of the directory in which the file will be saved **(for example : C:\user\directory\ )** (it is important to add the ** \ ** after the name of the directory)
 - Then the user has to enter the name of the file **(for example : testfile)** (without the .h5 !)
 - The data will be saved by blocks for the composition matrix c at the different printed times
+
+For Linux Users :
+- Write directly the name of the file, and it will be saved in the folder in which you are running the program. 
 
 # How to navigate in the Software
 
